@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-basic = "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H"
+health_anchor = "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H"
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,4 +16,6 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "../node_modules/.bin/jest --preset ts-jest"
+# Use bun test to run the test suite (Bun supports TypeScript natively).
+# Make sure `bun` is installed and available in PATH on your machine.
+test = "bun test"
