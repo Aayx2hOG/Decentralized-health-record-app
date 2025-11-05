@@ -1,4 +1,5 @@
 import * as anchor from '@coral-xyz/anchor'
+import { fetchFromIpfs, uploadToIpfs } from './helpers/ipfs_quicknode';
 
 describe('health_anchor', () => {
   // Configure the client to use the local cluster.
@@ -37,11 +38,11 @@ describe('health_anchor', () => {
 
     const recordKeypair = anchor.web3.Keypair.generate();
 
-    const cid = "abc123";
     const tile = "Blood test";
     const recipient = anchor.web3.Keypair.generate().publicKey;
     const encryptedKey = new Uint8Array([1, 2, 3, 4, 5]);
-
+    const blob = Buffer.from("test-ipfs-payload");
+    const cid = await uploadToIpfs(blob);
 
     await program.methods.createRecord(
       cid,
@@ -52,6 +53,11 @@ describe('health_anchor', () => {
       record: recordKeypair.publicKey,
       owner: owner.publicKey,
     }).signers([owner, recordKeypair]).rpc();
+
+    const fetched = await fetchFromIpfs(cid);
+    if (fetched.toString() !== blob.toString()) {
+      throw new Error("Fetched data from IPFS does not match uploaded data");
+    }
 
     const record = await program.account.record.fetch(recordKeypair.publicKey);
 
