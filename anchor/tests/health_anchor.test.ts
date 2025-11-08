@@ -1,4 +1,7 @@
 import * as anchor from '@coral-xyz/anchor'
+import { ipfsClient, addBuffer, catToBuffer } from './helpers/ipfs';
+import { generateSymmetricKey, encryptPayloadAESGCM, encryptSymmetricKeyForRecipient } from './helpers/crypto';
+const IPFS_INTEGRATION = process.env.RUN_IPFS_INTEGRATION === '1';
 
 describe('health_anchor', () => {
   const provider = anchor.AnchorProvider.env();
@@ -38,18 +41,46 @@ describe('health_anchor', () => {
 
     const tile = "Blood test";
     const recipient = anchor.web3.Keypair.generate().publicKey;
-    const encryptedKey = new Uint8Array([1, 2, 3, 4, 5]);
-    const cid = "cid_test";
+
+    const client = ipfsClient();
+
+    try {
+      await (client as any).id();
+    } catch (err) {
+      if (IPFS_INTEGRATION) {
+        throw new Error('IPFS API unreachable but RUN_IPFS_INTEGRATION=1 (failing test)');
+      } else {
+        console.warn('IPFS API not reachable; skipping encrypted-IPFS flow in Creates a new record test');
+        return;
+      }
+    }
+
+    const blob = Buffer.from("test-ipfs-payload");
+    const symKey: Buffer = generateSymmetricKey();
+    const encryptedPayload = encryptPayloadAESGCM(blob, symKey);
+
+    const payloadBuffer = Buffer.from(JSON.stringify(encryptedPayload));
+    const cid = await addBuffer(payloadBuffer);
+
+    const encForRecipient = await encryptSymmetricKeyForRecipient(
+      Uint8Array.from(symKey),
+      owner.secretKey,
+      recipient.toBuffer()
+    );
+
+    const encryptedKeyPacked: Buffer = encForRecipient.packed;
 
     await program.methods.createRecord(
       cid,
       tile,
       [recipient],
-      [Buffer.from(encryptedKey)]
+      [encryptedKeyPacked]
     ).accounts({
       record: recordKeypair.publicKey,
       owner: owner.publicKey,
     }).signers([owner, recordKeypair]).rpc();
+
+    // IPFS integration tests are run separately below.
 
     const record = await program.account.record.fetch(recordKeypair.publicKey);
 
@@ -125,5 +156,25 @@ describe('health_anchor', () => {
 
     expect(entry?.revoked).toBe(true);
 
+  })
+
+  it('ipfs helper smoke test', async () => {
+    const client = ipfsClient();
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (client as any).id();
+    } catch (err) {
+      // IPFS API not available locally — skip this test by returning early
+      // log a short warning so CI/devs see why it was skipped
+      console.warn('IPFS API not reachable; skipping ipfs helper smoke test');
+      return;
+    }
+
+    const payload = Buffer.from('test-ipfs-payload');
+    const cid = await addBuffer(payload);
+    const fetched = await catToBuffer(cid);
+    if (fetched.toString() !== payload.toString()) {
+      throw new Error('Fetched data does not match uploaded data');
+    }
   })
 })

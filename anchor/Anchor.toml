@@ -16,6 +16,4 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-# Use bun test to run the test suite (Bun supports TypeScript natively).
-# Make sure `bun` is installed and available in PATH on your machine.
 test = "bun test"
