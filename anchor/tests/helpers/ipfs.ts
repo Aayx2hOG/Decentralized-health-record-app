@@ -20,3 +20,13 @@ export const catToBuffer = async (cid: string) => {
     }
     return Buffer.concat(chunks.map(c => Buffer.from(c)));
 }
+
+export const isIpfsAvailable = async (): Promise<boolean> => {
+    const api = (process.env.IPFS_API_URL || API_URL).replace(/\/$/, '');
+    try {
+        const res = await fetch(`${api}/api/v0/id`, { method: 'POST' });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}

@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import * as anchor from '@coral-xyz/anchor'
-import { ipfsClient, addBuffer, catToBuffer } from './helpers/ipfs';
+import { ipfsClient, addBuffer, catToBuffer, isIpfsAvailable } from './helpers/ipfs';
 import { generateSymmetricKey, encryptPayloadAESGCM, encryptSymmetricKeyForRecipient } from './helpers/crypto';
+
 const IPFS_INTEGRATION = process.env.RUN_IPFS_INTEGRATION === '1';
 
 describe('health_anchor', () => {
-  const provider = anchor.AnchorProvider.env();
+  const provider = anchor.AnchorProvider.local();
   anchor.setProvider(provider);
 
   const program = anchor.workspace.HealthAnchor;
@@ -15,14 +19,18 @@ describe('health_anchor', () => {
     program.programId
   );
 
-  it("Initalized the config account", async () => {
-    await program.methods.initialize().accountsPartial({
-      config: configPda,
-      admin: admin.publicKey,
-      systemProgram: anchor.web3.SystemProgram.programId,
-    }).rpc();
-
-    const config = await program.account.config.fetch(configPda);
+  it("Initializes (or reuses) the config account", async () => {
+    let config: any;
+    try {
+      config = await program.account.config.fetch(configPda);
+    } catch {
+      await program.methods.initialize().accountsPartial({
+        config: configPda,
+        admin: admin.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      }).rpc();
+      config = await program.account.config.fetch(configPda);
+    }
 
     expect(config.admin.toBase58()).toBe(admin.publicKey.toBase58());
     expect(typeof config.bump).toBe("number");
@@ -42,17 +50,11 @@ describe('health_anchor', () => {
     const tile = "Blood test";
     const recipient = anchor.web3.Keypair.generate().publicKey;
 
-    const client = ipfsClient();
-
-    try {
-      await (client as any).id();
-    } catch (err) {
-      if (IPFS_INTEGRATION) {
-        throw new Error('IPFS API unreachable but RUN_IPFS_INTEGRATION=1 (failing test)');
-      } else {
-        console.warn('IPFS API not reachable; skipping encrypted-IPFS flow in Creates a new record test');
-        return;
-      }
+    const available = await isIpfsAvailable();
+    if (!available) {
+      if (IPFS_INTEGRATION) throw new Error('IPFS API unreachable but RUN_IPFS_INTEGRATION=1 (failing test)');
+      console.warn('IPFS API not reachable; skipping encrypted-IPFS flow in Creates a new record test');
+      return;
     }
 
     const blob = Buffer.from("test-ipfs-payload");
@@ -159,13 +161,11 @@ describe('health_anchor', () => {
   })
 
   it('ipfs helper smoke test', async () => {
-    const client = ipfsClient();
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (client as any).id();
-    } catch (err) {
-      // IPFS API not available locally — skip this test by returning early
-      // log a short warning so CI/devs see why it was skipped
+    // Use the lightweight HTTP-based availability probe that avoids
+    // multiaddr parsing issues in ipfs-http-client when the daemon
+    // advertises transports the local multiaddr table doesn't know.
+    const available = await isIpfsAvailable();
+    if (!available) {
       console.warn('IPFS API not reachable; skipping ipfs helper smoke test');
       return;
     }

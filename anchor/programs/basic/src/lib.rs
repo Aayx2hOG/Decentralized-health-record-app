@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H");
+declare_id!("5csFVdVXWaL5oH7iM34pGbWaAC414rPYppbMMSa8ePZ4");
 
 #[program]
 pub mod health_anchor {

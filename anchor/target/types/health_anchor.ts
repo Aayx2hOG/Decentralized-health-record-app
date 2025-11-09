@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/health_anchor.json`.
  */
 export type HealthAnchor = {
-  "address": "JAVuBXeBZqXNtS73azhBDAoYaaAFfo4gWXoZe2e7Jf8H",
+  "address": "5csFVdVXWaL5oH7iM34pGbWaAC414rPYppbMMSa8ePZ4",
   "metadata": {
     "name": "healthAnchor",
     "version": "0.1.0",
