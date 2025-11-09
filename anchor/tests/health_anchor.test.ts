@@ -53,7 +53,6 @@ describe('health_anchor', () => {
     const available = await isIpfsAvailable();
     if (!available) {
       if (IPFS_INTEGRATION) throw new Error('IPFS API unreachable but RUN_IPFS_INTEGRATION=1 (failing test)');
-      console.warn('IPFS API not reachable; skipping encrypted-IPFS flow in Creates a new record test');
       return;
     }
 
@@ -161,14 +160,8 @@ describe('health_anchor', () => {
   })
 
   it('ipfs helper smoke test', async () => {
-    // Use the lightweight HTTP-based availability probe that avoids
-    // multiaddr parsing issues in ipfs-http-client when the daemon
-    // advertises transports the local multiaddr table doesn't know.
     const available = await isIpfsAvailable();
-    if (!available) {
-      console.warn('IPFS API not reachable; skipping ipfs helper smoke test');
-      return;
-    }
+    if (!available) return;
 
     const payload = Buffer.from('test-ipfs-payload');
     const cid = await addBuffer(payload);
