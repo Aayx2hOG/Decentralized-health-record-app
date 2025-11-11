@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 import * as anchor from '@coral-xyz/anchor'
-import { ipfsClient, addBuffer, catToBuffer, isIpfsAvailable } from './helpers/ipfs';
-import { generateSymmetricKey, encryptPayloadAESGCM, encryptSymmetricKeyForRecipient } from './helpers/crypto';
+import { addBuffer, catToBuffer, isIpfsAvailable } from '../../src/lib/ipfs';
+import { generateSymmetricKey, encryptPayloadAESGCM, encryptSymmetricKeyForRecipient } from '../../src/lib/crypto';
 
 const IPFS_INTEGRATION = process.env.RUN_IPFS_INTEGRATION === '1';
 
@@ -57,8 +57,8 @@ describe('health_anchor', () => {
     }
 
     const blob = Buffer.from("test-ipfs-payload");
-    const symKey: Buffer = generateSymmetricKey();
-    const encryptedPayload = encryptPayloadAESGCM(blob, symKey);
+    const symKey: Buffer = Buffer.from(generateSymmetricKey() as Uint8Array);
+    const encryptedPayload = await encryptPayloadAESGCM(blob, symKey);
 
     const payloadBuffer = Buffer.from(JSON.stringify(encryptedPayload));
     const cid = await addBuffer(payloadBuffer);
@@ -69,7 +69,7 @@ describe('health_anchor', () => {
       recipient.toBuffer()
     );
 
-    const encryptedKeyPacked: Buffer = encForRecipient.packed;
+    const encryptedKeyPacked: Buffer = Buffer.from(encForRecipient.packed as Uint8Array);
 
     await program.methods.createRecord(
       cid,
