@@ -1,15 +1,15 @@
 'use client';
 
-import { encryptPayloadAESGCM, encryptSymmetricKeyForRecipient, generateSymmetricKey } from "@/lib/crypto";
+import { encryptPayloadAESGCM, encryptSymmetricKeyForRecipient, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
 import { PublicKey } from "@solana/web3.js";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useWallet } from '@solana/wallet-adapter-react';
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
         const arr = JSON.parse(text);
         if (Array.isArray(arr)) return new Uint8Array(arr);
     } catch (e) {
-        // ignore
     }
     throw new Error("Invalid secret key format");
 }
@@ -25,12 +25,21 @@ export default function CreateRecord() {
     const [title, setTitle] = useState("");
     const [textPayload, setTextPayload] = useState("");
     const [file, setFile] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [recipientsInput, setRecipientsInput] = useState("");
-    const [ownerSecretJson, setOwnerSecretJson] = useState("");
     const [cid, setCid] = useState<string | null>(null);
-    const [packedKeys, setPackedKeys] = useState<Array<{ recipient: string; packedB64: string }>>([]);
+    const [packedKeys, setPackedKeys] = useState<Array<{ recipient: string; packedB64?: string; packedCid?: string }>>([]);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const wallet = useWallet();
+
+    function canonicalize(obj: any): string {
+        if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+        if (Array.isArray(obj)) return '[' + obj.map(canonicalize).join(',') + ']';
+        const keys = Object.keys(obj).sort();
+        const parts = keys.map(k => JSON.stringify(k) + ':' + canonicalize(obj[k]));
+        return '{' + parts.join(',') + '}';
+    }
 
     async function onSubmit(e?: React.FormEvent) {
         e?.preventDefault();
@@ -52,8 +61,7 @@ export default function CreateRecord() {
             const enc = await encryptPayloadAESGCM(raw, symU8);
             const payloadJson = JSON.stringify(enc);
             const payloadBuf = typeof Buffer !== "undefined" ? Buffer.from(payloadJson) : new TextEncoder().encode(payloadJson);
-            // Use server API to add to IPFS (avoids bundling ipfs-http-client into the client)
-            const payloadBase64 = typeof Buffer !== 'undefined' ? Buffer.from(payloadBuf).toString('base64') : btoa(String.fromCharCode(...(payloadBuf as Uint8Array)));
+            const payloadBase64 = toBase64(payloadBuf as any);
             const res = await fetch('/api/ipfs/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: payloadBase64 }) });
             if (!res.ok) throw new Error('IPFS add failed');
             const j = await res.json();
@@ -66,19 +74,23 @@ export default function CreateRecord() {
                 setBusy(false);
                 return;
             }
-
-            const ownerSecret = parseSecretKeyJson(ownerSecretJson);
-            const results: Array<{ recipient: string; packedB64: string }> = [];
+            const results: Array<{ recipient: string; packedB64?: string; packedCid?: string }> = [];
 
             for (const r of recipients) {
                 const pub = new PublicKey(r);
                 const recipientPkBytes = pub.toBuffer();
 
-                const encForRecipient = await encryptSymmetricKeyForRecipient(symU8, ownerSecret, recipientPkBytes as Uint8Array);
+                const encForRecipient = await encryptSymmetricKeyForRecipientSealed(symU8, recipientPkBytes as Uint8Array);
 
                 const packed = (encForRecipient.packed as any) instanceof Uint8Array ? encForRecipient.packed as Uint8Array : new Uint8Array(encForRecipient.packed as Buffer);
-                const packedB64 = toBase64(packed as Uint8Array);
-                results.push({ recipient: r, packedB64 });
+                const packedB64 = toBase64(packed as any);
+
+                const addRes = await fetch('/api/ipfs/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: packedB64 }) });
+                if (!addRes.ok) throw new Error('IPFS add for packed key failed');
+                const addJson = await addRes.json();
+                const packedCid = addJson.cid as string;
+
+                results.push({ recipient: r, packedB64, packedCid });
             }
 
             setPackedKeys(results);
@@ -90,15 +102,95 @@ export default function CreateRecord() {
         }
     }
 
-    function downloadPacked(recipient: string, b64: string) {
-        const bytes = typeof Buffer !== "undefined" ? Buffer.from(b64, "base64") : Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-        const blob = new Blob([bytes], { type: "application/octet-stream" });
+    async function downloadPacked(recipient: string, b64?: string, cid?: string) {
+        let bytes: Uint8Array | Buffer | null = null;
+        if (b64) {
+            bytes = typeof Buffer !== "undefined" ? Buffer.from(b64, "base64") : Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+        } else if (cid) {
+            const r = await fetch(`https://ipfs.io/ipfs/${cid}`);
+            if (!r.ok) throw new Error('Failed to fetch packed blob from IPFS');
+            const arrBuf = await r.arrayBuffer();
+            bytes = new Uint8Array(arrBuf);
+        } else {
+            throw new Error('No data available to download');
+        }
+        const blob = new Blob([bytes as any], { type: "application/octet-stream" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = `encrypted_key_${recipient}.bin`;
         a.click();
         URL.revokeObjectURL(url);
+    }
+
+    function downloadRecordJson() {
+        const obj: any = {
+            cid,
+            title,
+            recipients: recipientsInput.split(',').map(s => s.trim()).filter(Boolean),
+            packedKeys: packedKeys.map(p => ({ recipient: p.recipient, packedCid: p.packedCid })),
+            exportedAt: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `record_${cid || 'untagged'}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function signAndDownload() {
+        setError(null);
+        try {
+            if (!wallet?.publicKey) throw new Error('Connect a wallet to sign');
+            if (!wallet.signMessage) throw new Error('Connected wallet does not support signMessage');
+
+            const metadata: any = {
+                cid,
+                title,
+                packedKeys: packedKeys.map(p => ({ recipient: p.recipient, packedCid: p.packedCid })),
+                exportedAt: new Date().toISOString(),
+            };
+
+            // canonicalize for deterministic signing
+            const messageStr = canonicalize(metadata);
+            const message = new TextEncoder().encode(messageStr);
+
+            // signMessage may return Uint8Array
+            const sig = await wallet.signMessage(message);
+            const sigB64 = (typeof Buffer !== 'undefined') ? Buffer.from(sig).toString('base64') : btoa(String.fromCharCode(...(sig as Uint8Array)));
+
+            const signed = {
+                ...metadata,
+                signer: wallet.publicKey.toBase58(),
+                signature: sigB64,
+            };
+
+            const blob = new Blob([JSON.stringify(signed, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `record_${cid || 'untagged'}.signed.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (e: any) {
+            setError(e?.message || String(e));
+        }
+    }
+
+    async function loadRecordJsonFile(file: File | null) {
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const obj = JSON.parse(text);
+            if (obj.title) setTitle(obj.title);
+            if (obj.cid) setCid(obj.cid);
+            if (Array.isArray(obj.recipients)) setRecipientsInput(obj.recipients.join(', '));
+            if (Array.isArray(obj.packedKeys)) setPackedKeys(obj.packedKeys.map((p: any) => ({ recipient: p.recipient, packedB64: p.packedB64, packedCid: p.packedCid })));
+        } catch (e: any) {
+            setError('Failed to load record JSON: ' + (e?.message || String(e)));
+        }
     }
 
     return (
@@ -109,13 +201,29 @@ export default function CreateRecord() {
                 <div>
                     <label className="block text-sm font-medium">Title</label>
                     <input className="mt-1 block w-full rounded-md border px-3 py-2" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Record title" />
+
+                    <div className="mt-4 flex items-center gap-3">
+                        <button type="button" className="rounded bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm" onClick={downloadRecordJson} disabled={!cid && packedKeys.length === 0}>Download JSON</button>
+                        <label className="inline-flex items-center rounded bg-red-400 px-3 py-1 text-sm cursor-pointer">
+                            <input type="file" accept="application/json" className="hidden" onChange={(e) => loadRecordJsonFile(e.target.files?.[0] ?? null)} />
+                            Load JSON
+                        </label>
+                    </div>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium">Text payload (or choose file)</label>
                     <textarea className="mt-1 block w-full rounded-md border px-3 py-2" value={textPayload} onChange={(e) => setTextPayload(e.target.value)} placeholder="Optional text payload" />
-                    <div className="mt-2">
-                        <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                    <div className="mt-2 flex items-center gap-3">
+                        <input ref={(el) => { fileInputRef.current = el; }} type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+                        <button type="button" className="inline-flex items-center gap-2 rounded bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 text-sm" onClick={() => fileInputRef.current?.click()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v6M8 8l4-4 4 4" /></svg>
+                            Choose file
+                        </button>
+                        <div className="text-sm text-slate-600">{file ? file.name : <span className="italic">No file selected</span>}</div>
+                        {file && (
+                            <button type="button" className="text-sm text-slate-500 hover:text-slate-700" onClick={() => setFile(null)}>Clear</button>
+                        )}
                     </div>
                 </div>
 
@@ -125,8 +233,7 @@ export default function CreateRecord() {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">Owner secret key (JSON array) — dev only</label>
-                    <textarea className="mt-1 block w-full rounded-md border px-3 py-2" value={ownerSecretJson} onChange={(e) => setOwnerSecretJson(e.target.value)} placeholder='[12,34,56,...] (64 elements)' />
+                    <p className="text-sm text-slate-600">Uploader does not need to provide a private key — we use anonymous sealed boxes so recipients can open with their own secret keys.</p>
                 </div>
 
                 <div>
@@ -151,9 +258,14 @@ export default function CreateRecord() {
                         {packedKeys.map((p) => (
                             <li key={p.recipient} className="rounded border p-3">
                                 <div className="font-mono text-sm break-all">{p.recipient}</div>
-                                <div className="mt-2 text-xs break-all">{p.packedB64}</div>
+                                {p.packedCid && (
+                                    <div className="mt-2 text-xs">
+                                        CID: <a className="text-sky-600" href={`https://ipfs.io/ipfs/${p.packedCid}`} target="_blank" rel="noreferrer">{p.packedCid}</a>
+                                    </div>
+                                )}
+                                <div className="mt-2 text-xs break-all">{p.packedB64 ?? <span className="italic text-slate-500">(stored on IPFS)</span>}</div>
                                 <div className="mt-2">
-                                    <button className="rounded bg-gray-200 px-3 py-1 text-sm" onClick={() => downloadPacked(p.recipient, p.packedB64)}>Download</button>
+                                    <button className="rounded bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 text-sm" onClick={() => downloadPacked(p.recipient, p.packedB64, p.packedCid)}>Download</button>
                                 </div>
                             </li>
                         ))}
@@ -164,7 +276,7 @@ export default function CreateRecord() {
 
             <div className="mt-6">
                 <h4 className="font-medium">Optional: On-chain createRecord snippet</h4>
-                <pre className="mt-2 rounded bg-slate-50 p-3 text-xs">
+                <pre className="mt-2 rounded border-1 p-3 text-xs">
                     {`// Example (pseudo-code) using Anchor on the frontend (requires Anchor provider + IDL):
 const recordKeypair = anchor.web3.Keypair.generate();
 await program.methods.createRecord(

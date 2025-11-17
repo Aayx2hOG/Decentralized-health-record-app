@@ -97,8 +97,6 @@ export async function decryptPayloadAESGCM(obj: { iv: string, ciphertext: string
         return out;
     }
 
-    // Node path
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const nodeCrypto = require('crypto');
     const decipher = nodeCrypto.createDecipheriv('aes-256-gcm', Buffer.from(k), Buffer.from(iv));
     decipher.setAuthTag(Buffer.from(tag));
@@ -112,10 +110,6 @@ export async function encryptSymmetricKeyForRecipient(
     recipientEd25519PublicKey: Uint8Array
 ): Promise<{ nonce: string; boxed: string; packed: Buffer | Uint8Array }> {
     await sodium.ready;
-    // libsodium-wrappers may export as a default on some bundlers/ESM interop.
-    // Normalize to the actual API object so functions like
-    // crypto_sign_ed25519_pk_to_curve25519 are always available.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
 
     const recipientCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(recipientEd25519PublicKey);
@@ -133,6 +127,27 @@ export async function encryptSymmetricKeyForRecipient(
     return {
         nonce: toBase64(nonce),
         boxed: toBase64(boxed),
+        packed,
+    };
+}
+export async function encryptSymmetricKeyForRecipientSealed(
+    symKey: Uint8Array,
+    recipientEd25519PublicKey: Uint8Array
+): Promise<{ boxed: string; packed: Buffer | Uint8Array }> {
+    await sodium.ready;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
+
+    // convert ed25519 pub -> curve25519 pub
+    const recipientCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(recipientEd25519PublicKey);
+
+    const boxed = sodiumLib.crypto_box_seal(symKey, recipientCurvePk);
+
+    const boxedBuf = typeof Buffer !== 'undefined' ? Buffer.from(boxed) : new Uint8Array(boxed);
+    const packed = boxedBuf;
+
+    return {
+        boxed: toBase64(typeof boxedBuf === 'string' ? new Uint8Array(boxedBuf as any) : boxedBuf as Uint8Array),
         packed,
     };
 }
