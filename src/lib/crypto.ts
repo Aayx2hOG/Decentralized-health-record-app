@@ -159,7 +159,6 @@ export async function decryptSymmetricKeyFromSender(
     recipientEd25519SecretKey: Uint8Array
 ): Promise<Buffer | Uint8Array> {
     await sodium.ready;
-    // Normalize default export as above
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
 
@@ -174,4 +173,27 @@ export async function decryptSymmetricKeyFromSender(
     const out = Buffer.from(opened);
     if (typeof Buffer !== 'undefined') return out;
     return new Uint8Array(out);
+}
+
+export async function decryptSymmetricKeySealedFromPacked(
+    packed: Uint8Array | Buffer,
+    recipientEd25519SecretKey: Uint8Array
+): Promise<Buffer | Uint8Array> {
+    await sodium.ready;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
+
+    // convert ed25519 secret -> curve25519 keypair
+    const recipientCurveSk = sodiumLib.crypto_sign_ed25519_sk_to_curve25519(recipientEd25519SecretKey);
+
+    // derive curve25519 public key from ed25519 public key (last 32 bytes of ed25519 secret)
+    const ed25519Pk = recipientEd25519SecretKey.slice(32, 64);
+    const recipientCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(ed25519Pk);
+
+    const packedU8 = packed instanceof Uint8Array ? packed : new Uint8Array(packed as any);
+
+    const opened = sodiumLib.crypto_box_seal_open(packedU8, recipientCurvePk, recipientCurveSk);
+
+    const out = typeof Buffer !== 'undefined' ? Buffer.from(opened) : new Uint8Array(opened);
+    return out;
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { encryptPayloadAESGCM, encryptSymmetricKeyForRecipient, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
+import { encryptPayloadAESGCM, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
+import { ed25519PubkeyToDidKey } from "../lib/ssi";
 import { PublicKey } from "@solana/web3.js";
 import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -31,6 +32,7 @@ export default function CreateRecord() {
     const [packedKeys, setPackedKeys] = useState<Array<{ recipient: string; packedB64?: string; packedCid?: string }>>([]);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [enableRewrap, setEnableRewrap] = useState(true);
     const wallet = useWallet();
 
     function canonicalize(obj: any): string {
@@ -94,6 +96,19 @@ export default function CreateRecord() {
             }
 
             setPackedKeys(results);
+
+            if (enableRewrap && myCid && recipients.length > 0) {
+                const symKeyB64 = toBase64(symU8);
+                const storeRes = await fetch('/api/rewrap/request', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recordCid: myCid, symKey: symKeyB64, recipients })
+                });
+                if (!storeRes.ok) {
+                    const errText = await storeRes.text();
+                    setError('Upload succeeded but rewrap key storage failed: ' + errText);
+                }
+            }
         } catch (e: any) {
             console.error("Error creating record:", e);
             setError(e?.message || String(e));
@@ -123,23 +138,6 @@ export default function CreateRecord() {
         URL.revokeObjectURL(url);
     }
 
-    function downloadRecordJson() {
-        const obj: any = {
-            cid,
-            title,
-            recipients: recipientsInput.split(',').map(s => s.trim()).filter(Boolean),
-            packedKeys: packedKeys.map(p => ({ recipient: p.recipient, packedCid: p.packedCid })),
-            exportedAt: new Date().toISOString(),
-        };
-        const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `record_${cid || 'untagged'}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
     async function signAndDownload() {
         setError(null);
         try {
@@ -161,9 +159,12 @@ export default function CreateRecord() {
             const sig = await wallet.signMessage(message);
             const sigB64 = (typeof Buffer !== 'undefined') ? Buffer.from(sig).toString('base64') : btoa(String.fromCharCode(...(sig as Uint8Array)));
 
+            const signerDid = ed25519PubkeyToDidKey(wallet.publicKey.toBuffer());
+
             const signed = {
                 ...metadata,
                 signer: wallet.publicKey.toBase58(),
+                signerDid,
                 signature: sigB64,
             };
 
@@ -203,10 +204,17 @@ export default function CreateRecord() {
                     <input className="mt-1 block w-full rounded-md border px-3 py-2" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Record title" />
 
                     <div className="mt-4 flex items-center gap-3">
-                        <button type="button" className="rounded bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-sm" onClick={downloadRecordJson} disabled={!cid && packedKeys.length === 0}>Download JSON</button>
-                        <label className="inline-flex items-center rounded bg-red-400 px-3 py-1 text-sm cursor-pointer">
+                        <button
+                            type="button"
+                            className="rounded bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-semibold flex items-center gap-2"
+                            onClick={signAndDownload}
+                            disabled={!cid && packedKeys.length === 0}
+                        >
+                            Sign & Download Record
+                        </button>
+                        <label className="inline-flex items-center rounded bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 text-sm cursor-pointer">
                             <input type="file" accept="application/json" className="hidden" onChange={(e) => loadRecordJsonFile(e.target.files?.[0] ?? null)} />
-                            Load JSON
+                            Upload Record
                         </label>
                     </div>
                 </div>
@@ -234,6 +242,11 @@ export default function CreateRecord() {
 
                 <div>
                     <p className="text-sm text-slate-600">Uploader does not need to provide a private key — we use anonymous sealed boxes so recipients can open with their own secret keys.</p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <input type="checkbox" id="enable-rewrap" checked={enableRewrap} onChange={(e) => setEnableRewrap(e.target.checked)} />
+                    <label htmlFor="enable-rewrap" className="text-sm text-slate-600">Allow recipients to request access without pasting private keys (stores encrypted key on server)</label>
                 </div>
 
                 <div>
@@ -273,24 +286,6 @@ export default function CreateRecord() {
                     <p className="mt-3 text-sm text-slate-600">These packed buffers are nonce||boxed (binary). On-chain you should store the same packed buffer (e.g. as a bytes field).</p>
                 </div>
             )}
-
-            <div className="mt-6">
-                <h4 className="font-medium">Optional: On-chain createRecord snippet</h4>
-                <pre className="mt-2 rounded border-1 p-3 text-xs">
-                    {`// Example (pseudo-code) using Anchor on the frontend (requires Anchor provider + IDL):
-const recordKeypair = anchor.web3.Keypair.generate();
-await program.methods.createRecord(
-    "${cid}",
-    "${title || 'Title'}",
-    [${recipientsInput.split(',').map(s => `"${s.trim()}"`).join(', ')}],
-    [/* pass Buffer.from(packed) for each recipient */]
-).accounts({
-    record: recordKeypair.publicKey,
-    owner: wallet.publicKey,
-}).signers([recordKeypair]).rpc();
-`}
-                </pre>
-            </div>
         </div>
     );
 }
