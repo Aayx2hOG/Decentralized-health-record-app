@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model RewrapKey {
+  id              Int         @id @default(autoincrement())
+  recordCid       String
+  recipientPubkey String
+  encryptedSymKey String      @db.Text
+  creatorPubkey   String?
+  createdAt       DateTime    @default(now())
+  expiresAt       DateTime?
+  accessCount     Int         @default(0)
+  lastAccessedAt  DateTime?
+  accessLogs      AccessLog[]
+
+  @@unique([recordCid, recipientPubkey], name: "recordCid_recipientPubkey")
+  @@index([recipientPubkey], name: "idx_recipient_pubkey")
+  @@index([recordCid], name: "idx_record_cid")
+  @@index([expiresAt], name: "idx_expires_at")
+  @@map("rewrap_keys")
+}
+
+model AccessLog {
+  id              Int        @id @default(autoincrement())
+  recordCid       String
+  recipientPubkey String
+  rewrapKeyId     Int?
+  success         Boolean
+  ipAddress       String?
+  userAgent       String?    @db.Text
+  errorMessage    String?    @db.Text
+  accessedAt      DateTime   @default(now())
+  rewrapKey       RewrapKey? @relation(fields: [rewrapKeyId], references: [id])
+
+  @@index([recordCid], name: "idx_access_record_cid")
+  @@index([recipientPubkey], name: "idx_access_recipient")
+  @@index([accessedAt], name: "idx_access_time")
+  @@map("access_logs")
+}

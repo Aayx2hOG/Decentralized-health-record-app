@@ -7,9 +7,6 @@ export const ipfsClient = () => {
 }
 
 const makeBuffer = (u8: Uint8Array) => {
-    // Return a Node Buffer when available, otherwise a Uint8Array
-    // This keeps behavior identical for existing Node tests while
-    // remaining friendly for browser bundlers that may prefer Uint8Array.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (typeof Buffer !== 'undefined') return Buffer.from(u8);
