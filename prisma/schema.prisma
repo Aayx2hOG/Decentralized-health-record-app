@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             BigInt      @id @default(autoincrement())
+  pubkey         String      @unique
+  createdAt      DateTime    @default(now())
+  createdRecords Record[]
+  rewrapKeys     RewrapKey[] @relation("recipient_rewraps")
+  accessLogs     AccessLog[]
+
+  @@map("users")
+}
+
+model Record {
+  id         BigInt      @id @default(autoincrement())
+  cid        String      @unique
+  creator    User        @relation(fields: [creatorId], references: [id])
+  creatorId  BigInt
+  createdAt  DateTime    @default(now())
+  rewrapKeys RewrapKey[]
+  accessLogs AccessLog[]
+
+  @@index([creatorId], name: "idx_record_creator")
+  @@map("records")
+}
+
+model RewrapKey {
+  id              BigInt      @id @default(autoincrement())
+  recordId        BigInt
+  recipientId     BigInt
+  encryptedSymKey String      @db.Text
+  createdAt       DateTime    @default(now())
+  expiresAt       DateTime?
+  accessCount     BigInt      @default(0)
+  lastAccessedAt  DateTime?
+  isRevoked       Boolean     @default(false)
+  revokedAt       DateTime?
+  shard           Int?
+  record          Record      @relation(fields: [recordId], references: [id])
+  recipient       User        @relation("recipient_rewraps", fields: [recipientId], references: [id])
+  accessLogs      AccessLog[]
+
+  @@unique([recordId, recipientId], name: "unique_record_recipient")
+  @@index([recipientId], name: "idx_recipient")
+  @@index([recordId], name: "idx_record_id")
+  @@index([expiresAt], name: "idx_expires_at")
+  @@index([shard], name: "idx_shard")
+  @@map("rewrap_keys")
+}
+
+model AccessLog {
+  id          BigInt     @id @default(autoincrement())
+  recordId    BigInt
+  recipientId BigInt
+  rewrapKeyId BigInt?
+  success     Boolean
+  ipAddress   String?
+  userAgent   String?    @db.Text
+  errorMsg    String?    @db.Text
+  accessedAt  DateTime   @default(now())
+  record      Record     @relation(fields: [recordId], references: [id])
+  recipient   User       @relation(fields: [recipientId], references: [id])
+  rewrapKey   RewrapKey? @relation(fields: [rewrapKeyId], references: [id])
+
+  @@index([recordId], name: "idx_access_record")
+  @@index([recipientId], name: "idx_access_recipient")
+  @@index([accessedAt], name: "idx_access_time")
+  @@index([rewrapKeyId], name: "idx_access_key")
+  @@index([success], name: "idx_access_success")
+  @@index([recordId, recipientId, accessedAt], name: "idx_record_recipient_time")
+  @@map("access_logs")
+}

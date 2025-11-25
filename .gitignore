@@ -73,3 +73,7 @@ test-ledger
 # editor/project files
 .vscode/
 .idea/
+
+/generated/prisma
+
+/generated/prisma
