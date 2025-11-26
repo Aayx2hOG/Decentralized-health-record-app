@@ -3,7 +3,6 @@ import * as sodium from 'libsodium-wrappers';
 import { prismaClient } from 'db/src';
 
 export async function POST(req: NextRequest) {
-
   const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
   const userAgent = req.headers.get('user-agent') || 'unknown';
 
@@ -79,6 +78,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ error: 'Record not found or you are not recipient.' }, { status: 404 });
     }
+
     if (stored?.expiresAt && stored?.expiresAt < new Date()) {
       await prismaClient.accessLog.create({
         data: {
@@ -126,6 +126,7 @@ export async function POST(req: NextRequest) {
         },
       }),
     ]);
+
     return NextResponse.json({ rewrappedKey: sealedB64 });
   } catch (e: any) {
     console.error('Rewrap error:', e);
@@ -152,46 +153,75 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { recordCid, symKey, recipients } = body;
+    const { recordCid, symKey, recipients, creatorPubkey, creatorSignature } = body;
 
     if (!recordCid || !symKey || !Array.isArray(recipients) || recipients.length === 0) {
       return NextResponse.json({ error: 'Missing recordCid, symKey, or recipients' }, { status: 400 });
     }
 
+    if (!creatorPubkey || !creatorSignature) {
+      return NextResponse.json({ error: 'Missing creatorPubkey or creatorSignature' }, { status: 400 });
+    }
+
+    await sodium.ready;
+    const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
+
+    const messageToSign = JSON.stringify({
+      recordCid,
+      recipients: [...recipients].sort()
+    });
+    const message = new TextEncoder().encode(messageToSign);
+    const sigBytes = Buffer.from(creatorSignature, 'base64');
+
+    const bs58 = require('bs58');
+    const creatorPubBytes = bs58.decode(creatorPubkey);
+
+    const valid = sodiumLib.crypto_sign_verify_detached(sigBytes, message, creatorPubBytes);
+    if (!valid) {
+      console.error('Invalid creator signature for recordCid:', recordCid);
+      return NextResponse.json({ error: 'Invalid creator signature - unauthorized' }, { status: 403 });
+    }
+
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    const results = await Promise.allSettled(recipients.map((recipientPubkey: string) =>
-      prismaClient.rewrapKey.upsert({
-        where: {
-          recordCid_recipientPubkey: {
-            recordCid,
-            recipientPubkey
+    const results = await Promise.allSettled(
+      recipients.map((recipientPubkey: string) =>
+        prismaClient.rewrapKey.upsert({
+          where: {
+            recordCid_recipientPubkey: {
+              recordCid,
+              recipientPubkey
+            },
           },
-        },
-        update: {
-          encryptedSymKey: symKey,
-          expiresAt,
-        },
-        create: {
-          recordCid,
-          recipientPubkey,
-          encryptedSymKey: symKey,
-          expiresAt,
-        }
-      })
-    ));
+          update: {
+            encryptedSymKey: symKey,
+            expiresAt,
+            creatorPubkey,
+          },
+          create: {
+            recordCid,
+            recipientPubkey,
+            encryptedSymKey: symKey,
+            creatorPubkey,
+            expiresAt,
+          }
+        })
+      )
+    );
 
     const successful = results.filter(r => r.status === 'fulfilled').length;
     const failed = results.filter(r => r.status === 'rejected').length;
 
-    if (failed > 0) console.error('Some keys failed to store:', results.filter(r => r.status === 'rejected'));
+    if (failed > 0) {
+      console.error('Some keys failed to store:', results.filter(r => r.status === 'rejected'));
+    }
 
     return NextResponse.json({
       success: true,
       stored: successful,
       failed,
-      message: `Stored ${successful} rewrap keys for ${recipients.length} recipients, ${failed} failed.`,
+      message: `Stored ${successful} rewrap keys for ${recipients.length} recipients${failed > 0 ? `, ${failed} failed` : ''}.`,
     });
   } catch (e: any) {
     console.error('Store error:', e);

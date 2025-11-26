@@ -99,14 +99,10 @@ export default function CreateRecord() {
 
             if (enableRewrap && myCid && recipients.length > 0) {
                 const symKeyB64 = toBase64(symU8);
-                const storeRes = await fetch('/api/rewrap/request', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ recordCid: myCid, symKey: symKeyB64, recipients })
-                });
-                if (!storeRes.ok) {
-                    const errText = await storeRes.text();
-                    setError('Upload succeeded but rewrap key storage failed: ' + errText);
+                try {
+                    await uploadToRewrapAPI(myCid, symKeyB64, recipients);
+                } catch (rewrapErr: any) {
+                    setError('Upload succeeded but rewrap key storage failed: ' + (rewrapErr?.message || String(rewrapErr)));
                 }
             }
         } catch (e: any) {
@@ -191,6 +187,48 @@ export default function CreateRecord() {
             if (Array.isArray(obj.packedKeys)) setPackedKeys(obj.packedKeys.map((p: any) => ({ recipient: p.recipient, packedB64: p.packedB64, packedCid: p.packedCid })));
         } catch (e: any) {
             setError('Failed to load record JSON: ' + (e?.message || String(e)));
+        }
+    }
+
+    async function uploadToRewrapAPI(cid: string, symKey: string, recipientAddress: string[]) {
+        if (!wallet.publicKey) {
+            alert('Wallet not connected');
+            return;
+        }
+
+        try {
+            const messageToSign = JSON.stringify({
+                recordCid: cid,
+                recipients: [...recipientAddress].sort()
+            });
+            const messageBytes = new TextEncoder().encode(messageToSign);
+            const signature = await wallet.signMessage!(messageBytes);
+            const creatorSignature = Buffer.from(signature).toString('base64');
+            const bs58 = require('bs58');
+            const creatorPubkey = bs58.encode(wallet.publicKey.toBytes());
+
+            const res = await fetch('api/rewrap/request', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recordCid: cid,
+                    symKey,
+                    recipients: recipientAddress,
+                    creatorPubkey,
+                    creatorSignature,
+                }),
+            });
+
+            if (!res.ok) {
+                const e = await res.json();
+                throw new Error(e.error || 'Failed to store rewrap keys.');
+            }
+            const result = await res.json();
+            console.log('Rewrap API response: ', result);
+            return result;
+        } catch (e) {
+            console.error('Failed to upload rewrap API: ', e);
+            throw e;
         }
     }
 
