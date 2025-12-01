@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prisma": "^7.0.1",
+    "src": "^1.1.2"
   },
   "peerDependencies": {
     "typescript": "^5"
