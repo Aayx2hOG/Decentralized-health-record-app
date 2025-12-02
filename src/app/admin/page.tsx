@@ -8,6 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
+interface AnalyticsData {
+    timeSeriesData: Array<{ date: string; successful: number; failed: number; total: number }>;
+    successVsFailed: { successful: number; failed: number };
+    topRecords: Array<{ cid: string; count: number }>;
+    hourlyPattern: Array<{ hour: number; count: number }>;
+    errorDistribution: Array<{ error: string; count: number }>;
+}
 
 interface RewrapKey {
     id: number;
@@ -48,6 +57,7 @@ export default function AdminPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSuccess, setFilterSuccess] = useState<string>('all');
     const [filterType, setFilterType] = useState<string>('all');
+    const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 
     useEffect(() => {
         fetchData();
@@ -56,15 +66,17 @@ export default function AdminPage() {
     async function fetchData() {
         setLoading(true);
         try {
-            const [keysRes, logsRes, statsRes] = await Promise.all([
+            const [keysRes, logsRes, statsRes, analyticsRes] = await Promise.all([
                 fetch('/api/admin/keys'),
                 fetch('/api/admin/logs'),
                 fetch('/api/admin/stats'),
+                fetch('/api/admin/analytics'),
             ]);
 
             if (keysRes.ok) setKeys(await keysRes.json());
             if (logsRes.ok) setLogs(await logsRes.json());
             if (statsRes.ok) setStats(await statsRes.json());
+            if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
         } catch (e) {
             console.error('Failed to fetch admin data:', e);
         } finally {
@@ -227,6 +239,7 @@ export default function AdminPage() {
                 <TabsList>
                     <TabsTrigger value="keys">Rewrap Keys</TabsTrigger>
                     <TabsTrigger value="logs">Access Logs</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="keys" className="space-y-4">
@@ -399,7 +412,127 @@ export default function AdminPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+
+                <TabsContent value="analytics" className="space-y-4">
+                    {!analytics ? (
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="text-center text-muted-foreground">Loading analytics...</div>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Access Trends (Last 30 Days)</CardTitle>
+                                    <CardDescription>Daily access attempts over time</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <LineChart data={analytics.timeSeriesData}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="date" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Line type="monotone" dataKey="successful" stroke="#22c55e" name="Successful" strokeWidth={2} />
+                                            <Line type="monotone" dataKey="failed" stroke="#ef4444" name="Failed" strokeWidth={2} />
+                                            <Line type="monotone" dataKey="total" stroke="#3b82f6" name="Total" strokeWidth={2} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Success vs Failed</CardTitle>
+                                        <CardDescription>Overall access attempt results</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ResponsiveContainer width="100%" height={250}>
+                                            <PieChart>
+                                                <Pie
+                                                    data={[
+                                                        { name: 'Successful', value: analytics.successVsFailed.successful },
+                                                        { name: 'Failed', value: analytics.successVsFailed.failed },
+                                                    ]}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    labelLine={false}
+                                                    label={({ name, percent = 0 }: { name?: string; percent?: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                                    outerRadius={80}
+                                                    fill="#8884d8"
+                                                    dataKey="value"
+                                                >
+                                                    <Cell fill="#22c55e" />
+                                                    <Cell fill="#ef4444" />
+                                                </Pie>
+                                                <Tooltip />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </Card>
+
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Hourly Access Pattern</CardTitle>
+                                        <CardDescription>Access attempts by hour of day</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ResponsiveContainer width="100%" height={250}>
+                                            <BarChart data={analytics.hourlyPattern}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="hour" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Bar dataKey="count" fill="#3b82f6" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Most Accessed Records</CardTitle>
+                                    <CardDescription>Top 10 records by access count</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <BarChart data={analytics.topRecords} layout="vertical">
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis type="number" />
+                                            <YAxis dataKey="cid" type="category" width={150} tickFormatter={(cid) => `${cid.slice(0, 8)}...`} />
+                                            <Tooltip />
+                                            <Bar dataKey="count" fill="#8b5cf6" />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+
+                            {analytics.errorDistribution.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Error Distribution</CardTitle>
+                                        <CardDescription>Common error messages</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-2">
+                                            {analytics.errorDistribution.map((item, index) => (
+                                                <div key={index} className="flex items-center justify-between p-2 rounded border">
+                                                    <span className="text-sm text-muted-foreground truncate flex-1">{item.error}</span>
+                                                    <Badge variant="destructive">{item.count}</Badge>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </>
+                    )}
+                </TabsContent>
             </Tabs>
-        </div>
+        </div >
     );
 }
