@@ -58,10 +58,18 @@ export default function AdminPage() {
     const [filterSuccess, setFilterSuccess] = useState<string>('all');
     const [filterType, setFilterType] = useState<string>('all');
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+    const [keysPage, setKeysPage] = useState(1);
+    const [logsPage, setLogsPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(25);
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        setKeysPage(1);
+        setLogsPage(1);
+    }, [searchTerm, filterType, filterSuccess]);
 
     async function fetchData() {
         setLoading(true);
@@ -108,6 +116,19 @@ export default function AdminPage() {
         if (filterSuccess === 'failed') return matchesSearch && !log.success;
         return matchesSearch;
     });
+
+    const totalKeysPages = Math.ceil(filteredKeys.length / itemsPerPage);
+    const totalLogsPages = Math.ceil(filteredLogs.length / itemsPerPage);
+
+    const paginatedKeys = filteredKeys.slice(
+        (keysPage - 1) * itemsPerPage,
+        keysPage * itemsPerPage
+    );
+
+    const paginatedLogs = filteredLogs.slice(
+        (logsPage - 1) * itemsPerPage,
+        logsPage * itemsPerPage
+    );
 
     function formatDate(date: string | null) {
         if (!date) return 'Never';
@@ -269,6 +290,22 @@ export default function AdminPage() {
                                 <Button onClick={fetchData} variant="outline">Refresh</Button>
                             </div>
 
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-sm text-muted-foreground">Show:</span>
+                                <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(Number(val))}>
+                                    <SelectTrigger className="w-[100px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="25">25</SelectItem>
+                                        <SelectItem value="50">50</SelectItem>
+                                        <SelectItem value="100">100</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <span className="text-sm text-muted-foreground">per page</span>
+                            </div>
+
                             <div className="rounded-md border">
                                 <Table>
                                     <TableHeader>
@@ -285,14 +322,14 @@ export default function AdminPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {filteredKeys.length === 0 ? (
+                                        {paginatedKeys.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={9} className="text-center text-muted-foreground">
                                                     No keys found
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            filteredKeys.map((key) => (
+                                            paginatedKeys.map((key) => (
                                                 <TableRow key={key.id}>
                                                     <TableCell className="font-mono text-xs">
                                                         {truncate(key.recordCid)}
@@ -332,6 +369,34 @@ export default function AdminPage() {
                                     </TableBody>
                                 </Table>
                             </div>
+                            {totalKeysPages > 1 && (
+                                <div className="flex items-center justify-between mt-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        Showing {((keysPage - 1) * itemsPerPage) + 1} to {Math.min(keysPage * itemsPerPage, filteredKeys.length)} of {filteredKeys.length} results
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setKeysPage(p => Math.max(1, p - 1))}
+                                            disabled={keysPage === 1}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <div className="text-sm">
+                                            Page {keysPage} of {totalKeysPages}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setKeysPage(p => Math.min(totalKeysPages, p + 1))}
+                                            disabled={keysPage === totalKeysPages}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -363,6 +428,22 @@ export default function AdminPage() {
                                 <Button onClick={fetchData} variant="outline">Refresh</Button>
                             </div>
 
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-sm text-muted-foreground">Show:</span>
+                                <Select value={itemsPerPage.toString()} onValueChange={(val) => setItemsPerPage(Number(val))}>
+                                    <SelectTrigger className="w-[100px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="25">25</SelectItem>
+                                        <SelectItem value="50">50</SelectItem>
+                                        <SelectItem value="100">100</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <span className="text-sm text-muted-foreground">per page</span>
+                            </div>
+
                             <div className="rounded-md border">
                                 <Table>
                                     <TableHeader>
@@ -376,14 +457,14 @@ export default function AdminPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {filteredLogs.length === 0 ? (
+                                        {paginatedLogs.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={6} className="text-center text-muted-foreground">
                                                     No access logs found
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            filteredLogs.map((log) => (
+                                            paginatedLogs.map((log) => (
                                                 <TableRow key={log.id}>
                                                     <TableCell className="text-xs">{formatDate(log.accessedAt)}</TableCell>
                                                     <TableCell className="font-mono text-xs">
@@ -409,6 +490,34 @@ export default function AdminPage() {
                                     </TableBody>
                                 </Table>
                             </div>
+                            {totalLogsPages > 1 && (
+                                <div className="flex items-center justify-between mt-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        Showing {((logsPage - 1) * itemsPerPage) + 1} to {Math.min(logsPage * itemsPerPage, filteredLogs.length)} of {filteredLogs.length} results
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setLogsPage(p => Math.max(1, p - 1))}
+                                            disabled={logsPage === 1}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <div className="text-sm">
+                                            Page {logsPage} of {totalLogsPages}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setLogsPage(p => Math.min(totalLogsPages, p + 1))}
+                                            disabled={logsPage === totalLogsPages}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>
