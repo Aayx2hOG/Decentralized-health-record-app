@@ -52,7 +52,6 @@ export function useGetTokenAccounts({ address }: { address: PublicKey }) {
 
 export function useTransferSol({ address }: { address: PublicKey }) {
   const { connection } = useConnection()
-  // const transactionToast = useTransactionToast()
   const wallet = useWallet()
   const client = useQueryClient()
 
@@ -68,10 +67,8 @@ export function useTransferSol({ address }: { address: PublicKey }) {
           connection,
         })
 
-        // Send transaction and await for signature
         signature = await wallet.sendTransaction(transaction, connection)
 
-        // Send transaction and await for signature
         await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
 
         console.log(signature)
@@ -103,7 +100,6 @@ export function useTransferSol({ address }: { address: PublicKey }) {
 
 export function useRequestAirdrop({ address }: { address: PublicKey }) {
   const { connection } = useConnection()
-  // const transactionToast = useTransactionToast()
   const client = useQueryClient()
 
   return useMutation({
@@ -145,10 +141,8 @@ async function createTransaction({
   transaction: VersionedTransaction
   latestBlockhash: { blockhash: string; lastValidBlockHeight: number }
 }> {
-  // Get the latest blockhash to use in our transaction
   const latestBlockhash = await connection.getLatestBlockhash()
 
-  // Create instructions to send, in this case a simple transfer
   const instructions = [
     SystemProgram.transfer({
       fromPubkey: publicKey,
@@ -157,14 +151,12 @@ async function createTransaction({
     }),
   ]
 
-  // Create a new TransactionMessage with version and compile it to legacy
   const messageLegacy = new TransactionMessage({
     payerKey: publicKey,
     recentBlockhash: latestBlockhash.blockhash,
     instructions,
   }).compileToLegacyMessage()
 
-  // Create a new VersionedTransaction which supports legacy and v0
   const transaction = new VersionedTransaction(messageLegacy)
 
   return {
