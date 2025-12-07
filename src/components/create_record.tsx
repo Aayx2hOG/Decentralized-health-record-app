@@ -5,6 +5,7 @@ import { ed25519PubkeyToDidKey } from "../lib/ssi";
 import { PublicKey } from "@solana/web3.js";
 import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
+import bs58 from 'bs58';
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
@@ -147,11 +148,9 @@ export default function CreateRecord() {
                 exportedAt: new Date().toISOString(),
             };
 
-            // canonicalize for deterministic signing
             const messageStr = canonicalize(metadata);
             const message = new TextEncoder().encode(messageStr);
 
-            // signMessage may return Uint8Array
             const sig = await wallet.signMessage(message);
             const sigB64 = (typeof Buffer !== 'undefined') ? Buffer.from(sig).toString('base64') : btoa(String.fromCharCode(...(sig as Uint8Array)));
 
@@ -204,7 +203,6 @@ export default function CreateRecord() {
             const messageBytes = new TextEncoder().encode(messageToSign);
             const signature = await wallet.signMessage!(messageBytes);
             const creatorSignature = Buffer.from(signature).toString('base64');
-            const bs58 = require('bs58');
             const creatorPubkey = bs58.encode(wallet.publicKey.toBytes());
 
             const res = await fetch('api/rewrap/request', {

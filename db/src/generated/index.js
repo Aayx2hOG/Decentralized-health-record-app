@@ -39,12 +39,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.0.0
- * Query Engine version: 0c19ccc313cf9911a90d99d2ac2eb0280c76c513
+ * Prisma Client JS version: 7.1.0
+ * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
  */
 Prisma.prismaVersion = {
-  client: "7.0.0",
-  engine: "0c19ccc313cf9911a90d99d2ac2eb0280c76c513"
+  client: "7.1.0",
+  engine: "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -142,8 +142,8 @@ exports.Prisma.ModelName = {
  */
 const config = {
   "previewFeatures": [],
-  "clientVersion": "7.0.0",
-  "engineVersion": "0c19ccc313cf9911a90d99d2ac2eb0280c76c513",
+  "clientVersion": "7.1.0",
+  "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel RewrapKey {\n  id              Int         @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  encryptedSymKey String      @db.Text\n  creatorPubkey   String?\n  createdAt       DateTime    @default(now())\n  expiresAt       DateTime?\n  accessCount     Int         @default(0)\n  lastAccessedAt  DateTime?\n  accessLogs      AccessLog[]\n\n  @@unique([recordCid, recipientPubkey], name: \"recordCid_recipientPubkey\")\n  @@index([recipientPubkey], name: \"idx_recipient_pubkey\")\n  @@index([recordCid], name: \"idx_record_cid\")\n  @@index([expiresAt], name: \"idx_expires_at\")\n  @@map(\"rewrap_keys\")\n}\n\nmodel AccessLog {\n  id              Int        @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  rewrapKeyId     Int?\n  success         Boolean\n  ipAddress       String?\n  userAgent       String?    @db.Text\n  errorMessage    String?    @db.Text\n  accessedAt      DateTime   @default(now())\n  rewrapKey       RewrapKey? @relation(fields: [rewrapKeyId], references: [id])\n\n  @@index([recordCid], name: \"idx_access_record_cid\")\n  @@index([recipientPubkey], name: \"idx_access_recipient\")\n  @@index([accessedAt], name: \"idx_access_time\")\n  @@map(\"access_logs\")\n}\n"
 }

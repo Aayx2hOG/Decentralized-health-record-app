@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as sodium from 'libsodium-wrappers';
 import { prismaClient } from 'db/src';
+import bs58 from 'bs58';
 
 export async function POST(req: NextRequest) {
   const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
@@ -37,7 +38,6 @@ export async function POST(req: NextRequest) {
     const message = new TextEncoder().encode(messageToSign);
     const sigBytes = Buffer.from(signedRequest, 'base64');
 
-    const bs58 = require('bs58');
     const pubBytes = bs58.decode(recipientPub);
 
     const valid = sodiumLib.crypto_sign_verify_detached(sigBytes, message, pubBytes);
@@ -173,7 +173,6 @@ export async function PUT(req: NextRequest) {
     const message = new TextEncoder().encode(messageToSign);
     const sigBytes = Buffer.from(creatorSignature, 'base64');
 
-    const bs58 = require('bs58');
     const creatorPubBytes = bs58.decode(creatorPubkey);
 
     const valid = sodiumLib.crypto_sign_verify_detached(sigBytes, message, creatorPubBytes);

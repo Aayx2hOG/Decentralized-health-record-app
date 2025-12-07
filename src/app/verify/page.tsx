@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { decryptPayloadAESGCM } from '../../lib/crypto';
 import { verifyRecordSignature } from '../../lib/verify-signature';
+import bs58 from "bs58";
 
 function fromBase64(s: string) {
     if (typeof Buffer !== 'undefined') return Buffer.from(s, 'base64');
@@ -33,12 +34,11 @@ export default function VerifyPage() {
             setError('');
             setDecrypted('');
 
-            // Verify signature when file is loaded
             const verification = verifyRecordSignature(json);
             setSignatureStatus(verification);
 
             if (!verification.valid) {
-                setError(`⚠️ Signature verification failed: ${verification.error}`);
+                setError(`Signature verification failed: ${verification.error}`);
             }
         } catch (err: any) {
             setError('Invalid JSON file: ' + err.message);
@@ -58,17 +58,14 @@ export default function VerifyPage() {
 
             const recipientPub = wallet.publicKey.toBase58();
 
-            // Generate ephemeral keypair
             const sodium = require('libsodium-wrappers');
             await sodium.ready;
             const kp = sodium.crypto_sign_keypair();
             const ephemeralPub = kp.publicKey;
             const ephemeralSec = kp.privateKey;
 
-            const bs58 = require('bs58');
             const ephemeralPubB58 = bs58.encode(ephemeralPub);
 
-            // Sign request with wallet
             const timestamp = new Date().toISOString();
             const message = JSON.stringify({ ephemeralPub: ephemeralPubB58, timestamp });
             const sig = await wallet.signMessage(new TextEncoder().encode(message));
@@ -76,7 +73,6 @@ export default function VerifyPage() {
                 ? Buffer.from(sig).toString('base64')
                 : btoa(String.fromCharCode(...sig));
 
-            // Request rewrapped key from server
             const rewrapResp = await fetch('/api/rewrap/request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -96,14 +92,12 @@ export default function VerifyPage() {
 
             const { rewrappedKey } = await rewrapResp.json();
             const rewrappedBytes = fromBase64(rewrappedKey);
-
             // Unseal rewrapped key with ephemeral keypair
             const ephemeralCurveSec = sodium.crypto_sign_ed25519_sk_to_curve25519(ephemeralSec);
             const ephemeralCurvePub = sodium.crypto_sign_ed25519_pk_to_curve25519(ephemeralPub);
             const opened = sodium.crypto_box_seal_open(rewrappedBytes, ephemeralCurvePub, ephemeralCurveSec);
             const symKey = new Uint8Array(opened);
 
-            // Fetch and decrypt payload from IPFS
             let payloadResp = await fetch(`http://localhost:8080/ipfs/${jsonFile.cid}`);
             if (!payloadResp.ok) {
                 payloadResp = await fetch(`https://ipfs.io/ipfs/${jsonFile.cid}`);
@@ -154,7 +148,6 @@ export default function VerifyPage() {
             </div>
 
             <div className="space-y-6">
-                {/* File Upload */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-6 shadow-sm">
                     <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                         <span className="text-2xl">📄</span>
@@ -179,24 +172,23 @@ export default function VerifyPage() {
 
                 {jsonFile && (
                     <>
-                        {/* Signature Verification Status */}
                         {signatureStatus && (
                             <div className={`rounded-xl border p-5 shadow-sm ${signatureStatus.valid
-                                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                                    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
                                 }`}>
                                 <div className="flex items-start gap-3">
                                     <span className="text-2xl">{signatureStatus.valid ? '✅' : '❌'}</span>
                                     <div className="flex-1">
                                         <h3 className={`font-semibold mb-1 ${signatureStatus.valid
-                                                ? 'text-green-900 dark:text-green-300'
-                                                : 'text-red-900 dark:text-red-300'
+                                            ? 'text-green-900 dark:text-green-300'
+                                            : 'text-red-900 dark:text-red-300'
                                             }`}>
                                             {signatureStatus.valid ? 'Signature Valid' : 'Signature Invalid'}
                                         </h3>
                                         <p className={`text-sm ${signatureStatus.valid
-                                                ? 'text-green-700 dark:text-green-400'
-                                                : 'text-red-700 dark:text-red-400'
+                                            ? 'text-green-700 dark:text-green-400'
+                                            : 'text-red-700 dark:text-red-400'
                                             }`}>
                                             {signatureStatus.valid
                                                 ? `This record was authentically signed by ${signatureStatus.signer?.substring(0, 8)}...${signatureStatus.signer?.substring(signatureStatus.signer.length - 6)}`
@@ -208,7 +200,6 @@ export default function VerifyPage() {
                             </div>
                         )}
 
-                        {/* Record Info */}
                         <div className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 
                                       rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
                             <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-3 flex items-center gap-2">
@@ -227,7 +218,6 @@ export default function VerifyPage() {
                             </div>
                         </div>
 
-                        {/* Decrypt Button */}
                         <div className="bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-6 shadow-sm">
                             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                                 <span className="text-2xl">🔐</span>
@@ -241,7 +231,6 @@ export default function VerifyPage() {
                             {!wallet.connected && (
                                 <div className="mb-4 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
                                     <p className="text-sm text-orange-800 dark:text-orange-300 flex items-center gap-2">
-                                        <span className="text-lg">⚠️</span>
                                         Please connect your wallet using the button in the top-right corner
                                     </p>
                                 </div>
@@ -266,12 +255,10 @@ export default function VerifyPage() {
                                     </>
                                 ) : wallet.connected ? (
                                     <>
-                                        <span className="text-xl">🔓</span>
                                         <span>Decrypt with Wallet Signature</span>
                                     </>
                                 ) : (
                                     <>
-                                        <span className="text-xl">⚠️</span>
                                         <span>Connect Wallet First</span>
                                     </>
                                 )}
@@ -284,7 +271,6 @@ export default function VerifyPage() {
                 {error && (
                     <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-lg p-5 shadow-sm">
                         <div className="flex items-start gap-3">
-                            <span className="text-2xl">❌</span>
                             <div>
                                 <h4 className="font-semibold text-red-900 dark:text-red-300 mb-1">Decryption Failed</h4>
                                 <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
@@ -293,7 +279,6 @@ export default function VerifyPage() {
                     </div>
                 )}
 
-                {/* Decrypted Output */}
                 <div key={renderKey} className={`${decrypted ? 'block' : 'hidden'} 
                                                   bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 
                                                   border-l-4 border-green-500 rounded-xl p-6 shadow-lg`}>

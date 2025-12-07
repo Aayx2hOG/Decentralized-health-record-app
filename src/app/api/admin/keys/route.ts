@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prismaClient } from 'db/src';
+import { requireAdminAuth } from '@/lib/admin-auth';
 
-export async function GET() {
+export async function GET(request: Request) {
+    // Verify admin authentication
+    const authResult = await requireAdminAuth(request);
+    if (!authResult.valid) {
+        return NextResponse.json(
+            { error: authResult.error || 'Unauthorized' },
+            { status: 401 }
+        );
+    }
+
     try {
         const keys = await prismaClient.rewrapKey.findMany({
             orderBy: { createdAt: 'desc' },

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -50,10 +51,12 @@ interface Stats {
 }
 
 export default function AdminPage() {
+    const wallet = useWallet();
     const [keys, setKeys] = useState<RewrapKey[]>([]);
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [authError, setAuthError] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSuccess, setFilterSuccess] = useState<string>('all');
     const [filterType, setFilterType] = useState<string>('all');
@@ -61,6 +64,8 @@ export default function AdminPage() {
     const [keysPage, setKeysPage] = useState(1);
     const [logsPage, setLogsPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(25);
+
+    const isAdmin = wallet.publicKey && process.env.NEXT_PUBLIC_ADMIN_PUBKEYS?.split(',').includes(wallet.publicKey.toBase58());
 
     useEffect(() => {
         fetchData();
@@ -72,21 +77,42 @@ export default function AdminPage() {
     }, [searchTerm, filterType, filterSuccess]);
 
     async function fetchData() {
+        if (!wallet.publicKey || !wallet.signMessage) {
+            setAuthError('Please connect your wallet');
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
+        setAuthError('');
         try {
+            const { signAdminAuth } = await import('@/lib/admin-client');
+            const authToken = await signAdminAuth(wallet);
+            
+            if (!authToken) {
+                throw new Error('Failed to generate authentication token');
+            }
+
+            const authHeaders = {
+                'Authorization': `Bearer ${authToken}`
+            };
+
             const [keysRes, logsRes, statsRes, analyticsRes] = await Promise.all([
-                fetch('/api/admin/keys'),
-                fetch('/api/admin/logs'),
-                fetch('/api/admin/stats'),
-                fetch('/api/admin/analytics'),
+                fetch('/api/admin/keys', { headers: authHeaders }),
+                fetch('/api/admin/logs', { headers: authHeaders }),
+                fetch('/api/admin/stats', { headers: authHeaders }),
+                fetch('/api/admin/analytics', { headers: authHeaders }),
             ]);
 
             if (keysRes.ok) setKeys(await keysRes.json());
+            else if (keysRes.status === 401) setAuthError('Unauthorized: Not an admin wallet');
+            
             if (logsRes.ok) setLogs(await logsRes.json());
             if (statsRes.ok) setStats(await statsRes.json());
             if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
-        } catch (e) {
+        } catch (e: any) {
             console.error('Failed to fetch admin data:', e);
+            setAuthError(e.message || 'Failed to authenticate');
         } finally {
             setLoading(false);
         }
@@ -173,6 +199,51 @@ export default function AdminPage() {
                 <div className="flex items-center justify-center h-64">
                     <div className="text-lg text-muted-foreground">Loading admin data...</div>
                 </div>
+            </div>
+        );
+    }
+
+    if (!wallet.publicKey) {
+        return (
+            <div className="container mx-auto py-12">
+                <Card className="max-w-md mx-auto">
+                    <CardHeader>
+                        <CardTitle>Admin Access Required</CardTitle>
+                        <CardDescription>Please connect your wallet to access the admin dashboard</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col items-center gap-4 py-8">
+                            <div className="text-6xl">🔐</div>
+                            <p className="text-center text-muted-foreground">
+                                Connect your admin wallet using the button in the header
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (authError) {
+        return (
+            <div className="container mx-auto py-12">
+                <Card className="max-w-md mx-auto border-red-200 dark:border-red-800">
+                    <CardHeader>
+                        <CardTitle className="text-red-600 dark:text-red-400">Access Denied</CardTitle>
+                        <CardDescription>{authError}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col items-center gap-4 py-8">
+                            <div className="text-6xl">❌</div>
+                            <p className="text-center text-muted-foreground">
+                                Your wallet ({wallet.publicKey.toBase58().slice(0, 8)}...) is not authorized to access the admin dashboard.
+                            </p>
+                            <Button onClick={() => fetchData()} variant="outline">
+                                Retry Authentication
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     }
