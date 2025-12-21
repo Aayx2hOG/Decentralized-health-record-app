@@ -25,6 +25,7 @@ Decentralized health records management system built on Solana with end-to-end e
 - Node.js 18+ or Bun 1.0+
 - PostgreSQL 16+ (Docker recommended)
 - Solana wallet extension (Phantom, Solflare, etc.)
+- IPFS daemon or Pinata account (optional - falls back to public gateways)
 
 ### Installation
 
@@ -48,6 +49,8 @@ cat > .env << 'EOF'
 DATABASE_URL="postgresql://postgres:mysupersecretpassword@localhost:5432/health_dapp"
 RUN_IPFS_INTEGRATION=0
 IPFS_API_URL=http://127.0.0.1:5001
+# Optional: Add Pinata JWT for managed IPFS
+# PINATA_JWT=your_pinata_jwt_token_here
 EOF
 
 cat > db/.env << 'EOF'
@@ -123,7 +126,10 @@ cd db && bunx prisma generate
 ## Troubleshooting
 
 **Database Issues**: `docker restart health-dapp-postgres`  
-**IPFS Issues**: Falls back to public gateways automatically  
+**IPFS Issues**: 
+- Falls back to public gateways automatically if local IPFS daemon is unavailable
+- To use Pinata for managed IPFS, add `PINATA_JWT=your_token` to `.env`
+- Get Pinata JWT token from [pinata.cloud](https://pinata.cloud) API keys section  
 **Wallet Issues**: Check network settings and clear browser cache
 
 ## License
