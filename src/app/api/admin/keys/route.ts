@@ -31,9 +31,35 @@ export async function GET(request: Request) {
             take: 1000,
         });
 
+        const receivedConsents = await prismaClient.consentCredential.findMany({
+            where: {
+                recipientPubkey: authResult.pubkey,
+                issuerPubkey: {
+                    not: authResult.pubkey
+                }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 1000,
+        });
+
+        const consentsAsKeys = receivedConsents.map(consent => ({
+            id: -consent.id,
+            recordCid: consent.recordCid,
+            recipientPubkey: consent.recipientPubkey,
+            creatorPubkey: consent.issuerPubkey,
+            createdAt: consent.createdAt.toISOString(),
+            expiresAt: consent.expiresAt?.toISOString() || null,
+            accessCount: 0,
+            lastAccessedAt: null,
+            isConsent: true,
+        }));
+
+        const combinedAccessible = [...accessibleKeys.map(k => ({ ...k, isConsent: false })), ...consentsAsKeys];
+        combinedAccessible.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
         return NextResponse.json({
             created: createdKeys,
-            accessible: accessibleKeys
+            accessible: combinedAccessible
         });
     } catch (e: any) {
         console.error('Failed to fetch keys:', e);

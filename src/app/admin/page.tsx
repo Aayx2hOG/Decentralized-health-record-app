@@ -29,6 +29,7 @@ interface RewrapKey {
     expiresAt: string | null;
     accessCount: number;
     lastAccessedAt: string | null;
+    isConsent?: boolean;
 }
 
 interface AccessLog {
@@ -561,7 +562,12 @@ export default function AdminPage() {
                                             paginatedAccessibleKeys.map((key) => (
                                                 <TableRow key={key.id}>
                                                     <TableCell className="font-mono text-xs">
-                                                        {truncate(key.recordCid)}
+                                                        <div className="flex items-center gap-2">
+                                                            {truncate(key.recordCid)}
+                                                            {key.isConsent && (
+                                                                <Badge variant="secondary" className="text-xs">Consent</Badge>
+                                                            )}
+                                                        </div>
                                                     </TableCell>
                                                     <TableCell className="font-mono text-xs">
                                                         {truncate(key.recipientPubkey)}
