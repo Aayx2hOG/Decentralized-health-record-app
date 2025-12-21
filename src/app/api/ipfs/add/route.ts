@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 
-const API_URL = process.env.IPFS_API_URL || 'http://127.0.0.1:5001';
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
+
+// Use dedicated gateway URL if using Infura
+const API_URL = INFURA_PROJECT_ID && INFURA_API_KEY_SECRET
+    ? `https://${INFURA_PROJECT_ID}:${INFURA_API_KEY_SECRET}@ipfs.infura.io:5001`
+    : process.env.IPFS_API_URL || 'http://127.0.0.1:5001';
 
 export async function POST(req: Request) {
     try {
@@ -15,14 +19,7 @@ export async function POST(req: Request) {
         // Dynamically import ipfs-http-client to avoid build issues
         const { create } = await import('ipfs-http-client');
 
-        // Configure IPFS client with authentication if using Infura
-        const clientOptions: any = { url: API_URL };
-        if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
-            const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
-            clientOptions.headers = { authorization: auth };
-        }
-
-        const client = create(clientOptions);
+        const client = create({ url: API_URL });
         const result = await client.add(bytes);
         const cid = result.cid.toString();
         return NextResponse.json({ cid });
@@ -30,7 +27,7 @@ export async function POST(req: Request) {
         console.error('IPFS add error:', err);
         const errorMessage = err?.message || String(err);
         return NextResponse.json({
-            error: `IPFS add failed: ${errorMessage}. IPFS API URL: ${API_URL}. Make sure IPFS_API_URL environment variable is set to a valid IPFS endpoint.`
+            error: `IPFS add failed: ${errorMessage}. IPFS API URL: ${API_URL.replace(/:[^:@]+@/, ':***@')}. Make sure IPFS_API_URL environment variable is set to a valid IPFS endpoint.`
         }, { status: 500 });
     }
 }
