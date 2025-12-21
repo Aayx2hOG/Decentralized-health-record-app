@@ -1,14 +1,14 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Empty turbopack config to acknowledge Turbopack usage in Next.js 16+
-  // IPFS client uses dynamic imports, so no special configuration needed
-  turbopack: {},
+  turbopack: {
+    resolveAlias: {
+      electron: './src/lib/electron-stub.js',
+    },
+  },
 
-  // Keep webpack config for backward compatibility when explicitly using --webpack flag
   webpack: (config, { isServer }) => {
     if (isServer) {
-      // Externalize problematic IPFS dependencies for server-side rendering
       config.externals = config.externals || []
 
       // Add IPFS packages as external
@@ -19,13 +19,18 @@ const nextConfig: NextConfig = {
       }
     }
 
-    // Ignore node-specific modules that cause issues
     config.resolve = config.resolve || {}
     config.resolve.fallback = {
       ...config.resolve.fallback,
+      electron: false,
       fs: false,
       net: false,
       tls: false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      electron: false,
     }
 
     return config
