@@ -1,14 +1,28 @@
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
-
-// Use dedicated gateway URL if using Infura
-const API_URL = INFURA_PROJECT_ID && INFURA_API_KEY_SECRET
-    ? `https://${INFURA_PROJECT_ID}:${INFURA_API_KEY_SECRET}@ipfs.infura.io:5001`
-    : process.env.IPFS_API_URL || 'http://localhost:5001';
+const API_URL = process.env.IPFS_API_URL || 'http://localhost:5001';
 
 export const ipfsClient = async () => {
     const { create } = await import('ipfs-http-client');
-    return create({ url: API_URL });
+
+    const clientConfig: any = {
+        host: 'ipfs.infura.io',
+        port: 5001,
+        protocol: 'https'
+    };
+
+    if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
+        const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
+        clientConfig.headers = {
+            authorization: auth
+        };
+    } else if (!API_URL.includes('127.0.0.1') && !API_URL.includes('localhost')) {
+        clientConfig.url = API_URL;
+    } else {
+        clientConfig.url = API_URL;
+    }
+
+    return create(clientConfig);
 }
 
 const makeBuffer = (u8: Uint8Array) => {

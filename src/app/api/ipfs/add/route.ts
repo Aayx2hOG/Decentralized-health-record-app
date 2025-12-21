@@ -2,11 +2,7 @@ import { NextResponse } from 'next/server';
 
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
-
-// Use dedicated gateway URL if using Infura
-const API_URL = INFURA_PROJECT_ID && INFURA_API_KEY_SECRET
-    ? `https://${INFURA_PROJECT_ID}:${INFURA_API_KEY_SECRET}@ipfs.infura.io:5001`
-    : process.env.IPFS_API_URL || 'http://127.0.0.1:5001';
+const API_URL = process.env.IPFS_API_URL || 'http://127.0.0.1:5001';
 
 export async function POST(req: Request) {
     try {
@@ -16,10 +12,24 @@ export async function POST(req: Request) {
 
         const bytes = Buffer.from(payloadBase64, 'base64');
 
-        // Dynamically import ipfs-http-client to avoid build issues
         const { create } = await import('ipfs-http-client');
 
-        const client = create({ url: API_URL });
+        const clientConfig: any = {
+            host: 'ipfs.infura.io',
+            port: 5001,
+            protocol: 'https'
+        };
+
+        if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
+            const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
+            clientConfig.headers = {
+                authorization: auth
+            };
+        } else if (!API_URL.includes('127.0.0.1') && !API_URL.includes('localhost')) {
+            clientConfig.url = API_URL;
+        }
+
+        const client = create(clientConfig);
         const result = await client.add(bytes);
         const cid = result.cid.toString();
         return NextResponse.json({ cid });
@@ -27,7 +37,7 @@ export async function POST(req: Request) {
         console.error('IPFS add error:', err);
         const errorMessage = err?.message || String(err);
         return NextResponse.json({
-            error: `IPFS add failed: ${errorMessage}. IPFS API URL: ${API_URL.replace(/:[^:@]+@/, ':***@')}. Make sure IPFS_API_URL environment variable is set to a valid IPFS endpoint.`
+            error: `IPFS add failed: ${errorMessage}. Check IPFS configuration.`
         }, { status: 500 });
     }
 }
