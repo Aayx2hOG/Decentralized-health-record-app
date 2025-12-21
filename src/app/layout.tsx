@@ -5,8 +5,8 @@ import { AppLayout } from '@/components/app-layout'
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: 'Health DApp - Decentralized Health Records',
-  description: 'Secure, decentralized health records management on Solana with end-to-end encryption',
+  title: 'MediChain - Decentralized Health Records',
+  description: 'Secure, decentralized health records management on Solana with end-to-end encryption and W3C Verifiable Credentials',
 }
 
 const links: { label: string; path: string }[] = [

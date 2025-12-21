@@ -26,7 +26,7 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Activity className="h-5 w-5 text-primary" />
             </div>
-            <span className="font-bold text-xl hidden sm:inline-block">Health DApp</span>
+            <span className="font-bold text-xl hidden sm:inline-block">MediChain</span>
           </Link>
 
           <Separator orientation="vertical" className="h-6 hidden md:block" />
