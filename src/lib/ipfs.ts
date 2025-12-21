@@ -1,27 +1,8 @@
-const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
-const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
-const API_URL = process.env.IPFS_API_URL || 'http://localhost:5001';
+const PINATA_JWT = process.env.PINATA_JWT;
 
 export const ipfsClient = async () => {
     const { create } = await import('ipfs-http-client');
-
-    let clientConfig: any;
-
-    if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
-        const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
-        clientConfig = {
-            url: `https://ipfs.infura.io:5001/api/v0`,
-            headers: {
-                authorization: auth
-            }
-        };
-    } else if (!API_URL.includes('127.0.0.1') && !API_URL.includes('localhost')) {
-        clientConfig = { url: API_URL };
-    } else {
-        clientConfig = { url: API_URL };
-    }
-
-    return create(clientConfig);
+    return create({ url: 'http://localhost:5001' });
 }
 
 const makeBuffer = (u8: Uint8Array) => {
@@ -52,12 +33,19 @@ export const catToBuffer = async (cid: string) => {
 }
 
 export const isIpfsAvailable = async (): Promise<boolean> => {
-    try {
-        const url = API_URL.includes('@')
-            ? `https://ipfs.infura.io:5001/api/v0/id`
-            : `${API_URL.replace(/\/$/, '')}/api/v0/id`;
+    if (PINATA_JWT) {
+        try {
+            const res = await fetch('https://api.pinata.cloud/data/testAuthentication', {
+                headers: { 'Authorization': `Bearer ${PINATA_JWT}` }
+            });
+            return res.ok;
+        } catch {
+            return false;
+        }
+    }
 
-        const res = await fetch(url, { method: 'POST' });
+    try {
+        const res = await fetch('http://localhost:5001/api/v0/id', { method: 'POST' });
         return res.ok;
     } catch {
         return false;

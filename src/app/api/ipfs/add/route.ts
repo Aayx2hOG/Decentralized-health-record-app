@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
-const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
-const API_URL = process.env.IPFS_API_URL || 'http://127.0.0.1:5001';
+const PINATA_JWT = process.env.PINATA_JWT;
 
 export async function POST(req: Request) {
     try {
@@ -12,28 +10,33 @@ export async function POST(req: Request) {
 
         const bytes = Buffer.from(payloadBase64, 'base64');
 
-        const { create } = await import('ipfs-http-client');
+        if (PINATA_JWT) {
+            const formData = new FormData();
+            const blob = new Blob([bytes]);
+            formData.append('file', blob);
 
-        let clientConfig: any;
-
-        if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
-            const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
-            clientConfig = {
-                url: `https://ipfs.infura.io:5001/api/v0`,
+            const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+                method: 'POST',
                 headers: {
-                    authorization: auth
-                }
-            };
-        } else if (!API_URL.includes('127.0.0.1') && !API_URL.includes('localhost')) {
-            clientConfig = { url: API_URL };
-        } else {
-            clientConfig = { url: API_URL };
-        }
+                    'Authorization': `Bearer ${PINATA_JWT}`
+                },
+                body: formData
+            });
 
-        const client = create(clientConfig);
-        const result = await client.add(bytes);
-        const cid = result.cid.toString();
-        return NextResponse.json({ cid });
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`Pinata upload failed: ${error}`);
+            }
+
+            const result = await response.json();
+            return NextResponse.json({ cid: result.IpfsHash });
+        } else {
+            const { create } = await import('ipfs-http-client');
+            const client = create({ url: 'http://127.0.0.1:5001' });
+            const result = await client.add(bytes);
+            const cid = result.cid.toString();
+            return NextResponse.json({ cid });
+        }
     } catch (err: any) {
         console.error('IPFS add error:', err);
         const errorMessage = err?.message || String(err);
