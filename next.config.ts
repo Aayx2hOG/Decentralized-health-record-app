@@ -1,6 +1,11 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Empty turbopack config to acknowledge Turbopack usage in Next.js 16+
+  // IPFS client uses dynamic imports, so no special configuration needed
+  turbopack: {},
+
+  // Keep webpack config for backward compatibility when explicitly using --webpack flag
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalize problematic IPFS dependencies for server-side rendering
