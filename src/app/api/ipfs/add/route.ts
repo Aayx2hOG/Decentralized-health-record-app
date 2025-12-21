@@ -14,19 +14,20 @@ export async function POST(req: Request) {
 
         const { create } = await import('ipfs-http-client');
 
-        const clientConfig: any = {
-            host: 'ipfs.infura.io',
-            port: 5001,
-            protocol: 'https'
-        };
+        let clientConfig: any;
 
         if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
             const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
-            clientConfig.headers = {
-                authorization: auth
+            clientConfig = {
+                url: `https://ipfs.infura.io:5001/api/v0`,
+                headers: {
+                    authorization: auth
+                }
             };
         } else if (!API_URL.includes('127.0.0.1') && !API_URL.includes('localhost')) {
-            clientConfig.url = API_URL;
+            clientConfig = { url: API_URL };
+        } else {
+            clientConfig = { url: API_URL };
         }
 
         const client = create(clientConfig);
