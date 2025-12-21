@@ -203,11 +203,6 @@ export default function VerifyPage() {
             }
 
             setRenderKey(prev => prev + 1);
-
-            const resultMsg = plainStr && plainStr.length > 0
-                ? `Data decrypted: ${plainStr.substring(0, 50)}...`
-                : 'Verification successful! (No payload data attached)';
-            alert(resultMsg);
         } catch (err: any) {
             console.error('Decryption error:', err);
             setError(err.message || String(err));

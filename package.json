@@ -1,5 +1,5 @@
 {
-  "name": "health-dapp",
+  "name": "medichain",
   "scripts": {
     "anchor": "cd anchor && anchor",
     "anchor-build": "cd anchor && anchor build",
@@ -16,9 +16,9 @@
     "test": "bun test",
     "test:ipfs": "RUN_IPFS_INTEGRATION=1 IPFS_API_URL=http://127.0.0.1:5001 bun test"
   },
-  "displayName": "Web3js Basic",
-  "usecase": "Legacy",
-  "description": "Next.js, Tailwind, @solana/web3.js, Wallet Adapter, basic Anchor program",
+  "displayName": "MediChain",
+  "usecase": "Healthcare Data Management",
+  "description": "Decentralized health records management with W3C Verifiable Credentials, end-to-end encryption, and Solana blockchain integration",
   "keywords": [
     "anchor-basic",
     "nextjs",
