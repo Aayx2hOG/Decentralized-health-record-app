@@ -87,7 +87,10 @@ export default function CreateRecord() {
             const payloadBuf = typeof Buffer !== "undefined" ? Buffer.from(payloadJson) : new TextEncoder().encode(payloadJson);
             const payloadBase64 = toBase64(payloadBuf as any);
             const res = await fetch('/api/ipfs/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: payloadBase64 }) });
-            if (!res.ok) throw new Error('IPFS add failed');
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || 'IPFS add failed');
+            }
             const j = await res.json();
             const myCid = j.cid as string;
             setCid(myCid);

@@ -1,8 +1,18 @@
 const API_URL = process.env.IPFS_API_URL || 'http://localhost:5001';
+const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
+const INFURA_API_KEY_SECRET = process.env.INFURA_API_KEY_SECRET;
 
 export const ipfsClient = async () => {
     const { create } = await import('ipfs-http-client');
-    return create({ url: API_URL });
+
+    // Configure IPFS client with authentication if using Infura
+    const clientOptions: any = { url: API_URL };
+    if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
+        const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
+        clientOptions.headers = { authorization: auth };
+    }
+
+    return create(clientOptions);
 }
 
 const makeBuffer = (u8: Uint8Array) => {
@@ -35,7 +45,18 @@ export const catToBuffer = async (cid: string) => {
 export const isIpfsAvailable = async (): Promise<boolean> => {
     const api = (process.env.IPFS_API_URL || API_URL).replace(/\/$/, '');
     try {
-        const res = await fetch(`${api}/api/v0/id`, { method: 'POST' });
+        const headers: any = { 'Content-Type': 'application/json' };
+
+        // Add Infura authentication if available
+        if (INFURA_PROJECT_ID && INFURA_API_KEY_SECRET) {
+            const auth = 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_API_KEY_SECRET).toString('base64');
+            headers.authorization = auth;
+        }
+
+        const res = await fetch(`${api}/api/v0/id`, {
+            method: 'POST',
+            headers
+        });
         return res.ok;
     } catch {
         return false;
