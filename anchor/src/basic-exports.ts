@@ -1,14 +1,14 @@
 import { AnchorProvider, Program } from '@coral-xyz/anchor'
 import { Cluster, PublicKey } from '@solana/web3.js'
-import BasicIDL from '../target/idl/basic.json'
-import type { Basic } from '../target/types/basic'
+import BasicIDL from '../target/idl/health_anchor.json'
+import type { HealthAnchor } from '../target/types/health_anchor'
 
-export { Basic, BasicIDL }
+export { HealthAnchor as Basic, BasicIDL }
 
 export const BASIC_PROGRAM_ID = new PublicKey(BasicIDL.address)
 
-export function getBasicProgram(provider: AnchorProvider, address?: PublicKey): Program<Basic> {
-  return new Program({ ...BasicIDL, address: address ? address.toBase58() : BasicIDL.address } as Basic, provider)
+export function getBasicProgram(provider: AnchorProvider, address?: PublicKey): Program<HealthAnchor> {
+  return new Program({ ...BasicIDL, address: address ? address.toBase58() : BasicIDL.address } as HealthAnchor, provider)
 }
 
 export function getBasicProgramId(cluster: Cluster) {

@@ -4,12 +4,10 @@ import { useBasicProgram } from './basic-data-access'
 import { Button } from '@/components/ui/button'
 
 export function BasicCreate() {
-  const { greet } = useBasicProgram()
-
   return (
-    <Button onClick={() => greet.mutateAsync()} disabled={greet.isPending}>
-      Run program{greet.isPending && '...'}
-    </Button>
+    <div className="alert alert-info">
+      <span>This is a placeholder. Use the health records features to interact with the program.</span>
+    </div>
   )
 }
 

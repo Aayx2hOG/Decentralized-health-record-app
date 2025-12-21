@@ -1,8 +1,7 @@
-import { create } from 'ipfs-http-client';
-
 const API_URL = process.env.IPFS_API_URL || 'http://localhost:5001';
 
-export const ipfsClient = () => {
+export const ipfsClient = async () => {
+    const { create } = await import('ipfs-http-client');
     return create({ url: API_URL });
 }
 
@@ -12,13 +11,13 @@ const makeBuffer = (u8: Uint8Array) => {
 }
 
 export const addBuffer = async (buf: Buffer): Promise<string> => {
-    const client = ipfsClient();
+    const client = await ipfsClient();
     const result = await client.add(buf as any);
     return result.cid.toString();
 }
 
 export const catToBuffer = async (cid: string) => {
-    const client = ipfsClient();
+    const client = await ipfsClient();
     const chunks: Uint8Array[] = [];
     for await (const chunk of client.cat(cid)) {
         chunks.push(chunk);
