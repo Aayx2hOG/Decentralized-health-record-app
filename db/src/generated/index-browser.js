@@ -144,6 +144,14 @@ exports.Prisma.AccessLogScalarFieldEnum = {
   accessedAt: 'accessedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  pubkey: 'pubkey',
+  addedBy: 'addedBy',
+  addedAt: 'addedAt',
+  isActive: 'isActive'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -162,7 +170,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   RewrapKey: 'RewrapKey',
-  AccessLog: 'AccessLog'
+  AccessLog: 'AccessLog',
+  Admin: 'Admin'
 };
 
 /**

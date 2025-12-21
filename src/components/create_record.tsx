@@ -6,6 +6,14 @@ import { PublicKey } from "@solana/web3.js";
 import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Upload, Download, FileCheck2, AlertCircle } from "lucide-react";
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
@@ -23,17 +31,30 @@ function toBase64(u8: Uint8Array | Buffer) {
     return (globalThis as any).btoa(binary);
 }
 
+function fromBase64(b64: string): Uint8Array {
+    if (typeof Buffer !== "undefined" && Buffer.from) {
+        return new Uint8Array(Buffer.from(b64, "base64"));
+    }
+    const binary = (globalThis as any).atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
 export default function CreateRecord() {
     const [title, setTitle] = useState("");
     const [textPayload, setTextPayload] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [recipientsInput, setRecipientsInput] = useState("");
     const [cid, setCid] = useState<string | null>(null);
     const [packedKeys, setPackedKeys] = useState<Array<{ recipient: string; packedB64?: string; packedCid?: string }>>([]);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [enableRewrap, setEnableRewrap] = useState(true);
+    const [loadedRecordSymKey, setLoadedRecordSymKey] = useState<string | null>(null);
+    const [newRecipientsInput, setNewRecipientsInput] = useState("");
     const wallet = useWallet();
 
     function canonicalize(obj: any): string {
@@ -71,7 +92,11 @@ export default function CreateRecord() {
             const myCid = j.cid as string;
             setCid(myCid);
 
-            const recipients = recipientsInput.split(",").map((s) => s.trim()).filter(Boolean);
+            const recipients: string[] = [];
+            if (wallet.publicKey) {
+                recipients.push(wallet.publicKey.toBase58());
+            }
+
             if (!recipients.length) {
                 setPackedKeys([]);
                 setBusy(false);
@@ -98,8 +123,10 @@ export default function CreateRecord() {
 
             setPackedKeys(results);
 
+            const symKeyB64 = toBase64(symU8);
+            setLoadedRecordSymKey(symKeyB64);
+
             if (enableRewrap && myCid && recipients.length > 0) {
-                const symKeyB64 = toBase64(symU8);
                 try {
                     await uploadToRewrapAPI(myCid, symKeyB64, recipients);
                 } catch (rewrapErr: any) {
@@ -182,8 +209,9 @@ export default function CreateRecord() {
             const obj = JSON.parse(text);
             if (obj.title) setTitle(obj.title);
             if (obj.cid) setCid(obj.cid);
-            if (Array.isArray(obj.recipients)) setRecipientsInput(obj.recipients.join(', '));
-            if (Array.isArray(obj.packedKeys)) setPackedKeys(obj.packedKeys.map((p: any) => ({ recipient: p.recipient, packedB64: p.packedB64, packedCid: p.packedCid })));
+            if (Array.isArray(obj.packedKeys)) {
+                setPackedKeys(obj.packedKeys.map((p: any) => ({ recipient: p.recipient, packedB64: p.packedB64, packedCid: p.packedCid })));
+            }
         } catch (e: any) {
             setError('Failed to load record JSON: ' + (e?.message || String(e)));
         }
@@ -230,96 +258,338 @@ export default function CreateRecord() {
         }
     }
 
+    async function decryptAndLoadSymmetricKey() {
+        if (!cid) {
+            setError('No record CID available');
+            return;
+        }
+        if (!wallet.publicKey || !wallet.signMessage) {
+            setError('Wallet not connected');
+            return;
+        }
+
+        setError(null);
+        setBusy(true);
+
+        try {
+            const myPubkey = wallet.publicKey.toBase58();
+
+            const isRecipient = packedKeys.some(pk => pk.recipient === myPubkey);
+            if (!isRecipient) {
+                throw new Error('You are not a recipient of this record');
+            }
+
+            const messageToSign = JSON.stringify({
+                recordCid: cid,
+                requesterPubkey: myPubkey,
+            });
+            const messageBytes = new TextEncoder().encode(messageToSign);
+            const signature = await wallet.signMessage(messageBytes);
+            const requesterSignature = Buffer.from(signature).toString('base64');
+
+            const res = await fetch('/api/rewrap/decrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    recordCid: cid,
+                    requesterPubkey: myPubkey,
+                    requesterSignature,
+                }),
+            });
+
+            if (!res.ok) {
+                const e = await res.json();
+                throw new Error(e.error || 'Failed to decrypt symmetric key');
+            }
+
+            const result = await res.json();
+            if (result.symKey) {
+                setLoadedRecordSymKey(result.symKey);
+                alert('Successfully decrypted record! You can now add new recipients.');
+            } else {
+                throw new Error('No symmetric key returned from server');
+            }
+        } catch (e: any) {
+            console.error('Failed to decrypt symmetric key:', e);
+            setError(e?.message || String(e));
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function addRecipientsToExistingRecord() {
+        if (!cid) {
+            setError('No record loaded. Please upload an existing record first.');
+            return;
+        }
+        if (!loadedRecordSymKey) {
+            setError('Cannot add recipients: symmetric key not available. You must be the original creator and have access to decrypt the record first.');
+            return;
+        }
+
+        setError(null);
+        setBusy(true);
+
+        try {
+            const newRecipients = newRecipientsInput.split(",").map((s) => s.trim()).filter(Boolean);
+            if (!newRecipients.length) {
+                throw new Error('Please enter at least one recipient address');
+            }
+
+            const existingRecipients = packedKeys.map(pk => pk.recipient);
+
+            const uniqueNewRecipients = newRecipients.filter(r => !existingRecipients.includes(r));
+
+            if (uniqueNewRecipients.length === 0) {
+                setError('All recipients already exist for this record. No new recipients to add.');
+                setBusy(false);
+                return;
+            }
+
+            console.log('Adding new recipients:', uniqueNewRecipients);
+
+            const symU8 = fromBase64(loadedRecordSymKey);
+            const newResults: Array<{ recipient: string; packedB64?: string; packedCid?: string }> = [];
+
+            for (const r of uniqueNewRecipients) {
+                const pub = new PublicKey(r);
+                const recipientPkBytes = pub.toBuffer();
+
+                const encForRecipient = await encryptSymmetricKeyForRecipientSealed(symU8 as Uint8Array, recipientPkBytes as Uint8Array);
+
+                const packed = (encForRecipient.packed as any) instanceof Uint8Array ? encForRecipient.packed as Uint8Array : new Uint8Array(encForRecipient.packed as Buffer);
+                const packedB64 = toBase64(packed as any);
+
+                const addRes = await fetch('/api/ipfs/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: packedB64 }) });
+                if (!addRes.ok) throw new Error('IPFS add for packed key failed');
+                const addJson = await addRes.json();
+                const packedCid = addJson.cid as string;
+
+                newResults.push({ recipient: r, packedB64, packedCid });
+            }
+
+            setPackedKeys([...packedKeys, ...newResults]);
+
+            if (enableRewrap) {
+                try {
+                    await uploadToRewrapAPI(cid, loadedRecordSymKey, uniqueNewRecipients);
+                    alert(`Successfully added ${uniqueNewRecipients.length} new recipient(s)!`);
+                } catch (rewrapErr: any) {
+                    setError('Packed keys created but rewrap key storage failed: ' + (rewrapErr?.message || String(rewrapErr)));
+                }
+            }
+
+            setNewRecipientsInput('');
+        } catch (e: any) {
+            console.error("Error adding recipients:", e);
+            setError(e?.message || String(e));
+        } finally {
+            setBusy(false);
+        }
+    }
+
     return (
-        <div className="max-w-3xl p-6">
-            <h3 className="text-xl font-semibold">Create Record (dev demo)</h3>
-
-            <form onSubmit={onSubmit} className="mt-4 space-y-4">
-                <div>
-                    <label className="block text-sm font-medium">Title</label>
-                    <input className="mt-1 block w-full rounded-md border px-3 py-2" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Record title" />
-
-                    <div className="mt-4 flex items-center gap-3">
-                        <button
-                            type="button"
-                            className="rounded bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm font-semibold flex items-center gap-2"
-                            onClick={signAndDownload}
-                            disabled={!cid && packedKeys.length === 0}
-                        >
-                            Sign & Download Record
-                        </button>
-                        <label className="inline-flex items-center rounded bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 text-sm cursor-pointer">
-                            <input type="file" accept="application/json" className="hidden" onChange={(e) => loadRecordJsonFile(e.target.files?.[0] ?? null)} />
-                            Upload Record
-                        </label>
+        <div className="space-y-6">
+            <form onSubmit={onSubmit} className="space-y-6">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Record Title</Label>
+                        <Input
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Enter record title..."
+                        />
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium">Text payload (or choose file)</label>
-                    <textarea className="mt-1 block w-full rounded-md border px-3 py-2" value={textPayload} onChange={(e) => setTextPayload(e.target.value)} placeholder="Optional text payload" />
-                    <div className="mt-2 flex items-center gap-3">
-                        <input ref={(el) => { fileInputRef.current = el; }} type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-                        <button type="button" className="inline-flex items-center gap-2 rounded bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 text-sm" onClick={() => fileInputRef.current?.click()}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12v6M8 8l4-4 4 4" /></svg>
-                            Choose file
-                        </button>
-                        <div className="text-sm text-slate-600">{file ? file.name : <span className="italic">No file selected</span>}</div>
-                        {file && (
-                            <button type="button" className="text-sm text-slate-500 hover:text-slate-700" onClick={() => setFile(null)}>Clear</button>
+                <div className="space-y-2">
+                    <Label htmlFor="textPayload">Text Payload (Optional)</Label>
+                    <Textarea
+                        id="textPayload"
+                        value={textPayload}
+                        onChange={(e) => setTextPayload(e.target.value)}
+                        placeholder="Enter health record data or choose a file below"
+                        className="min-h-[120px]"
+                    />
+                    <div className="flex items-center gap-3 mt-2">
+                        <input
+                            ref={(el) => { fileInputRef.current = el; }}
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                        />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="gap-2"
+                        >
+                            <Upload className="h-4 w-4" />
+                            Choose File
+                        </Button>
+                        {file ? (
+                            <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="gap-1">
+                                    <FileCheck2 className="h-3 w-3" />
+                                    {file.name}
+                                </Badge>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setFile(null)}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
+                        ) : (
+                            <span className="text-sm text-muted-foreground italic">No file selected</span>
                         )}
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium">Recipients (comma-separated base58 public keys)</label>
-                    <input className="mt-1 block w-full rounded-md border px-3 py-2" value={recipientsInput} onChange={(e) => setRecipientsInput(e.target.value)} placeholder="RecipientPubkey1, RecipientPubkey2" />
+                <Alert>
+                    <AlertDescription className="text-sm">
+                        Your record will be encrypted and stored on IPFS. Use the <strong>Consent</strong> page to grant access to specific recipients.
+                    </AlertDescription>
+                </Alert>
+
+                <div className="flex items-center space-x-3 p-3 rounded-lg border bg-muted/30">
+                    <Checkbox
+                        id="enable-rewrap"
+                        checked={enableRewrap}
+                        onCheckedChange={(checked: boolean) => setEnableRewrap(checked)}
+                    />
+                    <div className="flex-1">
+                        <Label htmlFor="enable-rewrap" className="cursor-pointer font-medium">
+                            Enable Proxy Re-encryption
+                        </Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Allow recipients to request access using wallet signatures (key stored encrypted on server)
+                        </p>
+                    </div>
                 </div>
 
-                <div>
-                    <p className="text-sm text-slate-600">Uploader does not need to provide a private key — we use anonymous sealed boxes so recipients can open with their own secret keys.</p>
-                </div>
+                <Button
+                    type="submit"
+                    disabled={busy || !wallet.connected}
+                    className="w-full gap-2"
+                    size="lg"
+                >
+                    {busy ? 'Encrypting & Uploading...' : wallet.connected ? 'Encrypt & Upload to IPFS' : 'Connect Wallet First'}
+                </Button>
 
-                <div className="flex items-center gap-2">
-                    <input type="checkbox" id="enable-rewrap" checked={enableRewrap} onChange={(e) => setEnableRewrap(e.target.checked)} />
-                    <label htmlFor="enable-rewrap" className="text-sm text-slate-600">Allow recipients to request access without pasting private keys (stores encrypted key on server)</label>
-                </div>
-
-                <div>
-                    <button className="inline-flex items-center rounded bg-sky-600 px-4 py-2 text-white disabled:opacity-60" type="submit" disabled={busy}>{busy ? 'Working…' : 'Encrypt & Upload to IPFS'}</button>
+                {/* Action Buttons Section - Below Submit */}
+                <div className="flex justify-center gap-3 p-4 bg-muted/30 rounded-lg border-2">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={signAndDownload}
+                        disabled={!cid && packedKeys.length === 0}
+                        className="gap-2"
+                        size="lg"
+                    >
+                        <FileCheck2 className="h-4 w-4" />
+                        Sign & Download Record
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'application/json';
+                            input.onchange = (e) => loadRecordJsonFile((e.target as HTMLInputElement).files?.[0] ?? null);
+                            input.click();
+                        }}
+                        className="gap-2"
+                        size="lg"
+                    >
+                        <Upload className="h-4 w-4" />
+                        Upload Record
+                    </Button>
                 </div>
             </form>
 
-            {error && <div className="mt-4 text-red-600">{error}</div>}
+            {error && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
 
             {cid && (
-                <div className="mt-4">
-                    <h4 className="font-medium">IPFS CID</h4>
-                    <div className="mt-1 break-all">{cid}</div>
-                    <div className="mt-1 text-sm text-slate-600">Example cat URL: <a className="text-sky-600" href={`https://ipfs.io/ipfs/${cid}`} target="_blank" rel="noreferrer">https://ipfs.io/ipfs/{cid}</a></div>
+                <div className="p-4 rounded-lg border bg-muted/30 space-y-2">
+                    <div className="flex items-center gap-2">
+                        <Badge variant="default">Success</Badge>
+                        <Label className="font-semibold">IPFS CID</Label>
+                    </div>
+                    <code className="block text-sm font-mono bg-background px-3 py-2 rounded border break-all">
+                        {cid}
+                    </code>
+                    <a
+                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                        href={`https://ipfs.io/ipfs/${cid}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        View on IPFS Gateway →
+                    </a>
                 </div>
             )}
 
             {packedKeys.length > 0 && (
-                <div className="mt-6">
-                    <h4 className="font-medium">Packed encrypted keys (per recipient)</h4>
-                    <ul className="mt-2 space-y-3">
+                <div className="space-y-4">
+                    <div>
+                        <Label className="text-base font-semibold">Encrypted Keys per Recipient</Label>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            Each recipient has a unique encrypted key stored on IPFS
+                        </p>
+                    </div>
+                    <div className="space-y-3">
                         {packedKeys.map((p) => (
-                            <li key={p.recipient} className="rounded border p-3">
-                                <div className="font-mono text-sm break-all">{p.recipient}</div>
+                            <div key={p.recipient} className="rounded-lg border p-4 space-y-3 bg-muted/20">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex-1 min-w-0">
+                                        <Label className="text-xs text-muted-foreground">Recipient Address</Label>
+                                        <code className="block text-xs font-mono break-all mt-1">{p.recipient}</code>
+                                    </div>
+                                </div>
                                 {p.packedCid && (
-                                    <div className="mt-2 text-xs">
-                                        CID: <a className="text-sky-600" href={`https://ipfs.io/ipfs/${p.packedCid}`} target="_blank" rel="noreferrer">{p.packedCid}</a>
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Encrypted Key CID</Label>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <code className="text-xs font-mono break-all flex-1">{p.packedCid}</code>
+                                            <a
+                                                className="text-xs text-primary hover:underline shrink-0"
+                                                href={`https://ipfs.io/ipfs/${p.packedCid}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                View
+                                            </a>
+                                        </div>
                                     </div>
                                 )}
-                                <div className="mt-2 text-xs break-all">{p.packedB64 ?? <span className="italic text-slate-500">(stored on IPFS)</span>}</div>
-                                <div className="mt-2">
-                                    <button className="rounded bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 text-sm" onClick={() => downloadPacked(p.recipient, p.packedB64, p.packedCid)}>Download</button>
-                                </div>
-                            </li>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => downloadPacked(p.recipient, p.packedB64, p.packedCid)}
+                                    className="gap-2"
+                                >
+                                    <Download className="h-3 w-3" />
+                                    Download Key
+                                </Button>
+                            </div>
                         ))}
-                    </ul>
-                    <p className="mt-3 text-sm text-slate-600">These packed buffers are nonce||boxed (binary). On-chain you should store the same packed buffer (e.g. as a bytes field).</p>
+                    </div>
+                    <Alert>
+                        <AlertDescription className="text-xs">
+                            These encrypted keys are stored as binary data (nonce||sealed_box). Recipients can use them to decrypt the health record.
+                        </AlertDescription>
+                    </Alert>
                 </div>
             )}
         </div>

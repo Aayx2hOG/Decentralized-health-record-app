@@ -4,11 +4,9 @@ import * as sodium from 'libsodium-wrappers';
 const hasSubtle = typeof globalThis !== 'undefined' && !!(globalThis.crypto && (globalThis.crypto as any).subtle);
 const hasNodeCrypto = typeof process !== 'undefined' && !!(process.versions && process.versions.node);
 
-// Helpers to handle Buffer/Uint8Array and base64 across envs
 const toUint8 = (input: Uint8Array | ArrayBuffer | Buffer) => {
     if (input instanceof Uint8Array) return input;
     if (input instanceof ArrayBuffer) return new Uint8Array(input);
-    // @ts-ignore Buffer exists in Node
     if (typeof Buffer !== 'undefined' && Buffer.isBuffer(input)) return new Uint8Array(input as Uint8Array);
     return new Uint8Array(input as any);
 }
@@ -19,15 +17,12 @@ const randBytes = (len: number) => {
         (globalThis.crypto as any).getRandomValues(arr);
         return arr;
     }
-    // Node fallback
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const nodeCrypto = require('crypto');
     return new Uint8Array(nodeCrypto.randomBytes(len));
 }
 
 const toBase64 = (u8: Uint8Array) => {
     if (typeof Buffer !== 'undefined') return Buffer.from(u8).toString('base64');
-    // browser fallback
     let binary = '';
     const chunk = 0x8000;
     for (let i = 0; i < u8.length; i += chunk) {
@@ -47,7 +42,6 @@ const fromBase64 = (s: string) => {
 
 export function generateSymmetricKey(): Buffer | Uint8Array {
     const key = randBytes(32);
-    // Prefer Node Buffer when available to keep backwards compatibility
     if (typeof Buffer !== 'undefined') return Buffer.from(key);
     return key;
 }
@@ -62,14 +56,11 @@ export async function encryptPayloadAESGCM(plaintext: Uint8Array | Buffer, key: 
         const cryptoKey = await (globalThis.crypto as any).subtle.importKey('raw', k.buffer ? k.buffer : k, alg, false, ['encrypt']);
         const ctbuf = await (globalThis.crypto as any).subtle.encrypt(alg, cryptoKey, pt.buffer ? pt.buffer : pt);
         const ct = toUint8(ctbuf);
-        // Subtle appends tag to ciphertext in browsers; last 16 bytes are tag
         const tag = ct.slice(ct.length - 16);
         const ciphertext = ct.slice(0, ct.length - 16);
         return { iv: toBase64(iv), ciphertext: toBase64(ciphertext), tag: toBase64(tag) };
     }
 
-    // Node path
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const nodeCrypto = require('crypto');
     const cipher = nodeCrypto.createCipheriv('aes-256-gcm', Buffer.from(k), Buffer.from(iv));
     const ciphertext = Buffer.concat([cipher.update(Buffer.from(pt)), cipher.final()]);
@@ -86,12 +77,10 @@ export async function decryptPayloadAESGCM(obj: { iv: string, ciphertext: string
     if (hasSubtle) {
         const alg = { name: 'AES-GCM', iv, tagLength: 128 } as any;
         const cryptoKey = await (globalThis.crypto as any).subtle.importKey('raw', k.buffer ? k.buffer : k, alg, false, ['decrypt']);
-        // Subtle expects tag appended to ciphertext
         const combined = new Uint8Array(ct.length + tag.length);
         combined.set(ct, 0);
         combined.set(tag, ct.length);
         const plainBuf = await (globalThis.crypto as any).subtle.decrypt(alg, cryptoKey, combined.buffer);
-        // Prefer Node Buffer when available for compatibility
         const out = new Uint8Array(plainBuf);
         if (typeof Buffer !== 'undefined') return Buffer.from(out);
         return out;
@@ -135,10 +124,8 @@ export async function encryptSymmetricKeyForRecipientSealed(
     recipientEd25519PublicKey: Uint8Array
 ): Promise<{ boxed: string; packed: Buffer | Uint8Array }> {
     await sodium.ready;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
 
-    // convert ed25519 pub -> curve25519 pub
     const recipientCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(recipientEd25519PublicKey);
 
     const boxed = sodiumLib.crypto_box_seal(symKey, recipientCurvePk);
@@ -159,7 +146,6 @@ export async function decryptSymmetricKeyFromSender(
     recipientEd25519SecretKey: Uint8Array
 ): Promise<Buffer | Uint8Array> {
     await sodium.ready;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
 
     const senderCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(senderEd25519PublicKey);
@@ -180,13 +166,10 @@ export async function decryptSymmetricKeySealedFromPacked(
     recipientEd25519SecretKey: Uint8Array
 ): Promise<Buffer | Uint8Array> {
     await sodium.ready;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sodiumLib: any = (sodium && (sodium as any).default) ? (sodium as any).default : sodium;
 
-    // convert ed25519 secret -> curve25519 keypair
     const recipientCurveSk = sodiumLib.crypto_sign_ed25519_sk_to_curve25519(recipientEd25519SecretKey);
 
-    // derive curve25519 public key from ed25519 public key (last 32 bytes of ed25519 secret)
     const ed25519Pk = recipientEd25519SecretKey.slice(32, 64);
     const recipientCurvePk = sodiumLib.crypto_sign_ed25519_pk_to_curve25519(ed25519Pk);
 

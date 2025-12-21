@@ -43,3 +43,13 @@ model AccessLog {
   @@index([accessedAt], name: "idx_access_time")
   @@map("access_logs")
 }
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  pubkey   String   @unique
+  addedBy  String?
+  addedAt  DateTime @default(now())
+  isActive Boolean  @default(true)
+
+  @@index([pubkey])
+}

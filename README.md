@@ -165,7 +165,7 @@ docker ps | grep health-dapp-postgres
 cat > .env << 'EOF'
 DATABASE_URL="postgresql://postgres:mysupersecretpassword@localhost:5432/health_dapp"
 ADMIN_PUBKEYS="YOUR_SOLANA_WALLET_PUBLIC_KEY"
-NEXT_PUBLIC_ADMIN_PUBKEYS="YOUR_SOLANA_WALLET_PUBLIC_KEY"
+ADMIN_PUBKEYS="YOUR_SOLANA_WALLET_PUBLIC_KEY"
 RUN_IPFS_INTEGRATION=0
 IPFS_API_URL=http://127.0.0.1:5001
 EOF

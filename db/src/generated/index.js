@@ -117,6 +117,14 @@ exports.Prisma.AccessLogScalarFieldEnum = {
   accessedAt: 'accessedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  pubkey: 'pubkey',
+  addedBy: 'addedBy',
+  addedAt: 'addedAt',
+  isActive: 'isActive'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -135,7 +143,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   RewrapKey: 'RewrapKey',
-  AccessLog: 'AccessLog'
+  AccessLog: 'AccessLog',
+  Admin: 'Admin'
 };
 /**
  * Create the Client
@@ -145,10 +154,10 @@ const config = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel RewrapKey {\n  id              Int         @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  encryptedSymKey String      @db.Text\n  creatorPubkey   String?\n  createdAt       DateTime    @default(now())\n  expiresAt       DateTime?\n  accessCount     Int         @default(0)\n  lastAccessedAt  DateTime?\n  accessLogs      AccessLog[]\n\n  @@unique([recordCid, recipientPubkey], name: \"recordCid_recipientPubkey\")\n  @@index([recipientPubkey], name: \"idx_recipient_pubkey\")\n  @@index([recordCid], name: \"idx_record_cid\")\n  @@index([expiresAt], name: \"idx_expires_at\")\n  @@map(\"rewrap_keys\")\n}\n\nmodel AccessLog {\n  id              Int        @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  rewrapKeyId     Int?\n  success         Boolean\n  ipAddress       String?\n  userAgent       String?    @db.Text\n  errorMessage    String?    @db.Text\n  accessedAt      DateTime   @default(now())\n  rewrapKey       RewrapKey? @relation(fields: [rewrapKeyId], references: [id])\n\n  @@index([recordCid], name: \"idx_access_record_cid\")\n  @@index([recipientPubkey], name: \"idx_access_recipient\")\n  @@index([accessedAt], name: \"idx_access_time\")\n  @@map(\"access_logs\")\n}\n"
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel RewrapKey {\n  id              Int         @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  encryptedSymKey String      @db.Text\n  creatorPubkey   String?\n  createdAt       DateTime    @default(now())\n  expiresAt       DateTime?\n  accessCount     Int         @default(0)\n  lastAccessedAt  DateTime?\n  accessLogs      AccessLog[]\n\n  @@unique([recordCid, recipientPubkey], name: \"recordCid_recipientPubkey\")\n  @@index([recipientPubkey], name: \"idx_recipient_pubkey\")\n  @@index([recordCid], name: \"idx_record_cid\")\n  @@index([expiresAt], name: \"idx_expires_at\")\n  @@map(\"rewrap_keys\")\n}\n\nmodel AccessLog {\n  id              Int        @id @default(autoincrement())\n  recordCid       String\n  recipientPubkey String\n  rewrapKeyId     Int?\n  success         Boolean\n  ipAddress       String?\n  userAgent       String?    @db.Text\n  errorMessage    String?    @db.Text\n  accessedAt      DateTime   @default(now())\n  rewrapKey       RewrapKey? @relation(fields: [rewrapKeyId], references: [id])\n\n  @@index([recordCid], name: \"idx_access_record_cid\")\n  @@index([recipientPubkey], name: \"idx_access_recipient\")\n  @@index([accessedAt], name: \"idx_access_time\")\n  @@map(\"access_logs\")\n}\n\nmodel Admin {\n  id       Int      @id @default(autoincrement())\n  pubkey   String   @unique\n  addedBy  String?\n  addedAt  DateTime @default(now())\n  isActive Boolean  @default(true)\n\n  @@index([pubkey])\n}\n"
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"RewrapKey\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recordCid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipientPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"encryptedSymKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"creatorPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accessCount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"lastAccessedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accessLogs\",\"kind\":\"object\",\"type\":\"AccessLog\",\"relationName\":\"AccessLogToRewrapKey\"}],\"dbName\":\"rewrap_keys\"},\"AccessLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recordCid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipientPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rewrapKeyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"success\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"rewrapKey\",\"kind\":\"object\",\"type\":\"RewrapKey\",\"relationName\":\"AccessLogToRewrapKey\"}],\"dbName\":\"access_logs\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"RewrapKey\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recordCid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipientPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"encryptedSymKey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"creatorPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accessCount\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"lastAccessedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accessLogs\",\"kind\":\"object\",\"type\":\"AccessLog\",\"relationName\":\"AccessLogToRewrapKey\"}],\"dbName\":\"rewrap_keys\"},\"AccessLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recordCid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipientPubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rewrapKeyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"success\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"rewrapKey\",\"kind\":\"object\",\"type\":\"RewrapKey\",\"relationName\":\"AccessLogToRewrapKey\"}],\"dbName\":\"access_logs\"},\"Admin\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"pubkey\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"addedBy\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"addedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.compilerWasm = {
       getRuntime: async () => require('./query_compiler_bg.js'),

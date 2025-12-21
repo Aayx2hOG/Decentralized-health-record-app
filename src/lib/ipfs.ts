@@ -7,8 +7,6 @@ export const ipfsClient = () => {
 }
 
 const makeBuffer = (u8: Uint8Array) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     if (typeof Buffer !== 'undefined') return Buffer.from(u8);
     return u8;
 }

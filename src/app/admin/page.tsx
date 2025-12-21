@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +53,8 @@ interface Stats {
 
 export default function AdminPage() {
     const wallet = useWallet();
-    const [keys, setKeys] = useState<RewrapKey[]>([]);
+    const [createdKeys, setCreatedKeys] = useState<RewrapKey[]>([]);
+    const [accessibleKeys, setAccessibleKeys] = useState<RewrapKey[]>([]);
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -64,12 +66,27 @@ export default function AdminPage() {
     const [keysPage, setKeysPage] = useState(1);
     const [logsPage, setLogsPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(25);
-
-    const isAdmin = wallet.publicKey && process.env.NEXT_PUBLIC_ADMIN_PUBKEYS?.split(',').includes(wallet.publicKey.toBase58());
+    const fetchingRef = useRef(false);
+    const lastWalletRef = useRef<string | null>(null);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        const currentWallet = wallet.publicKey?.toBase58() || null;
+
+        if (wallet.publicKey && wallet.signMessage && currentWallet !== lastWalletRef.current) {
+            lastWalletRef.current = currentWallet;
+            fetchingRef.current = false;
+            setCreatedKeys([]);
+            setAccessibleKeys([]);
+            setLogs([]);
+            setStats(null);
+            setAnalytics(null);
+            setAuthError('');
+            fetchData();
+        } else if (!wallet.publicKey) {
+            lastWalletRef.current = null;
+            setLoading(false);
+        }
+    }, [wallet.publicKey]);
 
     useEffect(() => {
         setKeysPage(1);
@@ -77,18 +94,21 @@ export default function AdminPage() {
     }, [searchTerm, filterType, filterSuccess]);
 
     async function fetchData() {
-        if (!wallet.publicKey || !wallet.signMessage) {
-            setAuthError('Please connect your wallet');
-            setLoading(false);
+        if (!wallet.publicKey || !wallet.signMessage || fetchingRef.current) {
+            if (!wallet.publicKey || !wallet.signMessage) {
+                setAuthError('Please connect your wallet');
+                setLoading(false);
+            }
             return;
         }
 
+        fetchingRef.current = true;
         setLoading(true);
         setAuthError('');
         try {
             const { signAdminAuth } = await import('@/lib/admin-client');
             const authToken = await signAdminAuth(wallet);
-            
+
             if (!authToken) {
                 throw new Error('Failed to generate authentication token');
             }
@@ -104,21 +124,36 @@ export default function AdminPage() {
                 fetch('/api/admin/analytics', { headers: authHeaders }),
             ]);
 
-            if (keysRes.ok) setKeys(await keysRes.json());
-            else if (keysRes.status === 401) setAuthError('Unauthorized: Not an admin wallet');
-            
+            if (keysRes.ok) {
+                const keysData = await keysRes.json();
+                setCreatedKeys(keysData.created || []);
+                setAccessibleKeys(keysData.accessible || []);
+            } else if (keysRes.status === 401) {
+                const errorData = await keysRes.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('Auth error:', errorData);
+                setAuthError(errorData.error || 'You can only view your own records');
+            } else {
+                console.error('Failed to fetch keys:', keysRes.status);
+            }
+
             if (logsRes.ok) setLogs(await logsRes.json());
+            else console.error('Failed to fetch logs:', logsRes.status);
+
             if (statsRes.ok) setStats(await statsRes.json());
+            else console.error('Failed to fetch stats:', statsRes.status);
+
             if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
+            else console.error('Failed to fetch analytics:', analyticsRes.status);
         } catch (e: any) {
             console.error('Failed to fetch admin data:', e);
             setAuthError(e.message || 'Failed to authenticate');
         } finally {
             setLoading(false);
+            fetchingRef.current = false;
         }
     }
 
-    const filteredKeys = keys.filter((key) => {
+    const filterKeysBySearch = (keys: RewrapKey[]) => keys.filter((key) => {
         const matchesSearch =
             key.recordCid.toLowerCase().includes(searchTerm.toLowerCase()) ||
             key.recipientPubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -133,6 +168,9 @@ export default function AdminPage() {
         return matchesSearch;
     });
 
+    const filteredCreatedKeys = filterKeysBySearch(createdKeys);
+    const filteredAccessibleKeys = filterKeysBySearch(accessibleKeys);
+
     const filteredLogs = logs.filter((log) => {
         const matchesSearch =
             log.recordCid.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,10 +181,16 @@ export default function AdminPage() {
         return matchesSearch;
     });
 
-    const totalKeysPages = Math.ceil(filteredKeys.length / itemsPerPage);
+    const totalCreatedKeysPages = Math.ceil(filteredCreatedKeys.length / itemsPerPage);
+    const totalAccessibleKeysPages = Math.ceil(filteredAccessibleKeys.length / itemsPerPage);
     const totalLogsPages = Math.ceil(filteredLogs.length / itemsPerPage);
 
-    const paginatedKeys = filteredKeys.slice(
+    const paginatedCreatedKeys = filteredCreatedKeys.slice(
+        (keysPage - 1) * itemsPerPage,
+        keysPage * itemsPerPage
+    );
+
+    const paginatedAccessibleKeys = filteredAccessibleKeys.slice(
         (keysPage - 1) * itemsPerPage,
         keysPage * itemsPerPage
     );
@@ -208,14 +252,14 @@ export default function AdminPage() {
             <div className="container mx-auto py-12">
                 <Card className="max-w-md mx-auto">
                     <CardHeader>
-                        <CardTitle>Admin Access Required</CardTitle>
-                        <CardDescription>Please connect your wallet to access the admin dashboard</CardDescription>
+                        <CardTitle>Wallet Connection Required</CardTitle>
+                        <CardDescription>Please connect your wallet to view your health records dashboard</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col items-center gap-4 py-8">
                             <div className="text-6xl">🔐</div>
                             <p className="text-center text-muted-foreground">
-                                Connect your admin wallet using the button in the header
+                                Connect your wallet using the button in the header
                             </p>
                         </div>
                     </CardContent>
@@ -229,16 +273,19 @@ export default function AdminPage() {
             <div className="container mx-auto py-12">
                 <Card className="max-w-md mx-auto border-red-200 dark:border-red-800">
                     <CardHeader>
-                        <CardTitle className="text-red-600 dark:text-red-400">Access Denied</CardTitle>
+                        <CardTitle className="text-red-600 dark:text-red-400">Authentication Error</CardTitle>
                         <CardDescription>{authError}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col items-center gap-4 py-8">
                             <div className="text-6xl">❌</div>
                             <p className="text-center text-muted-foreground">
-                                Your wallet ({wallet.publicKey.toBase58().slice(0, 8)}...) is not authorized to access the admin dashboard.
+                                Wallet: {wallet.publicKey.toBase58().slice(0, 8)}...{wallet.publicKey.toBase58().slice(-4)}
                             </p>
-                            <Button onClick={() => fetchData()} variant="outline">
+                            <Button onClick={() => {
+                                fetchingRef.current = false;
+                                fetchData();
+                            }} variant="outline">
                                 Retry Authentication
                             </Button>
                         </div>
@@ -251,8 +298,8 @@ export default function AdminPage() {
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="mb-8">
-                <h1 className="text-4xl font-bold tracking-tight">Admin Dashboard</h1>
-                <p className="text-muted-foreground mt-2">Monitor and manage health record access</p>
+                <h1 className="text-4xl font-bold tracking-tight">My Health Records Dashboard</h1>
+                <p className="text-muted-foreground mt-2">Monitor and manage access to your health records</p>
             </div>
 
             {stats && (
@@ -335,10 +382,11 @@ export default function AdminPage() {
                 </TabsList>
 
                 <TabsContent value="keys" className="space-y-4">
+                    {/* Records You Created Section */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Rewrap Keys Management</CardTitle>
-                            <CardDescription>View and manage all stored encryption keys</CardDescription>
+                            <CardTitle>Records You Created</CardTitle>
+                            <CardDescription>Health records you have created and their access permissions</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="flex gap-4 mb-6">
@@ -393,14 +441,17 @@ export default function AdminPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {paginatedKeys.length === 0 ? (
+                                        {paginatedCreatedKeys.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={9} className="text-center text-muted-foreground">
-                                                    No keys found
+                                                <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <p>No records created yet</p>
+                                                        <p className="text-sm">Create a new health record to get started</p>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            paginatedKeys.map((key) => (
+                                            paginatedCreatedKeys.map((key) => (
                                                 <TableRow key={key.id}>
                                                     <TableCell className="font-mono text-xs">
                                                         {truncate(key.recordCid)}
@@ -440,10 +491,10 @@ export default function AdminPage() {
                                     </TableBody>
                                 </Table>
                             </div>
-                            {totalKeysPages > 1 && (
+                            {totalCreatedKeysPages > 1 && (
                                 <div className="flex items-center justify-between mt-4">
                                     <div className="text-sm text-muted-foreground">
-                                        Showing {((keysPage - 1) * itemsPerPage) + 1} to {Math.min(keysPage * itemsPerPage, filteredKeys.length)} of {filteredKeys.length} results
+                                        Showing {((keysPage - 1) * itemsPerPage) + 1} to {Math.min(keysPage * itemsPerPage, filteredCreatedKeys.length)} of {filteredCreatedKeys.length} results
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Button
@@ -455,13 +506,113 @@ export default function AdminPage() {
                                             Previous
                                         </Button>
                                         <div className="text-sm">
-                                            Page {keysPage} of {totalKeysPages}
+                                            Page {keysPage} of {totalCreatedKeysPages}
                                         </div>
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => setKeysPage(p => Math.min(totalKeysPages, p + 1))}
-                                            disabled={keysPage === totalKeysPages}
+                                            onClick={() => setKeysPage(p => Math.min(totalCreatedKeysPages, p + 1))}
+                                            disabled={keysPage === totalCreatedKeysPages}
+                                        >
+                                            Next
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Records You Can Access Section */}
+                    <Card className="border-2 border-primary/20">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                Records You Can Access
+                                <Badge variant="secondary">via Consent</Badge>
+                            </CardTitle>
+                            <CardDescription>Health records shared with you by other creators</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Record CID</TableHead>
+                                            <TableHead>Recipient</TableHead>
+                                            <TableHead>Creator</TableHead>
+                                            <TableHead>Created</TableHead>
+                                            <TableHead>Expires</TableHead>
+                                            <TableHead>Accesses</TableHead>
+                                            <TableHead>Last Access</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {paginatedAccessibleKeys.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <p>No accessible records</p>
+                                                        <p className="text-sm">Records shared with you via consent will appear here</p>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ) : (
+                                            paginatedAccessibleKeys.map((key) => (
+                                                <TableRow key={key.id}>
+                                                    <TableCell className="font-mono text-xs">
+                                                        {truncate(key.recordCid)}
+                                                    </TableCell>
+                                                    <TableCell className="font-mono text-xs">
+                                                        {truncate(key.recipientPubkey)}
+                                                    </TableCell>
+                                                    <TableCell className="font-mono text-xs">
+                                                        {key.creatorPubkey ? truncate(key.creatorPubkey) : '-'}
+                                                    </TableCell>
+                                                    <TableCell className="text-xs">{formatDate(key.createdAt)}</TableCell>
+                                                    <TableCell className="text-xs">{formatDate(key.expiresAt)}</TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="outline">{key.accessCount}</Badge>
+                                                    </TableCell>
+                                                    <TableCell className="text-xs">{formatDate(key.lastAccessedAt)}</TableCell>
+                                                    <TableCell>
+                                                        {isExpired(key.expiresAt) ? (
+                                                            <Badge variant="destructive">Expired</Badge>
+                                                        ) : (
+                                                            <Badge variant="default">Active</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="text-xs text-muted-foreground">Read-only</span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            {totalAccessibleKeysPages > 1 && (
+                                <div className="flex items-center justify-between mt-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        Showing {((keysPage - 1) * itemsPerPage) + 1} to {Math.min(keysPage * itemsPerPage, filteredAccessibleKeys.length)} of {filteredAccessibleKeys.length} results
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setKeysPage(p => Math.max(1, p - 1))}
+                                            disabled={keysPage === 1}
+                                        >
+                                            Previous
+                                        </Button>
+                                        <div className="text-sm">
+                                            Page {keysPage} of {totalAccessibleKeysPages}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setKeysPage(p => Math.min(totalAccessibleKeysPages, p + 1))}
+                                            disabled={keysPage === totalAccessibleKeysPages}
                                         >
                                             Next
                                         </Button>
@@ -594,10 +745,25 @@ export default function AdminPage() {
                 </TabsContent>
 
                 <TabsContent value="analytics" className="space-y-4">
-                    {!analytics ? (
+                    {loading ? (
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="text-center text-muted-foreground">Loading analytics...</div>
+                            </CardContent>
+                        </Card>
+                    ) : !analytics ? (
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="text-center text-muted-foreground">No analytics data available</div>
+                            </CardContent>
+                        </Card>
+                    ) : (analytics.timeSeriesData.length === 0 && analytics.topRecords.length === 0) ? (
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="text-center">
+                                    <p className="text-muted-foreground mb-2">No data to display yet</p>
+                                    <p className="text-sm text-muted-foreground">Create some health records and they will appear here</p>
+                                </div>
                             </CardContent>
                         </Card>
                     ) : (

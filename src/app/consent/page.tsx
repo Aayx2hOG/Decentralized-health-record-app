@@ -4,6 +4,12 @@ import React, { useState } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { ed25519PubkeyToDidKey, pubkeyBase58ToDidKey } from '../../lib/ssi';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FileCheck, Shield, Clock, Link2, CheckCircle, AlertCircle } from 'lucide-react';
 
 function canonicalize(obj: any): string {
     if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
@@ -78,12 +84,35 @@ export default function ConsentPage() {
 
             let txSig: string | undefined = undefined;
             if (anchorOnChain) {
-                // Memo program id
-                const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
-                const ix = new TransactionInstruction({ programId: MEMO_PROGRAM_ID, keys: [], data: Buffer.from(cid) });
-                const tx = new Transaction().add(ix);
-                const sigTx = await wallet.sendTransaction(tx, connection);
-                txSig = sigTx;
+                try {
+                    const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+                    const ix = new TransactionInstruction({
+                        programId: MEMO_PROGRAM_ID,
+                        keys: [],
+                        data: Buffer.from(cid)
+                    });
+                    const tx = new Transaction().add(ix);
+                    tx.feePayer = wallet.publicKey;
+
+                    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+                    tx.recentBlockhash = blockhash;
+
+                    const sigTx = await wallet.sendTransaction(tx, connection);
+                    await connection.confirmTransaction({
+                        signature: sigTx,
+                        blockhash,
+                        lastValidBlockHeight
+                    }, 'confirmed');
+                    txSig = sigTx;
+                } catch (txError: any) {
+                    console.warn('On-chain anchoring failed, but consent credential was created successfully:', txError);
+                    setResult({
+                        cid,
+                        error: `Consent created successfully but on-chain anchoring failed. This is okay - your consent is still valid. Error: ${txError.message || 'RPC connection failed. Make sure you have SOL in your wallet and are connected to a valid cluster (devnet/testnet/mainnet).'}`
+                    });
+                    setBusy(false);
+                    return;
+                }
             }
 
             setResult({ cid, tx: txSig });
@@ -95,45 +124,205 @@ export default function ConsentPage() {
     }
 
     return (
-        <div className="max-w-3xl p-6">
-            <h3 className="text-xl font-semibold">Consent Manager</h3>
-            <p className="mt-2 text-sm text-slate-600">Issue a short-lived consent credential granting a recipient access to a record CID. The credential is signed by your connected wallet and uploaded to IPFS.</p>
-
-            <form onSubmit={onIssue} className="mt-4 space-y-4">
-                <div>
-                    <label className="block text-sm font-medium">Record CID</label>
-                    <input className="mt-1 block w-full rounded-md border px-3 py-2" value={recordCid} onChange={(e) => setRecordCid(e.target.value)} placeholder="Qm... or bafy..." />
+        <div className="container mx-auto py-8 px-4">
+            <div className="max-w-4xl mx-auto space-y-8">
+                {/* Header Section */}
+                <div className="text-center space-y-4">
+                    <div className="inline-block">
+                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                            <FileCheck className="h-8 w-8 text-primary" />
+                        </div>
+                    </div>
+                    <h1 className="text-4xl font-bold tracking-tight">Consent Manager</h1>
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                        Issue verifiable consent credentials granting recipients time-limited access to your health records
+                    </p>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium">Recipient pubkey (base58)</label>
-                    <input className="mt-1 block w-full rounded-md border px-3 py-2" value={recipientPk} onChange={(e) => setRecipientPk(e.target.value)} placeholder="Recipient base58 pubkey" />
+                {/* Info Cards */}
+                <div className="grid md:grid-cols-3 gap-4">
+                    <Card className="border-2">
+                        <CardHeader className="pb-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                                <Shield className="h-5 w-5 text-primary" />
+                            </div>
+                            <CardTitle className="text-base">Verifiable Credentials</CardTitle>
+                            <CardDescription className="text-xs">
+                                W3C-compliant consent credentials with cryptographic proofs
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+
+                    <Card className="border-2">
+                        <CardHeader className="pb-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                                <Clock className="h-5 w-5 text-primary" />
+                            </div>
+                            <CardTitle className="text-base">Time-Limited</CardTitle>
+                            <CardDescription className="text-xs">
+                                Set custom expiration periods for granular access control
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
+
+                    <Card className="border-2">
+                        <CardHeader className="pb-3">
+                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                                <Link2 className="h-5 w-5 text-primary" />
+                            </div>
+                            <CardTitle className="text-base">On-Chain Anchoring</CardTitle>
+                            <CardDescription className="text-xs">
+                                Optionally anchor consent proofs on Solana blockchain
+                            </CardDescription>
+                        </CardHeader>
+                    </Card>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium">Validity (days)</label>
-                    <input type="number" min={1} className="mt-1 block w-24 rounded-md border px-3 py-2" value={String(daysValid)} onChange={(e) => setDaysValid(Number(e.target.value))} />
-                </div>
+                {/* Main Form */}
+                <Card className="border-2 shadow-lg">
+                    <CardHeader>
+                        <CardTitle>Issue Consent Credential</CardTitle>
+                        <CardDescription>
+                            Grant a recipient access to a specific health record with time-limited permissions
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={onIssue} className="space-y-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="recordCid" className="text-base">Record CID</Label>
+                                <Input
+                                    id="recordCid"
+                                    value={recordCid}
+                                    onChange={(e) => setRecordCid(e.target.value)}
+                                    placeholder="Qm... or bafy..."
+                                    className="h-11"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    The IPFS Content Identifier of the health record to grant access to
+                                </p>
+                            </div>
 
-                <div className="flex items-center gap-3">
-                    <label className="inline-flex items-center gap-2">
-                        <input type="checkbox" checked={anchorOnChain} onChange={(e) => setAnchorOnChain(e.target.checked)} />
-                        <span className="text-sm">Anchor consent on-chain (Memo)</span>
-                    </label>
-                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="recipientPk" className="text-base">Recipient Public Key</Label>
+                                <Input
+                                    id="recipientPk"
+                                    value={recipientPk}
+                                    onChange={(e) => setRecipientPk(e.target.value)}
+                                    placeholder="Base58 encoded Solana public key"
+                                    className="h-11 font-mono text-sm"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    The Solana wallet address of the recipient who will receive access
+                                </p>
+                            </div>
 
-                <div>
-                    <button type="submit" disabled={busy} className="inline-flex items-center rounded bg-sky-600 px-4 py-2 text-white disabled:opacity-60">{busy ? 'Issuing…' : 'Issue Consent'}</button>
-                </div>
-            </form>
+                            <div className="space-y-2">
+                                <Label htmlFor="daysValid" className="text-base">Validity Period (Days)</Label>
+                                <Input
+                                    id="daysValid"
+                                    type="number"
+                                    min={1}
+                                    max={365}
+                                    value={String(daysValid)}
+                                    onChange={(e) => setDaysValid(Number(e.target.value))}
+                                    className="h-11 max-w-32"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    The credential will expire after this many days
+                                </p>
+                            </div>
 
-            {result && (
-                <div className="mt-6">
-                    {result.error && <div className="text-red-600">Error: {result.error}</div>}
-                    {result.cid && <div className="text-sm">Consent uploaded to IPFS CID: <a href={`https://ipfs.io/ipfs/${result.cid}`} target="_blank" rel="noreferrer" className="text-sky-600">{result.cid}</a></div>}
-                    {result.tx && <div className="text-sm">Anchored on-chain tx: <span className="font-mono">{result.tx}</span></div>}
-                </div>
-            )}
+                            <div className="flex items-center space-x-3 p-4 rounded-lg border bg-muted/30">
+                                <Checkbox
+                                    id="anchorOnChain"
+                                    checked={anchorOnChain}
+                                    onCheckedChange={(checked: boolean) => setAnchorOnChain(checked)}
+                                />
+                                <div className="flex-1">
+                                    <Label htmlFor="anchorOnChain" className="cursor-pointer font-medium">
+                                        Anchor consent on-chain
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Record the consent credential CID on Solana using the Memo program (requires transaction fee)
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={busy || !wallet.connected}
+                                className="w-full h-12 text-base"
+                                size="lg"
+                            >
+                                {busy ? 'Issuing Consent...' : wallet.connected ? 'Issue Consent Credential' : 'Connect Wallet First'}
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                {/* Result Display */}
+                {result && (
+                    <Card className={`border-2 ${result.error ? 'border-destructive' : 'border-green-500'}`}>
+                        <CardContent className="pt-6">
+                            {result.error ? (
+                                <div className="flex items-start gap-3">
+                                    <AlertCircle className="h-6 w-6 text-destructive shrink-0 mt-0.5" />
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-destructive mb-1">Error Issuing Consent</h3>
+                                        <p className="text-sm text-muted-foreground">{result.error}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <CheckCircle className="h-8 w-8 text-green-600" />
+                                        <div>
+                                            <h3 className="font-semibold text-green-900 dark:text-green-300 text-xl">
+                                                Consent Issued Successfully
+                                            </h3>
+                                            <p className="text-sm text-green-700 dark:text-green-400">
+                                                The verifiable credential has been created and stored on IPFS
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {result.cid && (
+                                        <div className="p-4 rounded-lg bg-muted/50 space-y-2">
+                                            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                Consent Credential CID
+                                            </Label>
+                                            <div className="flex items-center gap-2">
+                                                <code className="text-sm font-mono bg-background px-3 py-2 rounded border flex-1 break-all">
+                                                    {result.cid}
+                                                </code>
+                                            </div>
+                                            <a
+                                                href={`https://ipfs.io/ipfs/${result.cid}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                            >
+                                                View on IPFS <Link2 className="h-3 w-3" />
+                                            </a>
+                                        </div>
+                                    )}
+
+                                    {result.tx && (
+                                        <div className="p-4 rounded-lg bg-muted/50 space-y-2">
+                                            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                                On-Chain Transaction
+                                            </Label>
+                                            <code className="text-sm font-mono bg-background px-3 py-2 rounded border block break-all">
+                                                {result.tx}
+                                            </code>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </div>
     );
 }
