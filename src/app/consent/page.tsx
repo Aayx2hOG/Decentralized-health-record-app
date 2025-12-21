@@ -106,13 +106,40 @@ export default function ConsentPage() {
                     txSig = sigTx;
                 } catch (txError: any) {
                     console.warn('On-chain anchoring failed, but consent credential was created successfully:', txError);
-                    setResult({
-                        cid,
-                        error: `Consent created successfully but on-chain anchoring failed. This is okay - your consent is still valid. Error: ${txError.message || 'RPC connection failed. Make sure you have SOL in your wallet and are connected to a valid cluster (devnet/testnet/mainnet).'}`
-                    });
-                    setBusy(false);
-                    return;
                 }
+            }
+
+            try {
+                const storeRes = await fetch('/api/consent/store', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        consentCid: cid,
+                        recordCid,
+                        issuerPubkey: wallet.publicKey.toBase58(),
+                        recipientPubkey: recipientPk,
+                        expiresAt: expirationDate,
+                        anchoredTxId: txSig || null
+                    })
+                });
+
+                if (!storeRes.ok) {
+                    const errorData = await storeRes.json().catch(() => ({ error: 'Unknown error' }));
+                    console.warn('Failed to store consent in database:', errorData);
+                } else {
+                    console.log('Consent successfully stored in database');
+                }
+            } catch (storeError) {
+                console.warn('Failed to store consent in database:', storeError);
+            }
+
+            if (anchorOnChain && !txSig) {
+                setResult({
+                    cid,
+                    error: `Consent created successfully but on-chain anchoring failed. This is okay - your consent is still valid.`
+                });
+                setBusy(false);
+                return;
             }
 
             setResult({ cid, tx: txSig });

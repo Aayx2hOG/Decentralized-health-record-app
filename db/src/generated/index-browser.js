@@ -152,6 +152,17 @@ exports.Prisma.AdminScalarFieldEnum = {
   isActive: 'isActive'
 };
 
+exports.Prisma.ConsentCredentialScalarFieldEnum = {
+  id: 'id',
+  consentCid: 'consentCid',
+  recordCid: 'recordCid',
+  issuerPubkey: 'issuerPubkey',
+  recipientPubkey: 'recipientPubkey',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  anchoredTxId: 'anchoredTxId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -171,7 +182,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   RewrapKey: 'RewrapKey',
   AccessLog: 'AccessLog',
-  Admin: 'Admin'
+  Admin: 'Admin',
+  ConsentCredential: 'ConsentCredential'
 };
 
 /**

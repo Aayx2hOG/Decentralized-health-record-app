@@ -6,9 +6,10 @@ Decentralized health records management system built on Solana with end-to-end e
 
 - **End-to-End Encryption**: AES-256-GCM encryption, zero-knowledge architecture
 - **Consent Management**: W3C Verifiable Credentials with time-limited, revocable access
+- **Consent Tracking**: Database-backed tracking of issued and received consents
 - **Blockchain Integration**: Solana wallet signatures and optional on-chain anchoring
 - **Decentralized Storage**: IPFS for immutable, content-addressed storage
-- **Admin Dashboard**: Real-time analytics, access logs, and key management
+- **Personal Dashboard**: Real-time analytics, access logs, and key management
 
 ## Tech Stack
 
@@ -45,7 +46,6 @@ docker run -d \
 # Configure environment
 cat > .env << 'EOF'
 DATABASE_URL="postgresql://postgres:mysupersecretpassword@localhost:5432/health_dapp"
-ADMIN_PUBKEYS="YOUR_SOLANA_WALLET_PUBLIC_KEY"
 RUN_IPFS_INTEGRATION=0
 IPFS_API_URL=http://127.0.0.1:5001
 EOF
@@ -80,16 +80,24 @@ Access at `http://localhost:3000`
 1. Navigate to `/consent` and connect wallet
 2. Enter record CID, recipient public key, and validity period
 3. Click "Issue Consent Credential"
-4. Share the generated consent CID with recipient
+4. Consent is automatically saved to database and IPFS - share consent CID with recipient
+
+### View My Consents
+1. Navigate to `/my-consents` and connect wallet
+2. View two sections:
+   - **Consents You've Issued**: Track all consents you've granted, including recipient and expiration
+   - **Consents You've Received**: View all consents others have shared with you
+3. Copy consent CIDs, check expiration status, or click "Use" to decrypt records directly
+4. Lost consent CIDs can always be retrieved here
 
 ### Decrypt Record
 1. Navigate to `/verify` and upload `.signed.json`
-2. Enter consent CID (if applicable)
+2. Enter consent CID (required - obtain from record creator or `/my-consents` page)
 3. Connect wallet and click "Decrypt with Wallet"
 
-### Admin Dashboard
-1. Navigate to `/admin` and connect admin wallet
-2. View analytics, access logs, and manage keys
+### View Your Dashboard
+1. Navigate to `/admin` and connect your wallet
+2. View your created records, accessible records, analytics, and access logs
 
 ## Security
 
@@ -116,8 +124,7 @@ cd db && bunx prisma generate
 
 **Database Issues**: `docker restart health-dapp-postgres`  
 **IPFS Issues**: Falls back to public gateways automatically  
-**Wallet Issues**: Check network settings and clear browser cache  
-**Admin Access**: Verify wallet public key in `ADMIN_PUBKEYS` env variable
+**Wallet Issues**: Check network settings and clear browser cache
 
 ## License
 

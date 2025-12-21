@@ -14,6 +14,7 @@ const links: { label: string; path: string }[] = [
   { label: 'Create Record', path: '/create' },
   { label: 'Verify Record', path: '/verify' },
   { label: 'Consent', path: '/consent' },
+  { label: 'My Consents', path: '/my-consents' },
   { label: 'Admin', path: '/admin' },
 ]
 

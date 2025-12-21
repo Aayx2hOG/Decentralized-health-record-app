@@ -84,6 +84,9 @@ export default function VerifyPage() {
                 throw new Error('Your wallet does not support message signing. Please use a compatible wallet like Phantom or Solflare.');
             }
             if (!jsonFile?.cid) throw new Error('Load a signed record JSON first');
+            if (!consentCid || consentCid.trim() === '') {
+                throw new Error('Consent credential CID is required. Please enter the consent CID provided by the record creator.');
+            }
 
             const recipientPub = wallet.publicKey.toBase58();
 
@@ -126,7 +129,7 @@ export default function VerifyPage() {
                         ephemeralPub: ephemeralPubB58,
                         signedRequest: sigB64,
                         timestamp,
-                        consentCid: consentCid || undefined
+                        consentCid: consentCid
                     })
                 });
             } catch (fetchError: any) {
@@ -359,20 +362,21 @@ export default function VerifyPage() {
                                 {/* Consent Credential Input */}
                                 <div className="space-y-2">
                                     <Label htmlFor="consentCid" className="text-sm font-medium">
-                                        Consent Credential CID
+                                        Consent Credential CID <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="consentCid"
                                         type="text"
                                         value={consentCid}
                                         onChange={(e) => handleConsentCidChange(e.target.value)}
-                                        placeholder="Enter consent credential CID if you have one..."
+                                        placeholder="Enter consent credential CID (required)..."
                                         className="font-mono"
+                                        required
                                     />
                                     <p className="text-xs text-muted-foreground">
                                         {consentCid
-                                            ? '✓ Consent CID saved. It will be automatically used for decryption.'
-                                            : 'If you have a consent credential CID from the record creator, enter it here to access the record'
+                                            ? '✓ Consent CID saved and will be used for decryption.'
+                                            : '⚠️ Required: You must obtain the consent credential CID from the record creator to decrypt this record'
                                         }
                                     </p>
                                 </div>

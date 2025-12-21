@@ -28,6 +28,11 @@ export type AccessLog = $Result.DefaultSelection<Prisma.$AccessLogPayload>
  * 
  */
 export type Admin = $Result.DefaultSelection<Prisma.$AdminPayload>
+/**
+ * Model ConsentCredential
+ * 
+ */
+export type ConsentCredential = $Result.DefaultSelection<Prisma.$ConsentCredentialPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -175,6 +180,16 @@ export class PrismaClient<
     * ```
     */
   get admin(): Prisma.AdminDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.consentCredential`: Exposes CRUD operations for the **ConsentCredential** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ConsentCredentials
+    * const consentCredentials = await prisma.consentCredential.findMany()
+    * ```
+    */
+  get consentCredential(): Prisma.ConsentCredentialDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -611,7 +626,8 @@ export namespace Prisma {
   export const ModelName: {
     RewrapKey: 'RewrapKey',
     AccessLog: 'AccessLog',
-    Admin: 'Admin'
+    Admin: 'Admin',
+    ConsentCredential: 'ConsentCredential'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -627,7 +643,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rewrapKey" | "accessLog" | "admin"
+      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -853,6 +869,80 @@ export namespace Prisma {
           }
         }
       }
+      ConsentCredential: {
+        payload: Prisma.$ConsentCredentialPayload<ExtArgs>
+        fields: Prisma.ConsentCredentialFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConsentCredentialFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConsentCredentialFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          findFirst: {
+            args: Prisma.ConsentCredentialFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConsentCredentialFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          findMany: {
+            args: Prisma.ConsentCredentialFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>[]
+          }
+          create: {
+            args: Prisma.ConsentCredentialCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          createMany: {
+            args: Prisma.ConsentCredentialCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConsentCredentialCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>[]
+          }
+          delete: {
+            args: Prisma.ConsentCredentialDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          update: {
+            args: Prisma.ConsentCredentialUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          deleteMany: {
+            args: Prisma.ConsentCredentialDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConsentCredentialUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConsentCredentialUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>[]
+          }
+          upsert: {
+            args: Prisma.ConsentCredentialUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConsentCredentialPayload>
+          }
+          aggregate: {
+            args: Prisma.ConsentCredentialAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConsentCredential>
+          }
+          groupBy: {
+            args: Prisma.ConsentCredentialGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConsentCredentialGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConsentCredentialCountArgs<ExtArgs>
+            result: $Utils.Optional<ConsentCredentialCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -964,6 +1054,7 @@ export namespace Prisma {
     rewrapKey?: RewrapKeyOmit
     accessLog?: AccessLogOmit
     admin?: AdminOmit
+    consentCredential?: ConsentCredentialOmit
   }
 
   /* Types for Logging */
@@ -4431,6 +4522,1074 @@ export namespace Prisma {
 
 
   /**
+   * Model ConsentCredential
+   */
+
+  export type AggregateConsentCredential = {
+    _count: ConsentCredentialCountAggregateOutputType | null
+    _avg: ConsentCredentialAvgAggregateOutputType | null
+    _sum: ConsentCredentialSumAggregateOutputType | null
+    _min: ConsentCredentialMinAggregateOutputType | null
+    _max: ConsentCredentialMaxAggregateOutputType | null
+  }
+
+  export type ConsentCredentialAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type ConsentCredentialSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type ConsentCredentialMinAggregateOutputType = {
+    id: number | null
+    consentCid: string | null
+    recordCid: string | null
+    issuerPubkey: string | null
+    recipientPubkey: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    anchoredTxId: string | null
+  }
+
+  export type ConsentCredentialMaxAggregateOutputType = {
+    id: number | null
+    consentCid: string | null
+    recordCid: string | null
+    issuerPubkey: string | null
+    recipientPubkey: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    anchoredTxId: string | null
+  }
+
+  export type ConsentCredentialCountAggregateOutputType = {
+    id: number
+    consentCid: number
+    recordCid: number
+    issuerPubkey: number
+    recipientPubkey: number
+    expiresAt: number
+    createdAt: number
+    anchoredTxId: number
+    _all: number
+  }
+
+
+  export type ConsentCredentialAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type ConsentCredentialSumAggregateInputType = {
+    id?: true
+  }
+
+  export type ConsentCredentialMinAggregateInputType = {
+    id?: true
+    consentCid?: true
+    recordCid?: true
+    issuerPubkey?: true
+    recipientPubkey?: true
+    expiresAt?: true
+    createdAt?: true
+    anchoredTxId?: true
+  }
+
+  export type ConsentCredentialMaxAggregateInputType = {
+    id?: true
+    consentCid?: true
+    recordCid?: true
+    issuerPubkey?: true
+    recipientPubkey?: true
+    expiresAt?: true
+    createdAt?: true
+    anchoredTxId?: true
+  }
+
+  export type ConsentCredentialCountAggregateInputType = {
+    id?: true
+    consentCid?: true
+    recordCid?: true
+    issuerPubkey?: true
+    recipientPubkey?: true
+    expiresAt?: true
+    createdAt?: true
+    anchoredTxId?: true
+    _all?: true
+  }
+
+  export type ConsentCredentialAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConsentCredential to aggregate.
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConsentCredentials to fetch.
+     */
+    orderBy?: ConsentCredentialOrderByWithRelationInput | ConsentCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConsentCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConsentCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConsentCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ConsentCredentials
+    **/
+    _count?: true | ConsentCredentialCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ConsentCredentialAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ConsentCredentialSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConsentCredentialMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConsentCredentialMaxAggregateInputType
+  }
+
+  export type GetConsentCredentialAggregateType<T extends ConsentCredentialAggregateArgs> = {
+        [P in keyof T & keyof AggregateConsentCredential]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConsentCredential[P]>
+      : GetScalarType<T[P], AggregateConsentCredential[P]>
+  }
+
+
+
+
+  export type ConsentCredentialGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConsentCredentialWhereInput
+    orderBy?: ConsentCredentialOrderByWithAggregationInput | ConsentCredentialOrderByWithAggregationInput[]
+    by: ConsentCredentialScalarFieldEnum[] | ConsentCredentialScalarFieldEnum
+    having?: ConsentCredentialScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConsentCredentialCountAggregateInputType | true
+    _avg?: ConsentCredentialAvgAggregateInputType
+    _sum?: ConsentCredentialSumAggregateInputType
+    _min?: ConsentCredentialMinAggregateInputType
+    _max?: ConsentCredentialMaxAggregateInputType
+  }
+
+  export type ConsentCredentialGroupByOutputType = {
+    id: number
+    consentCid: string
+    recordCid: string
+    issuerPubkey: string
+    recipientPubkey: string
+    expiresAt: Date | null
+    createdAt: Date
+    anchoredTxId: string | null
+    _count: ConsentCredentialCountAggregateOutputType | null
+    _avg: ConsentCredentialAvgAggregateOutputType | null
+    _sum: ConsentCredentialSumAggregateOutputType | null
+    _min: ConsentCredentialMinAggregateOutputType | null
+    _max: ConsentCredentialMaxAggregateOutputType | null
+  }
+
+  type GetConsentCredentialGroupByPayload<T extends ConsentCredentialGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConsentCredentialGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConsentCredentialGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConsentCredentialGroupByOutputType[P]>
+            : GetScalarType<T[P], ConsentCredentialGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConsentCredentialSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    consentCid?: boolean
+    recordCid?: boolean
+    issuerPubkey?: boolean
+    recipientPubkey?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    anchoredTxId?: boolean
+  }, ExtArgs["result"]["consentCredential"]>
+
+  export type ConsentCredentialSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    consentCid?: boolean
+    recordCid?: boolean
+    issuerPubkey?: boolean
+    recipientPubkey?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    anchoredTxId?: boolean
+  }, ExtArgs["result"]["consentCredential"]>
+
+  export type ConsentCredentialSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    consentCid?: boolean
+    recordCid?: boolean
+    issuerPubkey?: boolean
+    recipientPubkey?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    anchoredTxId?: boolean
+  }, ExtArgs["result"]["consentCredential"]>
+
+  export type ConsentCredentialSelectScalar = {
+    id?: boolean
+    consentCid?: boolean
+    recordCid?: boolean
+    issuerPubkey?: boolean
+    recipientPubkey?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    anchoredTxId?: boolean
+  }
+
+  export type ConsentCredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "consentCid" | "recordCid" | "issuerPubkey" | "recipientPubkey" | "expiresAt" | "createdAt" | "anchoredTxId", ExtArgs["result"]["consentCredential"]>
+
+  export type $ConsentCredentialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ConsentCredential"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      consentCid: string
+      recordCid: string
+      issuerPubkey: string
+      recipientPubkey: string
+      expiresAt: Date | null
+      createdAt: Date
+      anchoredTxId: string | null
+    }, ExtArgs["result"]["consentCredential"]>
+    composites: {}
+  }
+
+  type ConsentCredentialGetPayload<S extends boolean | null | undefined | ConsentCredentialDefaultArgs> = $Result.GetResult<Prisma.$ConsentCredentialPayload, S>
+
+  type ConsentCredentialCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConsentCredentialFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConsentCredentialCountAggregateInputType | true
+    }
+
+  export interface ConsentCredentialDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ConsentCredential'], meta: { name: 'ConsentCredential' } }
+    /**
+     * Find zero or one ConsentCredential that matches the filter.
+     * @param {ConsentCredentialFindUniqueArgs} args - Arguments to find a ConsentCredential
+     * @example
+     * // Get one ConsentCredential
+     * const consentCredential = await prisma.consentCredential.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConsentCredentialFindUniqueArgs>(args: SelectSubset<T, ConsentCredentialFindUniqueArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ConsentCredential that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConsentCredentialFindUniqueOrThrowArgs} args - Arguments to find a ConsentCredential
+     * @example
+     * // Get one ConsentCredential
+     * const consentCredential = await prisma.consentCredential.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConsentCredentialFindUniqueOrThrowArgs>(args: SelectSubset<T, ConsentCredentialFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConsentCredential that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialFindFirstArgs} args - Arguments to find a ConsentCredential
+     * @example
+     * // Get one ConsentCredential
+     * const consentCredential = await prisma.consentCredential.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConsentCredentialFindFirstArgs>(args?: SelectSubset<T, ConsentCredentialFindFirstArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConsentCredential that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialFindFirstOrThrowArgs} args - Arguments to find a ConsentCredential
+     * @example
+     * // Get one ConsentCredential
+     * const consentCredential = await prisma.consentCredential.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConsentCredentialFindFirstOrThrowArgs>(args?: SelectSubset<T, ConsentCredentialFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ConsentCredentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConsentCredentials
+     * const consentCredentials = await prisma.consentCredential.findMany()
+     * 
+     * // Get first 10 ConsentCredentials
+     * const consentCredentials = await prisma.consentCredential.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const consentCredentialWithIdOnly = await prisma.consentCredential.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConsentCredentialFindManyArgs>(args?: SelectSubset<T, ConsentCredentialFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ConsentCredential.
+     * @param {ConsentCredentialCreateArgs} args - Arguments to create a ConsentCredential.
+     * @example
+     * // Create one ConsentCredential
+     * const ConsentCredential = await prisma.consentCredential.create({
+     *   data: {
+     *     // ... data to create a ConsentCredential
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConsentCredentialCreateArgs>(args: SelectSubset<T, ConsentCredentialCreateArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ConsentCredentials.
+     * @param {ConsentCredentialCreateManyArgs} args - Arguments to create many ConsentCredentials.
+     * @example
+     * // Create many ConsentCredentials
+     * const consentCredential = await prisma.consentCredential.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConsentCredentialCreateManyArgs>(args?: SelectSubset<T, ConsentCredentialCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ConsentCredentials and returns the data saved in the database.
+     * @param {ConsentCredentialCreateManyAndReturnArgs} args - Arguments to create many ConsentCredentials.
+     * @example
+     * // Create many ConsentCredentials
+     * const consentCredential = await prisma.consentCredential.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ConsentCredentials and only return the `id`
+     * const consentCredentialWithIdOnly = await prisma.consentCredential.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConsentCredentialCreateManyAndReturnArgs>(args?: SelectSubset<T, ConsentCredentialCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ConsentCredential.
+     * @param {ConsentCredentialDeleteArgs} args - Arguments to delete one ConsentCredential.
+     * @example
+     * // Delete one ConsentCredential
+     * const ConsentCredential = await prisma.consentCredential.delete({
+     *   where: {
+     *     // ... filter to delete one ConsentCredential
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConsentCredentialDeleteArgs>(args: SelectSubset<T, ConsentCredentialDeleteArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ConsentCredential.
+     * @param {ConsentCredentialUpdateArgs} args - Arguments to update one ConsentCredential.
+     * @example
+     * // Update one ConsentCredential
+     * const consentCredential = await prisma.consentCredential.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConsentCredentialUpdateArgs>(args: SelectSubset<T, ConsentCredentialUpdateArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ConsentCredentials.
+     * @param {ConsentCredentialDeleteManyArgs} args - Arguments to filter ConsentCredentials to delete.
+     * @example
+     * // Delete a few ConsentCredentials
+     * const { count } = await prisma.consentCredential.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConsentCredentialDeleteManyArgs>(args?: SelectSubset<T, ConsentCredentialDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConsentCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConsentCredentials
+     * const consentCredential = await prisma.consentCredential.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConsentCredentialUpdateManyArgs>(args: SelectSubset<T, ConsentCredentialUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConsentCredentials and returns the data updated in the database.
+     * @param {ConsentCredentialUpdateManyAndReturnArgs} args - Arguments to update many ConsentCredentials.
+     * @example
+     * // Update many ConsentCredentials
+     * const consentCredential = await prisma.consentCredential.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ConsentCredentials and only return the `id`
+     * const consentCredentialWithIdOnly = await prisma.consentCredential.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConsentCredentialUpdateManyAndReturnArgs>(args: SelectSubset<T, ConsentCredentialUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ConsentCredential.
+     * @param {ConsentCredentialUpsertArgs} args - Arguments to update or create a ConsentCredential.
+     * @example
+     * // Update or create a ConsentCredential
+     * const consentCredential = await prisma.consentCredential.upsert({
+     *   create: {
+     *     // ... data to create a ConsentCredential
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConsentCredential we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConsentCredentialUpsertArgs>(args: SelectSubset<T, ConsentCredentialUpsertArgs<ExtArgs>>): Prisma__ConsentCredentialClient<$Result.GetResult<Prisma.$ConsentCredentialPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ConsentCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialCountArgs} args - Arguments to filter ConsentCredentials to count.
+     * @example
+     * // Count the number of ConsentCredentials
+     * const count = await prisma.consentCredential.count({
+     *   where: {
+     *     // ... the filter for the ConsentCredentials we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConsentCredentialCountArgs>(
+      args?: Subset<T, ConsentCredentialCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConsentCredentialCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ConsentCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConsentCredentialAggregateArgs>(args: Subset<T, ConsentCredentialAggregateArgs>): Prisma.PrismaPromise<GetConsentCredentialAggregateType<T>>
+
+    /**
+     * Group by ConsentCredential.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConsentCredentialGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConsentCredentialGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConsentCredentialGroupByArgs['orderBy'] }
+        : { orderBy?: ConsentCredentialGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConsentCredentialGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConsentCredentialGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ConsentCredential model
+   */
+  readonly fields: ConsentCredentialFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConsentCredential.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConsentCredentialClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ConsentCredential model
+   */
+  interface ConsentCredentialFieldRefs {
+    readonly id: FieldRef<"ConsentCredential", 'Int'>
+    readonly consentCid: FieldRef<"ConsentCredential", 'String'>
+    readonly recordCid: FieldRef<"ConsentCredential", 'String'>
+    readonly issuerPubkey: FieldRef<"ConsentCredential", 'String'>
+    readonly recipientPubkey: FieldRef<"ConsentCredential", 'String'>
+    readonly expiresAt: FieldRef<"ConsentCredential", 'DateTime'>
+    readonly createdAt: FieldRef<"ConsentCredential", 'DateTime'>
+    readonly anchoredTxId: FieldRef<"ConsentCredential", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ConsentCredential findUnique
+   */
+  export type ConsentCredentialFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which ConsentCredential to fetch.
+     */
+    where: ConsentCredentialWhereUniqueInput
+  }
+
+  /**
+   * ConsentCredential findUniqueOrThrow
+   */
+  export type ConsentCredentialFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which ConsentCredential to fetch.
+     */
+    where: ConsentCredentialWhereUniqueInput
+  }
+
+  /**
+   * ConsentCredential findFirst
+   */
+  export type ConsentCredentialFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which ConsentCredential to fetch.
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConsentCredentials to fetch.
+     */
+    orderBy?: ConsentCredentialOrderByWithRelationInput | ConsentCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConsentCredentials.
+     */
+    cursor?: ConsentCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConsentCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConsentCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConsentCredentials.
+     */
+    distinct?: ConsentCredentialScalarFieldEnum | ConsentCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * ConsentCredential findFirstOrThrow
+   */
+  export type ConsentCredentialFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which ConsentCredential to fetch.
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConsentCredentials to fetch.
+     */
+    orderBy?: ConsentCredentialOrderByWithRelationInput | ConsentCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConsentCredentials.
+     */
+    cursor?: ConsentCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConsentCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConsentCredentials.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConsentCredentials.
+     */
+    distinct?: ConsentCredentialScalarFieldEnum | ConsentCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * ConsentCredential findMany
+   */
+  export type ConsentCredentialFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter, which ConsentCredentials to fetch.
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConsentCredentials to fetch.
+     */
+    orderBy?: ConsentCredentialOrderByWithRelationInput | ConsentCredentialOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ConsentCredentials.
+     */
+    cursor?: ConsentCredentialWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConsentCredentials from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConsentCredentials.
+     */
+    skip?: number
+    distinct?: ConsentCredentialScalarFieldEnum | ConsentCredentialScalarFieldEnum[]
+  }
+
+  /**
+   * ConsentCredential create
+   */
+  export type ConsentCredentialCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ConsentCredential.
+     */
+    data: XOR<ConsentCredentialCreateInput, ConsentCredentialUncheckedCreateInput>
+  }
+
+  /**
+   * ConsentCredential createMany
+   */
+  export type ConsentCredentialCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ConsentCredentials.
+     */
+    data: ConsentCredentialCreateManyInput | ConsentCredentialCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConsentCredential createManyAndReturn
+   */
+  export type ConsentCredentialCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * The data used to create many ConsentCredentials.
+     */
+    data: ConsentCredentialCreateManyInput | ConsentCredentialCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConsentCredential update
+   */
+  export type ConsentCredentialUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ConsentCredential.
+     */
+    data: XOR<ConsentCredentialUpdateInput, ConsentCredentialUncheckedUpdateInput>
+    /**
+     * Choose, which ConsentCredential to update.
+     */
+    where: ConsentCredentialWhereUniqueInput
+  }
+
+  /**
+   * ConsentCredential updateMany
+   */
+  export type ConsentCredentialUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ConsentCredentials.
+     */
+    data: XOR<ConsentCredentialUpdateManyMutationInput, ConsentCredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which ConsentCredentials to update
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * Limit how many ConsentCredentials to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConsentCredential updateManyAndReturn
+   */
+  export type ConsentCredentialUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * The data used to update ConsentCredentials.
+     */
+    data: XOR<ConsentCredentialUpdateManyMutationInput, ConsentCredentialUncheckedUpdateManyInput>
+    /**
+     * Filter which ConsentCredentials to update
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * Limit how many ConsentCredentials to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConsentCredential upsert
+   */
+  export type ConsentCredentialUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ConsentCredential to update in case it exists.
+     */
+    where: ConsentCredentialWhereUniqueInput
+    /**
+     * In case the ConsentCredential found by the `where` argument doesn't exist, create a new ConsentCredential with this data.
+     */
+    create: XOR<ConsentCredentialCreateInput, ConsentCredentialUncheckedCreateInput>
+    /**
+     * In case the ConsentCredential was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConsentCredentialUpdateInput, ConsentCredentialUncheckedUpdateInput>
+  }
+
+  /**
+   * ConsentCredential delete
+   */
+  export type ConsentCredentialDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+    /**
+     * Filter which ConsentCredential to delete.
+     */
+    where: ConsentCredentialWhereUniqueInput
+  }
+
+  /**
+   * ConsentCredential deleteMany
+   */
+  export type ConsentCredentialDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConsentCredentials to delete
+     */
+    where?: ConsentCredentialWhereInput
+    /**
+     * Limit how many ConsentCredentials to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConsentCredential without action
+   */
+  export type ConsentCredentialDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConsentCredential
+     */
+    select?: ConsentCredentialSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConsentCredential
+     */
+    omit?: ConsentCredentialOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4483,6 +5642,20 @@ export namespace Prisma {
   };
 
   export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof AdminScalarFieldEnum]
+
+
+  export const ConsentCredentialScalarFieldEnum: {
+    id: 'id',
+    consentCid: 'consentCid',
+    recordCid: 'recordCid',
+    issuerPubkey: 'issuerPubkey',
+    recipientPubkey: 'recipientPubkey',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    anchoredTxId: 'anchoredTxId'
+  };
+
+  export type ConsentCredentialScalarFieldEnum = (typeof ConsentCredentialScalarFieldEnum)[keyof typeof ConsentCredentialScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4789,6 +5962,75 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"Admin"> | boolean
   }
 
+  export type ConsentCredentialWhereInput = {
+    AND?: ConsentCredentialWhereInput | ConsentCredentialWhereInput[]
+    OR?: ConsentCredentialWhereInput[]
+    NOT?: ConsentCredentialWhereInput | ConsentCredentialWhereInput[]
+    id?: IntFilter<"ConsentCredential"> | number
+    consentCid?: StringFilter<"ConsentCredential"> | string
+    recordCid?: StringFilter<"ConsentCredential"> | string
+    issuerPubkey?: StringFilter<"ConsentCredential"> | string
+    recipientPubkey?: StringFilter<"ConsentCredential"> | string
+    expiresAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
+    createdAt?: DateTimeFilter<"ConsentCredential"> | Date | string
+    anchoredTxId?: StringNullableFilter<"ConsentCredential"> | string | null
+  }
+
+  export type ConsentCredentialOrderByWithRelationInput = {
+    id?: SortOrder
+    consentCid?: SortOrder
+    recordCid?: SortOrder
+    issuerPubkey?: SortOrder
+    recipientPubkey?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    anchoredTxId?: SortOrderInput | SortOrder
+  }
+
+  export type ConsentCredentialWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    consentCid?: string
+    AND?: ConsentCredentialWhereInput | ConsentCredentialWhereInput[]
+    OR?: ConsentCredentialWhereInput[]
+    NOT?: ConsentCredentialWhereInput | ConsentCredentialWhereInput[]
+    recordCid?: StringFilter<"ConsentCredential"> | string
+    issuerPubkey?: StringFilter<"ConsentCredential"> | string
+    recipientPubkey?: StringFilter<"ConsentCredential"> | string
+    expiresAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
+    createdAt?: DateTimeFilter<"ConsentCredential"> | Date | string
+    anchoredTxId?: StringNullableFilter<"ConsentCredential"> | string | null
+  }, "id" | "consentCid">
+
+  export type ConsentCredentialOrderByWithAggregationInput = {
+    id?: SortOrder
+    consentCid?: SortOrder
+    recordCid?: SortOrder
+    issuerPubkey?: SortOrder
+    recipientPubkey?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    anchoredTxId?: SortOrderInput | SortOrder
+    _count?: ConsentCredentialCountOrderByAggregateInput
+    _avg?: ConsentCredentialAvgOrderByAggregateInput
+    _max?: ConsentCredentialMaxOrderByAggregateInput
+    _min?: ConsentCredentialMinOrderByAggregateInput
+    _sum?: ConsentCredentialSumOrderByAggregateInput
+  }
+
+  export type ConsentCredentialScalarWhereWithAggregatesInput = {
+    AND?: ConsentCredentialScalarWhereWithAggregatesInput | ConsentCredentialScalarWhereWithAggregatesInput[]
+    OR?: ConsentCredentialScalarWhereWithAggregatesInput[]
+    NOT?: ConsentCredentialScalarWhereWithAggregatesInput | ConsentCredentialScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ConsentCredential"> | number
+    consentCid?: StringWithAggregatesFilter<"ConsentCredential"> | string
+    recordCid?: StringWithAggregatesFilter<"ConsentCredential"> | string
+    issuerPubkey?: StringWithAggregatesFilter<"ConsentCredential"> | string
+    recipientPubkey?: StringWithAggregatesFilter<"ConsentCredential"> | string
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"ConsentCredential"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ConsentCredential"> | Date | string
+    anchoredTxId?: StringNullableWithAggregatesFilter<"ConsentCredential"> | string | null
+  }
+
   export type RewrapKeyCreateInput = {
     recordCid: string
     recipientPubkey: string
@@ -5005,6 +6247,80 @@ export namespace Prisma {
     addedBy?: NullableStringFieldUpdateOperationsInput | string | null
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ConsentCredentialCreateInput = {
+    consentCid: string
+    recordCid: string
+    issuerPubkey: string
+    recipientPubkey: string
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    anchoredTxId?: string | null
+  }
+
+  export type ConsentCredentialUncheckedCreateInput = {
+    id?: number
+    consentCid: string
+    recordCid: string
+    issuerPubkey: string
+    recipientPubkey: string
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    anchoredTxId?: string | null
+  }
+
+  export type ConsentCredentialUpdateInput = {
+    consentCid?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    issuerPubkey?: StringFieldUpdateOperationsInput | string
+    recipientPubkey?: StringFieldUpdateOperationsInput | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ConsentCredentialUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    consentCid?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    issuerPubkey?: StringFieldUpdateOperationsInput | string
+    recipientPubkey?: StringFieldUpdateOperationsInput | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ConsentCredentialCreateManyInput = {
+    id?: number
+    consentCid: string
+    recordCid: string
+    issuerPubkey: string
+    recipientPubkey: string
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    anchoredTxId?: string | null
+  }
+
+  export type ConsentCredentialUpdateManyMutationInput = {
+    consentCid?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    issuerPubkey?: StringFieldUpdateOperationsInput | string
+    recipientPubkey?: StringFieldUpdateOperationsInput | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ConsentCredentialUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    consentCid?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    issuerPubkey?: StringFieldUpdateOperationsInput | string
+    recipientPubkey?: StringFieldUpdateOperationsInput | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -5336,6 +6652,47 @@ export namespace Prisma {
   }
 
   export type AdminSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ConsentCredentialCountOrderByAggregateInput = {
+    id?: SortOrder
+    consentCid?: SortOrder
+    recordCid?: SortOrder
+    issuerPubkey?: SortOrder
+    recipientPubkey?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    anchoredTxId?: SortOrder
+  }
+
+  export type ConsentCredentialAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ConsentCredentialMaxOrderByAggregateInput = {
+    id?: SortOrder
+    consentCid?: SortOrder
+    recordCid?: SortOrder
+    issuerPubkey?: SortOrder
+    recipientPubkey?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    anchoredTxId?: SortOrder
+  }
+
+  export type ConsentCredentialMinOrderByAggregateInput = {
+    id?: SortOrder
+    consentCid?: SortOrder
+    recordCid?: SortOrder
+    issuerPubkey?: SortOrder
+    recipientPubkey?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    anchoredTxId?: SortOrder
+  }
+
+  export type ConsentCredentialSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

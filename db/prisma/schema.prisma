@@ -52,4 +52,21 @@ model Admin {
   isActive Boolean  @default(true)
 
   @@index([pubkey])
+  @@map("admins")
+}
+
+model ConsentCredential {
+  id              Int       @id @default(autoincrement())
+  consentCid      String    @unique
+  recordCid       String
+  issuerPubkey    String
+  recipientPubkey String
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  anchoredTxId    String?
+
+  @@index([issuerPubkey], name: "idx_issuer")
+  @@index([recipientPubkey], name: "idx_recipient")
+  @@index([recordCid], name: "idx_consent_record")
+  @@map("consent_credentials")
 }
