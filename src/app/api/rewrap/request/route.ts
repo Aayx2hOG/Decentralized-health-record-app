@@ -221,23 +221,28 @@ export async function POST(req: NextRequest) {
 
       const allKeysForRecord = await prismaClient.rewrapKey.findMany({
         where: { recordCid },
-        select: { recipientPubkey: true }
+        select: { recipientPubkey: true, creatorPubkey: true }
       });
       console.log('[Rewrap] Available recipients for this CID:', allKeysForRecord);
+
+      const isCreator = allKeysForRecord.some(k => k.creatorPubkey === recipientPub);
+      const errorMessage = isCreator
+        ? "You are the record creator but don't have access stored. Please add yourself as a recipient."
+        : "No access permission found. Please obtain a consent credential CID from the record creator.";
 
       await prismaClient.accessLog.create({
         data: {
           recordCid,
           recipientPubkey: recipientPub,
           success: false,
-          errorMessage: "No rewrap key found for recipient",
+          errorMessage,
           ipAddress,
           userAgent
         },
       }).catch(e => console.error('Failed to log missing rewrap key', e));
 
       return NextResponse.json({
-        error: 'Record not found or you are not recipient. If you have a consent credential, please provide its CID.'
+        error: errorMessage
       }, { status: 404 });
     }
 

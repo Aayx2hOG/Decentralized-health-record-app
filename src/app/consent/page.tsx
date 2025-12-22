@@ -214,6 +214,12 @@ export default function ConsentPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
+                        <div className="mb-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                            <p className="text-sm text-blue-900 dark:text-blue-300">
+                                <strong>Note:</strong> Consent credentials are only required for recipients who need access to records.
+                                As the record creator, you can decrypt your own records without a consent credential.
+                            </p>
+                        </div>
                         <form onSubmit={onIssue} className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="recordCid" className="text-base">Record CID</Label>

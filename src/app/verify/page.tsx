@@ -84,9 +84,6 @@ export default function VerifyPage() {
                 throw new Error('Your wallet does not support message signing. Please use a compatible wallet like Phantom or Solflare.');
             }
             if (!jsonFile?.cid) throw new Error('Load a signed record JSON first');
-            if (!consentCid || consentCid.trim() === '') {
-                throw new Error('Consent credential CID is required. Please enter the consent CID provided by the record creator.');
-            }
 
             const recipientPub = wallet.publicKey.toBase58();
 
@@ -362,21 +359,20 @@ export default function VerifyPage() {
                                 {/* Consent Credential Input */}
                                 <div className="space-y-2">
                                     <Label htmlFor="consentCid" className="text-sm font-medium">
-                                        Consent Credential CID <span className="text-destructive">*</span>
+                                        Consent Credential CID <span className="text-muted-foreground">(only if you're a recipient)</span>
                                     </Label>
                                     <Input
                                         id="consentCid"
                                         type="text"
                                         value={consentCid}
                                         onChange={(e) => handleConsentCidChange(e.target.value)}
-                                        placeholder="Enter consent credential CID (required)..."
+                                        placeholder="Enter consent credential CID..."
                                         className="font-mono"
-                                        required
                                     />
                                     <p className="text-xs text-muted-foreground">
                                         {consentCid
                                             ? '✓ Consent CID saved and will be used for decryption.'
-                                            : '⚠️ Required: You must obtain the consent credential CID from the record creator to decrypt this record'
+                                            : '💡 Only required for recipients without direct access. Record creators can decrypt without consent CID.'
                                         }
                                     </p>
                                 </div>
