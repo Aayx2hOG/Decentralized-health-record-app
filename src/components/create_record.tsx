@@ -253,7 +253,6 @@ export default function CreateRecord() {
                 throw new Error(e.error || 'Failed to store rewrap keys.');
             }
             const result = await res.json();
-            console.log('Rewrap API response: ', result);
             return result;
         } catch (e) {
             console.error('Failed to upload rewrap API: ', e);
@@ -348,8 +347,6 @@ export default function CreateRecord() {
                 setBusy(false);
                 return;
             }
-
-            console.log('Adding new recipients:', uniqueNewRecipients);
 
             const symU8 = fromBase64(loadedRecordSymKey);
             const newResults: Array<{ recipient: string; packedB64?: string; packedCid?: string }> = [];

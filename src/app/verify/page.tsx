@@ -110,11 +110,6 @@ export default function VerifyPage() {
                 ? Buffer.from(sig).toString('base64')
                 : btoa(String.fromCharCode(...sig));
 
-            console.log('[Verify] Requesting rewrap key with FULL details:');
-            console.log('  - recordCid:', jsonFile.cid);
-            console.log('  - recipientPub (your wallet):', recipientPub);
-            console.log('  - ephemeralPub:', ephemeralPubB58);
-
             let rewrapResp;
             try {
                 rewrapResp = await fetch('/api/rewrap/request', {
@@ -153,8 +148,6 @@ export default function VerifyPage() {
             const opened = sodium.crypto_box_seal_open(rewrappedBytes, ephemeralCurvePub, ephemeralCurveSec);
             const symKey = new Uint8Array(opened);
 
-            console.log('[Verify] Fetching encrypted payload from IPFS:', jsonFile.cid);
-
             let payloadResp;
             const gateways = [
                 `http://127.0.0.1:8080/ipfs/${jsonFile.cid}`,
@@ -166,14 +159,11 @@ export default function VerifyPage() {
             let lastError;
             for (const gateway of gateways) {
                 try {
-                    console.log('[Verify] Trying gateway:', gateway);
                     payloadResp = await fetch(gateway);
                     if (payloadResp.ok) {
-                        console.log('[Verify] Successfully fetched from:', gateway);
                         break;
                     }
                 } catch (e: any) {
-                    console.log('[Verify] Gateway failed:', gateway, e.message);
                     lastError = e;
                 }
             }
@@ -190,14 +180,8 @@ export default function VerifyPage() {
                 ? Buffer.from(plainBuf).toString('utf8')
                 : new TextDecoder().decode(plainBuf);
 
-            console.log('Decryption successful!');
-            console.log('plainBuf type:', typeof plainBuf, 'length:', plainBuf?.length);
-            console.log('plainStr type:', typeof plainStr, 'length:', plainStr?.length);
-            console.log('plainStr value:', plainStr);
-
             if (!plainStr || plainStr.length === 0) {
                 setDecrypted('(No payload data - record created for signature verification only)');
-                console.log('Empty payload - this is a signature-only verification');
             } else {
                 setDecrypted(plainStr);
             }

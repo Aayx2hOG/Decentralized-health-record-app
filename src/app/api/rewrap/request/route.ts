@@ -65,16 +65,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log('[Rewrap] Looking for:', { recordCid, recipientPub, consentCid });
-    console.log('[Rewrap] Found in database:', stored ? 'Yes' : 'No');
-
     if (!stored) {
       if (consentCid) {
-        console.log('[Rewrap] Checking consent credential:', consentCid);
         const consentResult = await fetchAndVerifyConsent(consentCid);
 
         if (!consentResult.valid) {
-          console.log('[Rewrap] Invalid consent:', consentResult.error);
           await prismaClient.accessLog.create({
             data: {
               recordCid,
@@ -92,7 +87,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (consentResult.recordCid !== recordCid) {
-          console.log('[Rewrap] Consent CID mismatch:', { expected: recordCid, got: consentResult.recordCid });
           await prismaClient.accessLog.create({
             data: {
               recordCid,
@@ -110,7 +104,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (consentResult.recipient !== recipientPub) {
-          console.log('[Rewrap] Consent recipient mismatch:', { expected: recipientPub, got: consentResult.recipient });
           await prismaClient.accessLog.create({
             data: {
               recordCid,
@@ -126,8 +119,6 @@ export async function POST(req: NextRequest) {
             error: 'Consent credential is for a different recipient'
           }, { status: 403 });
         }
-
-        console.log('[Rewrap] Valid consent found! Issuer:', consentResult.issuer);
 
         if (!consentResult.issuer) {
           await prismaClient.accessLog.create({
@@ -156,7 +147,6 @@ export async function POST(req: NextRequest) {
         });
 
         if (!issuerKey) {
-          console.log('[Rewrap] No key found for consent issuer. Checking if issuer is the creator...');
           const anyKey = await prismaClient.rewrapKey.findFirst({
             where: { recordCid },
           });
@@ -215,7 +205,6 @@ export async function POST(req: NextRequest) {
           },
         }).catch(e => console.error('Failed to log consent access', e));
 
-        console.log('[Rewrap] Access granted via consent credential');
         return NextResponse.json({ rewrappedKey: sealedB64, viaConsent: true });
       }
 
@@ -223,7 +212,6 @@ export async function POST(req: NextRequest) {
         where: { recordCid },
         select: { recipientPubkey: true, creatorPubkey: true }
       });
-      console.log('[Rewrap] Available recipients for this CID:', allKeysForRecord);
 
       const isCreator = allKeysForRecord.some(k => k.creatorPubkey === recipientPub);
       const errorMessage = isCreator
@@ -322,21 +310,11 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { recordCid, symKey, recipients, creatorPubkey, creatorSignature } = body;
 
-    console.log('[PUT /api/rewrap/request] Request received:', {
-      recordCid,
-      symKeyLength: symKey?.length,
-      recipients,
-      creatorPubkey,
-      hasSignature: !!creatorSignature
-    });
-
     if (!recordCid || !symKey || !Array.isArray(recipients) || recipients.length === 0) {
-      console.error('[PUT] Missing required fields');
       return NextResponse.json({ error: 'Missing recordCid, symKey, or recipients' }, { status: 400 });
     }
 
     if (!creatorPubkey || !creatorSignature) {
-      console.error('[PUT] Missing auth fields');
       return NextResponse.json({ error: 'Missing creatorPubkey or creatorSignature' }, { status: 400 });
     }
 
@@ -354,16 +332,11 @@ export async function PUT(req: NextRequest) {
 
     const valid = sodiumLib.crypto_sign_verify_detached(sigBytes, message, creatorPubBytes);
     if (!valid) {
-      console.error('[PUT] Invalid creator signature for recordCid:', recordCid);
       return NextResponse.json({ error: 'Invalid creator signature - unauthorized' }, { status: 403 });
     }
 
-    console.log('[PUT] Signature verified, storing rewrap keys...');
-
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
-
-    console.log('[PUT] About to upsert keys for recipients:', recipients);
 
     const results = await Promise.allSettled(
       recipients.map((recipientPubkey: string) =>
@@ -405,22 +378,14 @@ export async function PUT(req: NextRequest) {
     const failed = results.filter(r => r.status === 'rejected').length;
 
     if (failed > 0) {
-      console.error('[PUT] Some keys failed to store:', results.filter(r => r.status === 'rejected').map((r: any) => ({
-        reason: r.reason?.message || r.reason
-      })));
+
+      return NextResponse.json({
+        success: true,
+        stored: successful,
+        failed,
+        message: `Stored ${successful} rewrap keys for ${recipients.length} recipients${failed > 0 ? `, ${failed} failed` : ''}.`,
+      });
+    } catch (e: any) {
+      return NextResponse.json({ error: e?.message || 'Store failed' }, { status: 500 });
     }
-
-    console.log('[PUT] Upsert complete:', { successful, failed, total: recipients.length });
-
-    return NextResponse.json({
-      success: true,
-      stored: successful,
-      failed,
-      message: `Stored ${successful} rewrap keys for ${recipients.length} recipients${failed > 0 ? `, ${failed} failed` : ''}.`,
-    });
-  } catch (e: any) {
-    console.error('[PUT] Store error:', e);
-    console.error('[PUT] Error stack:', e.stack);
-    return NextResponse.json({ error: e?.message || 'Store failed' }, { status: 500 });
   }
-}

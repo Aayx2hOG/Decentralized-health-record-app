@@ -155,11 +155,8 @@ export async function verifyAdminAuth(payload: AdminAuthPayload, ip?: string): P
     const { default: nacl } = await import('tweetnacl');
     const { default: bs58 } = await import('bs58');
 
-    console.log('[Auth] Verifying authentication for pubkey:', payload.Pubkey);
-
     const rateLimitResult = checkRateLimit(payload.Pubkey);
     if (!rateLimitResult.valid) {
-        console.log('[Auth] Rate limit failed');
         logAuthAttempt(payload.Pubkey, false, ip, rateLimitResult.error);
         return rateLimitResult;
     }
@@ -178,7 +175,6 @@ export async function verifyAdminAuth(payload: AdminAuthPayload, ip?: string): P
             logAuthAttempt(payload.Pubkey, false, ip, 'Nonce reuse detected');
             return { valid: false, error: 'Invalid nonce. Possible replay attack.' };
         }
-        console.log('[Auth] Allowing nonce reuse within 1 second (React Strict Mode)');
     }
 
     try {
@@ -194,18 +190,15 @@ export async function verifyAdminAuth(payload: AdminAuthPayload, ip?: string): P
         );
 
         if (!isValid) {
-            console.log('[Auth] Signature verification failed');
             logAuthAttempt(payload.Pubkey, false, ip, 'Invalid signature');
             return { valid: false, error: 'Invalid signature' };
         }
 
-        console.log('[Auth] Authentication successful for:', payload.Pubkey);
         usedNonces.set(payload.nonce, now);
         logAuthAttempt(payload.Pubkey, true, ip);
         return { valid: true, pubkey: payload.Pubkey };
 
     } catch (error) {
-        console.error('[Auth] Signature verification error:', error);
         logAuthAttempt(payload.Pubkey, false, ip, 'Signature verification error');
         return { valid: false, error: 'Signature verification failed' };
     }

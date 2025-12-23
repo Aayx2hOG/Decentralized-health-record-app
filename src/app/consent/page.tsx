@@ -105,7 +105,6 @@ export default function ConsentPage() {
                     }, 'confirmed');
                     txSig = sigTx;
                 } catch (txError: any) {
-                    console.warn('On-chain anchoring failed, but consent credential was created successfully:', txError);
                 }
             }
 
@@ -125,12 +124,9 @@ export default function ConsentPage() {
 
                 if (!storeRes.ok) {
                     const errorData = await storeRes.json().catch(() => ({ error: 'Unknown error' }));
-                    console.warn('Failed to store consent in database:', errorData);
                 } else {
-                    console.log('Consent successfully stored in database');
                 }
             } catch (storeError) {
-                console.warn('Failed to store consent in database:', storeError);
             }
 
             if (anchorOnChain && !txSig) {

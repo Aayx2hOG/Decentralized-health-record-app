@@ -40,7 +40,6 @@ export default function MyConsentsPage() {
             const res = await fetch(`/api/consent/list?pubkey=${wallet.publicKey.toBase58()}`);
             if (res.ok) {
                 const data = await res.json();
-                console.log('Fetched consents:', data);
                 setIssued(data.issued || []);
                 setReceived(data.received || []);
             } else {
