@@ -13,7 +13,7 @@ Decentralized health records management system built on Solana with end-to-end e
 
 ## Tech Stack
 
-- Next.js 15, React 18, TypeScript, TailwindCSS, shadcn/ui
+- Next.js, React, TypeScript, TailwindCSS, shadcn/ui
 - Solana (wallet-adapter, Ed25519 signatures)
 - IPFS (local daemon or public gateways)
 - PostgreSQL + Prisma ORM
@@ -22,9 +22,9 @@ Decentralized health records management system built on Solana with end-to-end e
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+ or Bun 1.0+
-- PostgreSQL 16+ (Docker recommended)
-- Solana wallet extension (Phantom, Solflare, etc.)
+- Node.js or Bun
+- PostgreSQL (Docker recommended)
+- Solana wallet extension (Phantom, MetaMask, Backpack etc.)
 - IPFS daemon or Pinata account (optional - falls back to public gateways)
 
 ### Installation
