@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
           ipAddress,
           userAgent,
         },
-      }).catch(e => console.error('Logging error:', e));
+      });
       return NextResponse.json({ error: 'Request timestamp out of range' }, { status: 400 });
     }
 
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
           ipAddress,
           userAgent
         },
-      }).catch(e => console.error('Failed to log invalid signature', e));
+      });
       return NextResponse.json({ error: 'Invalid signature' }, { status: 403 });
     }
 
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
               ipAddress,
               userAgent
             },
-          }).catch(e => console.error('Failed to log invalid consent', e));
+          });
 
           return NextResponse.json({
             error: `Invalid consent credential: ${consentResult.error}`
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
               ipAddress,
               userAgent
             },
-          }).catch(e => console.error('Failed to log consent mismatch', e));
+          });
 
           return NextResponse.json({
             error: 'Consent credential is for a different record'
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
               ipAddress,
               userAgent
             },
-          }).catch(e => console.error('Failed to log consent recipient mismatch', e));
+          });
 
           return NextResponse.json({
             error: 'Consent credential is for a different recipient'
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
               ipAddress,
               userAgent
             },
-          }).catch(e => console.error('Failed to log missing issuer', e));
+          });
 
           return NextResponse.json({
             error: 'Consent credential is invalid - missing issuer'
@@ -161,16 +161,13 @@ export async function POST(req: NextRequest) {
                 ipAddress,
                 userAgent
               },
-            }).catch(e => console.error('Failed to log invalid issuer', e));
+            });
 
             return NextResponse.json({
               error: 'Consent issuer is not authorized for this record'
             }, { status: 403 });
           }
-        }
 
-
-        if (!issuerKey) {
           await prismaClient.accessLog.create({
             data: {
               recordCid,
@@ -180,7 +177,7 @@ export async function POST(req: NextRequest) {
               ipAddress,
               userAgent
             },
-          }).catch(e => console.error('Failed to log missing symmetric key', e));
+          });
 
           return NextResponse.json({
             error: 'Valid consent credential, but the record creator has not enabled consent-based access. Please ask the creator to add you directly.'
@@ -199,11 +196,10 @@ export async function POST(req: NextRequest) {
             recordCid,
             recipientPubkey: recipientPub,
             success: true,
-            errorMessage: `Access granted via consent credential (issuer: ${consentResult.issuer})`,
             ipAddress,
             userAgent
           },
-        }).catch(e => console.error('Failed to log consent access', e));
+        });
 
         return NextResponse.json({ rewrappedKey: sealedB64, viaConsent: true });
       }
@@ -227,7 +223,7 @@ export async function POST(req: NextRequest) {
           ipAddress,
           userAgent
         },
-      }).catch(e => console.error('Failed to log missing rewrap key', e));
+      });
 
       return NextResponse.json({
         error: errorMessage
@@ -244,13 +240,13 @@ export async function POST(req: NextRequest) {
           ipAddress,
           userAgent
         },
-      }).catch(e => console.error("Failed to log expired rewrap key", e));
+      });
 
       await prismaClient.rewrapKey.delete({
         where: {
           id: stored.id
         },
-      }).catch(e => console.error('Failed to delete expired rewrap key', e));
+      });
 
       return NextResponse.json({ error: 'Rewrap key expired' }, { status: 410 });
     }
@@ -284,22 +280,18 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ rewrappedKey: sealedB64 });
   } catch (e: any) {
-    console.error('Rewrap error:', e);
-
     try {
-      const body = await req.json();
       await prismaClient.accessLog.create({
         data: {
-          recordCid: body.recordCid || 'unknown',
-          recipientPubkey: body.recipientPub || 'unknown',
+          recordCid: 'unknown',
+          recipientPubkey: 'unknown',
           success: false,
           errorMessage: e?.message || 'Rewrap failed',
           ipAddress,
           userAgent
         },
-      })
-    } catch (e) {
-      console.error('Logging error:', e);
+      });
+    } catch {
     }
     return NextResponse.json({ error: e?.message || 'Rewrap failed' }, { status: 500 });
   }
@@ -377,15 +369,13 @@ export async function PUT(req: NextRequest) {
     const successful = results.filter(r => r.status === 'fulfilled').length;
     const failed = results.filter(r => r.status === 'rejected').length;
 
-    if (failed > 0) {
-
-      return NextResponse.json({
-        success: true,
-        stored: successful,
-        failed,
-        message: `Stored ${successful} rewrap keys for ${recipients.length} recipients${failed > 0 ? `, ${failed} failed` : ''}.`,
-      });
-    } catch (e: any) {
-      return NextResponse.json({ error: e?.message || 'Store failed' }, { status: 500 });
-    }
+    return NextResponse.json({
+      success: true,
+      stored: successful,
+      failed,
+      message: `Stored ${successful} rewrap keys for ${recipients.length} recipients${failed > 0 ? `, ${failed} failed` : ''}.`,
+    });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || 'Store failed' }, { status: 500 });
   }
+}
