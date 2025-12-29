@@ -1,0 +1,20 @@
+[package]
+name = "compressed-health"
+version = "0.1.0"
+description = "Simplified compressed health records using batch operations"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "compressed_health"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = "0.31.1"

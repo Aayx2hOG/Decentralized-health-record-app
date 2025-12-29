@@ -1,0 +1,14 @@
+/home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/deps/serde-4b548bf7c6f29333.d: /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/build/serde-9799c36a4826e1df/out/private.rs
+
+/home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/deps/libserde-4b548bf7c6f29333.rlib: /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/build/serde-9799c36a4826e1df/out/private.rs
+
+/home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/deps/libserde-4b548bf7c6f29333.rmeta: /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/build/serde-9799c36a4826e1df/out/private.rs
+
+/home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/aayush/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/build/serde-9799c36a4826e1df/out/private.rs:
+
+# env-dep:OUT_DIR=/home/aayush/projects/health-dapp/anchor/target/sbpf-solana-solana/release/build/serde-9799c36a4826e1df/out
