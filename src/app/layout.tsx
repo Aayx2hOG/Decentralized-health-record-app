@@ -15,7 +15,7 @@ const links: { label: string; path: string }[] = [
   { label: 'Verify Record', path: '/verify' },
   { label: 'Consent', path: '/consent' },
   { label: 'My Consents', path: '/my-consents' },
-  { label: 'Admin', path: '/admin' },
+  { label: 'Governance', path: '/admin' },
 ]
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
