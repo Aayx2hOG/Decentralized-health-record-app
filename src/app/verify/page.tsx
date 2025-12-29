@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { FileCheck, Shield, Lock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { FileCheck, Shield, Lock, CheckCircle, AlertCircle, Loader2, Download, FileImage, FileText } from 'lucide-react';
 
 function fromBase64(s: string) {
     if (typeof Buffer !== 'undefined') return Buffer.from(s, 'base64');
@@ -21,11 +21,63 @@ function fromBase64(s: string) {
     return bytes;
 }
 
+function detectFileType(bytes: Uint8Array): { isBinary: boolean; mimeType: string; extension: string; displayType: string } {
+    const header = Array.from(bytes.slice(0, 12)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    if (header.startsWith('89504e47')) {
+        return { isBinary: true, mimeType: 'image/png', extension: 'png', displayType: 'PNG Image' };
+    }
+    if (header.startsWith('ffd8ff')) {
+        return { isBinary: true, mimeType: 'image/jpeg', extension: 'jpg', displayType: 'JPEG Image' };
+    }
+    if (header.startsWith('474946')) {
+        return { isBinary: true, mimeType: 'image/gif', extension: 'gif', displayType: 'GIF Image' };
+    }
+    if (header.startsWith('255044462d')) {
+        return { isBinary: true, mimeType: 'application/pdf', extension: 'pdf', displayType: 'PDF Document' };
+    }
+    if (header.substring(0, 8) === '52494646' && header.substring(16, 24) === '57454250') {
+        return { isBinary: true, mimeType: 'image/webp', extension: 'webp', displayType: 'WebP Image' };
+    }
+    if (header.startsWith('424d')) {
+        return { isBinary: true, mimeType: 'image/bmp', extension: 'bmp', displayType: 'BMP Image' };
+    }
+    if (header.startsWith('49492a00') || header.startsWith('4d4d002a')) {
+        return { isBinary: true, mimeType: 'image/tiff', extension: 'tiff', displayType: 'TIFF Image' };
+    }
+    if (header.substring(8, 16) === '66747970') {
+        return { isBinary: true, mimeType: 'video/mp4', extension: 'mp4', displayType: 'MP4 Video' };
+    }
+    if (header.startsWith('504b0304') || header.startsWith('504b0506') || header.startsWith('504b0708')) {
+        return { isBinary: true, mimeType: 'application/zip', extension: 'zip', displayType: 'ZIP Archive' };
+    }
+    if (header.startsWith('504b0304')) {
+        return { isBinary: true, mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', extension: 'docx', displayType: 'Word Document' };
+    }
+
+    let printableCount = 0;
+    const sampleSize = Math.min(bytes.length, 1000);
+    for (let i = 0; i < sampleSize; i++) {
+        const byte = bytes[i];
+        if ((byte >= 32 && byte <= 126) || byte === 9 || byte === 10 || byte === 13) {
+            printableCount++;
+        }
+    }
+
+    const printableRatio = printableCount / sampleSize;
+    if (printableRatio > 0.85) {
+        return { isBinary: false, mimeType: 'text/plain', extension: 'txt', displayType: 'Text' };
+    }
+
+    return { isBinary: true, mimeType: 'application/octet-stream', extension: 'bin', displayType: 'Binary File' };
+}
+
 export default function VerifyPage() {
     const wallet = useWallet();
     const [jsonFile, setJsonFile] = useState<any>(null);
     const [consentCid, setConsentCid] = useState<string>('');
     const [decrypted, setDecrypted] = useState<string>('');
+    const [decryptedBlob, setDecryptedBlob] = useState<{ data: Blob; type: string; name: string } | null>(null);
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [renderKey, setRenderKey] = useState(0);
@@ -57,6 +109,7 @@ export default function VerifyPage() {
             setJsonFile(json);
             setError('');
             setDecrypted('');
+            setDecryptedBlob(null);
 
             const verification = verifyRecordSignature(json);
             setSignatureStatus(verification);
@@ -73,6 +126,7 @@ export default function VerifyPage() {
     const handleDecrypt = async () => {
         setError('');
         setDecrypted('');
+        setDecryptedBlob(null);
         setLoading(true);
 
         try {
@@ -176,14 +230,29 @@ export default function VerifyPage() {
             const payload = JSON.parse(payloadTxt);
 
             const plainBuf = await decryptPayloadAESGCM(payload, symKey);
-            const plainStr = typeof Buffer !== 'undefined'
-                ? Buffer.from(plainBuf).toString('utf8')
-                : new TextDecoder().decode(plainBuf);
 
-            if (!plainStr || plainStr.length === 0) {
-                setDecrypted('(No payload data - record created for signature verification only)');
+            const uint8Array = plainBuf instanceof Uint8Array ? plainBuf : new Uint8Array(plainBuf);
+            const fileType = detectFileType(uint8Array);
+
+            if (fileType.isBinary) {
+                const arrayBuffer = new ArrayBuffer(uint8Array.length);
+                const view = new Uint8Array(arrayBuffer);
+                view.set(uint8Array);
+                const blob = new Blob([arrayBuffer], { type: fileType.mimeType });
+                const fileName = jsonFile.title ? `${jsonFile.title}.${fileType.extension}` : `decrypted_file.${fileType.extension}`;
+                setDecryptedBlob({ data: blob, type: fileType.mimeType, name: fileName });
+                setDecrypted('');
             } else {
-                setDecrypted(plainStr);
+                const plainStr = typeof Buffer !== 'undefined'
+                    ? Buffer.from(plainBuf).toString('utf8')
+                    : new TextDecoder().decode(plainBuf);
+
+                if (!plainStr || plainStr.length === 0) {
+                    setDecrypted('(No payload data - record created for signature verification only)');
+                } else {
+                    setDecrypted(plainStr);
+                }
+                setDecryptedBlob(null);
             }
 
             setRenderKey(prev => prev + 1);
@@ -211,7 +280,6 @@ export default function VerifyPage() {
                     </p>
                 </div>
 
-                {/* Info Cards */}
                 <div className="grid md:grid-cols-3 gap-4">
                     <Card className="border-2">
                         <CardHeader className="pb-3">
@@ -250,7 +318,6 @@ export default function VerifyPage() {
                     </Card>
                 </div>
 
-                {/* Step 1: Load File */}
                 <Card className="border-2 shadow-lg">
                     <CardHeader>
                         <div className="flex items-center gap-2">
@@ -281,7 +348,6 @@ export default function VerifyPage() {
 
                 {jsonFile && (
                     <>
-                        {/* Signature Status */}
                         {signatureStatus && (
                             <Card className={`border-2 ${signatureStatus.valid ? 'border-green-500 bg-green-50/50 dark:bg-green-950/20' : 'border-destructive bg-destructive/5'}`}>
                                 <CardContent className="pt-6">
@@ -307,7 +373,6 @@ export default function VerifyPage() {
                             </Card>
                         )}
 
-                        {/* Record Information */}
                         <Card className="border-2 bg-primary/5">
                             <CardHeader>
                                 <CardTitle className="text-base">Record Information</CardTitle>
@@ -328,7 +393,6 @@ export default function VerifyPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Step 2: Decrypt */}
                         <Card className="border-2 shadow-lg">
                             <CardHeader>
                                 <div className="flex items-center gap-2">
@@ -340,7 +404,6 @@ export default function VerifyPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {/* Consent Credential Input */}
                                 <div className="space-y-2">
                                     <Label htmlFor="consentCid" className="text-sm font-medium">
                                         Consent Credential CID <span className="text-muted-foreground">(only if you're a recipient)</span>
@@ -395,7 +458,6 @@ export default function VerifyPage() {
                     </>
                 )}
 
-                {/* Error Display */}
                 {error && (
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
@@ -405,8 +467,7 @@ export default function VerifyPage() {
                     </Alert>
                 )}
 
-                {/* Success Display */}
-                {decrypted && (
+                {(decrypted || decryptedBlob) && (
                     <Card key={renderKey} className="border-2 border-green-500 bg-green-50/50 dark:bg-green-950/20 shadow-lg">
                         <CardHeader>
                             <div className="flex items-start gap-3">
@@ -420,16 +481,93 @@ export default function VerifyPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-2">
-                                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                    Decrypted Health Record Data
-                                </Label>
-                                <div className="bg-background border rounded-lg p-4 shadow-inner">
-                                    <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed overflow-auto max-h-96">
-                                        {decrypted || '(waiting...)'}
-                                    </pre>
+                            {decryptedBlob ? (
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                            Decrypted File
+                                        </Label>
+                                        <Badge variant="secondary">{decryptedBlob.type.split('/')[1]?.toUpperCase() || 'FILE'}</Badge>
+                                    </div>
+
+                                    {decryptedBlob.type.startsWith('image/') && (
+                                        <div className="bg-background border rounded-lg p-4 shadow-inner">
+                                            <img
+                                                src={URL.createObjectURL(decryptedBlob.data)}
+                                                alt="Decrypted image"
+                                                className="max-w-full h-auto rounded"
+                                                style={{ maxHeight: '600px' }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {decryptedBlob.type === 'application/pdf' && (
+                                        <div className="bg-background border rounded-lg p-4 shadow-inner">
+                                            <embed
+                                                src={URL.createObjectURL(decryptedBlob.data)}
+                                                type="application/pdf"
+                                                className="w-full"
+                                                style={{ height: '600px' }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {decryptedBlob.type.startsWith('video/') && (
+                                        <div className="bg-background border rounded-lg p-4 shadow-inner">
+                                            <video
+                                                src={URL.createObjectURL(decryptedBlob.data)}
+                                                controls
+                                                className="max-w-full h-auto rounded"
+                                                style={{ maxHeight: '600px' }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {!decryptedBlob.type.startsWith('image/') &&
+                                        !decryptedBlob.type.startsWith('video/') &&
+                                        decryptedBlob.type !== 'application/pdf' && (
+                                            <div className="bg-background border rounded-lg p-6 text-center">
+                                                <FileImage className="h-16 w-16 mx-auto mb-3 text-muted-foreground" />
+                                                <p className="text-sm text-muted-foreground mb-1">
+                                                    File type: <strong>{decryptedBlob.type}</strong>
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    This file cannot be previewed in the browser
+                                                </p>
+                                            </div>
+                                        )}
+
+                                    <Button
+                                        onClick={() => {
+                                            const url = URL.createObjectURL(decryptedBlob.data);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = decryptedBlob.name;
+                                            a.click();
+                                            URL.revokeObjectURL(url);
+                                        }}
+                                        className="w-full gap-2"
+                                        size="lg"
+                                    >
+                                        <Download className="h-5 w-5" />
+                                        Download {decryptedBlob.name}
+                                    </Button>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                            Decrypted Health Record Data
+                                        </Label>
+                                        <Badge variant="secondary">TEXT</Badge>
+                                    </div>
+                                    <div className="bg-background border rounded-lg p-4 shadow-inner">
+                                        <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed overflow-auto max-h-96">
+                                            {decrypted || '(waiting...)'}
+                                        </pre>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}
