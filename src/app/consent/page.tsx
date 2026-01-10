@@ -37,10 +37,10 @@ export default function ConsentPage() {
             if (!wallet.publicKey) throw new Error('Connect wallet');
             if (!wallet.signMessage) throw new Error('Wallet cannot sign');
             if (!recordCid) throw new Error('Provide record CID');
-            if (!recipientPk) throw new Error('Provide recipient pubkey');
+            if (!recipientPk.trim()) throw new Error('Provide recipient pubkey');
 
             const issuerDid = ed25519PubkeyToDidKey(wallet.publicKey.toBuffer());
-            const recipientDid = pubkeyBase58ToDidKey(recipientPk);
+            const recipientDid = pubkeyBase58ToDidKey(recipientPk.trim());
 
             const issuanceDate = new Date().toISOString();
             const expirationDate = new Date(Date.now() + daysValid * 24 * 60 * 60 * 1000).toISOString();
@@ -116,7 +116,7 @@ export default function ConsentPage() {
                         consentCid: cid,
                         recordCid,
                         issuerPubkey: wallet.publicKey.toBase58(),
-                        recipientPubkey: recipientPk,
+                        recipientPubkey: recipientPk.trim(),
                         expiresAt: expirationDate,
                         anchoredTxId: txSig || null
                     })

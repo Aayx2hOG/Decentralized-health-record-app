@@ -7,6 +7,7 @@ import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
 import { Button } from "@/components/ui/button";
+import { Button as MovingButton } from "@/components/ui/moving-border";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,7 +46,7 @@ function fromBase64(b64: string): Uint8Array {
 
 export default function CreateRecord() {
     const [title, setTitle] = useState("");
-    const [textPayload, setTextPayload] = useState("");
+    const [description, setDescription] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [cid, setCid] = useState<string | null>(null);
@@ -71,13 +72,11 @@ export default function CreateRecord() {
         setBusy(true);
 
         try {
-            let raw: Uint8Array;
-            if (file) {
-                const buffer = await file.arrayBuffer();
-                raw = new Uint8Array(buffer);
-            } else {
-                raw = new TextEncoder().encode(textPayload || "");
+            if (!file) {
+                throw new Error('Please select a file to upload');
             }
+            const buffer = await file.arrayBuffer();
+            const raw = new Uint8Array(buffer);
 
             const sym = generateSymmetricKey();
             const symU8 = sym instanceof Uint8Array ? sym : new Uint8Array(sym as any);
@@ -174,6 +173,7 @@ export default function CreateRecord() {
             const metadata: any = {
                 cid,
                 title,
+                description,
                 packedKeys: packedKeys.map(p => ({ recipient: p.recipient, packedCid: p.packedCid })),
                 exportedAt: new Date().toISOString(),
             };
@@ -211,6 +211,7 @@ export default function CreateRecord() {
             const text = await file.text();
             const obj = JSON.parse(text);
             if (obj.title) setTitle(obj.title);
+            if (obj.description) setDescription(obj.description);
             if (obj.cid) setCid(obj.cid);
             if (Array.isArray(obj.packedKeys)) {
                 setPackedKeys(obj.packedKeys.map((p: any) => ({ recipient: p.recipient, packedB64: p.packedB64, packedCid: p.packedCid })));
@@ -401,18 +402,21 @@ export default function CreateRecord() {
                             placeholder="Enter record title..."
                         />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description (Optional)</Label>
+                        <Textarea
+                            id="description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Enter a description for this record..."
+                            className="min-h-[80px]"
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="textPayload">Text Payload (Optional)</Label>
-                    <Textarea
-                        id="textPayload"
-                        value={textPayload}
-                        onChange={(e) => setTextPayload(e.target.value)}
-                        placeholder="Enter health record data or choose a file below"
-                        className="min-h-[120px]"
-                    />
-                    <div className="flex items-center gap-3 mt-2">
+                    <Label htmlFor="file">Health Record File</Label>
+                    <div className="flex items-center gap-3">
                         <input
                             ref={(el) => { fileInputRef.current = el; }}
                             type="file"
@@ -448,11 +452,12 @@ export default function CreateRecord() {
                             <span className="text-sm text-muted-foreground italic">No file selected</span>
                         )}
                     </div>
+                    <p className="text-xs text-muted-foreground">Upload medical documents, lab reports, images, or any health-related files</p>
                 </div>
 
                 <Alert>
                     <AlertDescription className="text-sm">
-                        Your record will be encrypted and stored on IPFS. Use the <strong>Consent</strong> page to grant access to specific recipients.
+                        Your record will be encrypted and stored on IPFS. Use the Consent page to grant access to specific recipients.
                     </AlertDescription>
                 </Alert>
 
@@ -472,16 +477,27 @@ export default function CreateRecord() {
                     </div>
                 </div>
 
-                <Button
-                    type="submit"
-                    disabled={busy || !wallet.connected}
-                    className="w-full gap-2"
-                    size="lg"
+                <MovingButton
+                    type={wallet.connected ? "submit" : "button"}
+                    onClick={(e: any) => {
+                        if (!wallet.connected) {
+                            e.preventDefault();
+                            const walletButton = document.querySelector('.wallet-adapter-button') as HTMLElement;
+                            if (walletButton) {
+                                walletButton.click();
+                            } else {
+                                alert("Please connect your wallet using the button in the navigation bar.");
+                            }
+                        }
+                    }}
+                    disabled={busy}
+                    borderRadius="0.75rem"
+                    containerClassName="w-64 h-12 md:max-w-sm mx-auto block"
+                    className="bg-background text-foreground border-neutral-200 dark:border-slate-800 font-semibold text-lg"
                 >
-                    {busy ? 'Encrypting & Uploading...' : wallet.connected ? 'Encrypt & Upload to IPFS' : 'Connect Wallet First'}
-                </Button>
+                    {busy ? 'Encrypting & Uploading...' : wallet.connected ? 'Encrypt & Upload to IPFS' : 'Connect Wallet'}
+                </MovingButton>
 
-                {/* Action Buttons Section - Below Submit */}
                 <div className="flex justify-center gap-3 p-4 bg-muted/30 rounded-lg border-2">
                     <Button
                         type="button"

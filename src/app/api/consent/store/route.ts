@@ -17,8 +17,8 @@ export async function POST(request: Request) {
             data: {
                 consentCid,
                 recordCid,
-                issuerPubkey,
-                recipientPubkey,
+                issuerPubkey: issuerPubkey.trim(),
+                recipientPubkey: recipientPubkey.trim(),
                 expiresAt: expiresAt ? new Date(expiresAt) : null,
                 anchoredTxId: anchoredTxId || null,
             },

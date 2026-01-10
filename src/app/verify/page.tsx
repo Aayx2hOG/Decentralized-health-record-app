@@ -378,6 +378,22 @@ export default function VerifyPage() {
                                 <CardTitle className="text-base">Record Information</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
+                                {jsonFile.title && (
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Title</Label>
+                                        <p className="text-sm font-medium bg-background px-3 py-2 rounded border mt-1">
+                                            {jsonFile.title}
+                                        </p>
+                                    </div>
+                                )}
+                                {jsonFile.description && (
+                                    <div>
+                                        <Label className="text-xs text-muted-foreground">Description</Label>
+                                        <p className="text-sm bg-background px-3 py-2 rounded border mt-1 whitespace-pre-wrap">
+                                            {jsonFile.description}
+                                        </p>
+                                    </div>
+                                )}
                                 <div>
                                     <Label className="text-xs text-muted-foreground">Record CID</Label>
                                     <code className="block text-sm font-mono bg-background px-3 py-2 rounded border mt-1 break-all">

@@ -30,6 +30,7 @@ export function verifyRecordSignature(signedRecord: any): {
         const metadata = {
             cid: signedRecord.cid,
             title: signedRecord.title,
+            description: signedRecord.description,
             packedKeys: signedRecord.packedKeys,
             exportedAt: signedRecord.exportedAt,
         };
