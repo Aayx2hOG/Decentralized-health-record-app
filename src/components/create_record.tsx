@@ -7,7 +7,6 @@ import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
 import { Button } from "@/components/ui/button";
-import { Button as MovingButton } from "@/components/ui/moving-border";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -477,9 +476,9 @@ export default function CreateRecord() {
                     </div>
                 </div>
 
-                <MovingButton
+                <Button
                     type={wallet.connected ? "submit" : "button"}
-                    onClick={(e: any) => {
+                    onClick={(e: React.MouseEvent) => {
                         if (!wallet.connected) {
                             e.preventDefault();
                             const walletButton = document.querySelector('.wallet-adapter-button') as HTMLElement;
@@ -491,12 +490,11 @@ export default function CreateRecord() {
                         }
                     }}
                     disabled={busy}
-                    borderRadius="0.75rem"
-                    containerClassName="w-64 h-12 md:max-w-sm mx-auto block"
-                    className="bg-background text-foreground border-neutral-200 dark:border-slate-800 font-semibold text-lg"
+                    className="w-full"
+                    size="lg"
                 >
                     {busy ? 'Encrypting & Uploading...' : wallet.connected ? 'Encrypt & Upload to IPFS' : 'Connect Wallet'}
-                </MovingButton>
+                </Button>
 
                 <div className="flex justify-center gap-3 p-4 bg-muted/30 rounded-lg border-2">
                     <Button

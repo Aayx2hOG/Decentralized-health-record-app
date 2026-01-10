@@ -278,12 +278,23 @@ export default function ConsentPage() {
                             </div>
 
                             <Button
-                                type="submit"
-                                disabled={busy || !wallet.connected}
+                                type={wallet.connected ? "submit" : "button"}
+                                onClick={(e: React.MouseEvent) => {
+                                    if (!wallet.connected) {
+                                        e.preventDefault();
+                                        const walletButton = document.querySelector('.wallet-adapter-button') as HTMLElement;
+                                        if (walletButton) {
+                                            walletButton.click();
+                                        } else {
+                                            alert("Please connect your wallet using the button in the navigation bar.");
+                                        }
+                                    }
+                                }}
+                                disabled={busy}
                                 className="w-full h-12 text-base"
                                 size="lg"
                             >
-                                {busy ? 'Issuing Consent...' : wallet.connected ? 'Issue Consent Credential' : 'Connect Wallet First'}
+                                {busy ? 'Issuing Consent...' : wallet.connected ? 'Issue Consent Credential' : 'Connect Wallet'}
                             </Button>
                         </form>
                     </CardContent>
