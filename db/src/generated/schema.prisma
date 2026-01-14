@@ -72,3 +72,14 @@ model ConsentCredential {
   @@index([recordCid], name: "idx_consent_record")
   @@map("consent_credentials")
 }
+
+model RecordAnchor {
+  id          Int      @id @default(autoincrement())
+  recordCid   String   @unique
+  txSignature String
+  pda         String
+  anchoredBy  String
+  anchoredAt  DateTime @default(now())
+
+  @@map("record_anchors")
+}

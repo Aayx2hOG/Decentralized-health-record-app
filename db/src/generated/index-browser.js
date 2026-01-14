@@ -165,6 +165,15 @@ exports.Prisma.ConsentCredentialScalarFieldEnum = {
   anchoredTxId: 'anchoredTxId'
 };
 
+exports.Prisma.RecordAnchorScalarFieldEnum = {
+  id: 'id',
+  recordCid: 'recordCid',
+  txSignature: 'txSignature',
+  pda: 'pda',
+  anchoredBy: 'anchoredBy',
+  anchoredAt: 'anchoredAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -185,7 +194,8 @@ exports.Prisma.ModelName = {
   RewrapKey: 'RewrapKey',
   AccessLog: 'AccessLog',
   Admin: 'Admin',
-  ConsentCredential: 'ConsentCredential'
+  ConsentCredential: 'ConsentCredential',
+  RecordAnchor: 'RecordAnchor'
 };
 
 /**

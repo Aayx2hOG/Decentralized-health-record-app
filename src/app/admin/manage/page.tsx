@@ -120,7 +120,7 @@ export default function ManageAdminsPage() {
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="max-w-4xl mx-auto space-y-8">
-                {/* Header Section */}
+                
                 <div className="text-center space-y-4">
                     <div className="inline-block">
                         <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -149,7 +149,7 @@ export default function ManageAdminsPage() {
                     </Alert>
                 )}
 
-                {/* Add Admin Card */}
+                
                 <Card className="border-2 shadow-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export default function ManageAdminsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Admins List Card */}
+                
                 <Card className="border-2 shadow-lg">
                     <CardHeader>
                         <div className="flex items-center justify-between">

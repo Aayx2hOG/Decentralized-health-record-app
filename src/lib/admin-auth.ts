@@ -1,23 +1,5 @@
 import { prismaClient } from 'db/src';
-
-export interface AdminAuthPayload {
-    Pubkey: string,
-    timestamp: number,
-    signature: string,
-    nonce: string
-}
-
-export interface AuthResult {
-    valid: boolean,
-    error?: string,
-    pubkey?: string
-}
-
-export interface RateLimitEntry {
-    attempts: number,
-    lastAttempt: number,
-    blockedUntil?: number
-}
+import { AdminAuthPayload, AuthResult, RateLimitEntry } from '@/lib/types';
 
 const AUTH_CONFIG = {
     AUTH_WINDOW_MS: 5 * 60 * 1000,

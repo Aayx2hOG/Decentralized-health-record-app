@@ -54,9 +54,7 @@ pub mod compressed_health {
         for (i, record_data) in batch.iter().enumerate() {
             let data_to_hash = format!(
                 "{}{}{}",
-                record_data.owner,
-                record_data.cid,
-                record_data.title
+                record_data.owner, record_data.cid, record_data.title
             );
             let record_hash = hash(data_to_hash.as_bytes()).to_bytes();
 
@@ -76,12 +74,9 @@ pub mod compressed_health {
         Ok(())
     }
 
-    pub fn delete_record(
-        ctx: Context<DeleteRecord>,
-        record_index: u64,
-    ) -> Result<()> {
+    pub fn delete_record(ctx: Context<DeleteRecord>, record_index: u64) -> Result<()> {
         let config = &mut ctx.accounts.config;
-        
+
         emit!(RecordDeleted {
             owner: ctx.accounts.owner.key(),
             record_index,
@@ -93,6 +88,17 @@ pub mod compressed_health {
             .checked_add(1)
             .ok_or(ErrorCode::Overflow)?;
 
+        Ok(())
+    }
+
+    pub fn anchor_record(ctx: Context<AnchorRecord>, record_cid: String) -> Result<()> {
+        let anchor = &mut ctx.accounts.record_anchor;
+        anchor.record_cid = record_cid;
+        anchor.creator = ctx.accounts.payer.key();
+        anchor.timestamp = Clock::get()?.unix_timestamp;
+        anchor.bump = ctx.bumps.record_anchor;
+
+        msg!("Record anchored: {}", anchor.record_cid);
         Ok(())
     }
 
@@ -121,6 +127,32 @@ pub struct InitializeConfig<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
 
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct RecordAnchor {
+    #[max_len(64)]
+    pub record_cid: String,
+    pub creator: Pubkey,
+    pub timestamp: i64,
+    pub bump: u8,
+}
+
+#[derive(Accounts)]
+#[instruction(record_cid: String)]
+pub struct AnchorRecord<'info> {
+    #[account(
+        init,
+        payer = payer,
+        space = 8 + RecordAnchor::INIT_SPACE,
+        seeds = [b"anchor", &hash(record_cid.as_bytes()).to_bytes()[..32]],
+        bump,
+    )]
+    pub record_anchor: Account<'info, RecordAnchor>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 

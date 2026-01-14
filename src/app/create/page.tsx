@@ -8,7 +8,7 @@ export default function Page() {
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="max-w-5xl mx-auto space-y-8">
-                {/* Header Section */}
+                
                 <div className="text-center space-y-4">
                     <div className="inline-block">
                         <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -21,7 +21,7 @@ export default function Page() {
                     </p>
                 </div>
 
-                {/* Info Cards */}
+                
                 <div className="grid md:grid-cols-3 gap-4">
                     <Card className="border-2">
                         <CardHeader className="pb-3">
@@ -60,7 +60,7 @@ export default function Page() {
                     </Card>
                 </div>
 
-                {/* Main Content */}
+                
                 <Card className="border-2 shadow-lg">
                     <CardHeader>
                         <CardTitle>Record Details</CardTitle>

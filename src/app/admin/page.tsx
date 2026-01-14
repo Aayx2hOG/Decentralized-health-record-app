@@ -12,57 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { X, Search, Calendar, Filter } from 'lucide-react';
-
-interface AnalyticsData {
-    timeSeriesData: Array<{ date: string; successful: number; failed: number; total: number }>;
-    successVsFailed: { successful: number; failed: number };
-    topRecords: Array<{ cid: string; count: number }>;
-    hourlyPattern: Array<{ hour: number; count: number }>;
-    errorDistribution: Array<{ error: string; count: number }>;
-}
-
-interface RewrapKey {
-    id: number;
-    recordCid: string;
-    recipientPubkey: string;
-    creatorPubkey: string | null;
-    createdAt: string;
-    expiresAt: string | null;
-    accessCount: number;
-    lastAccessedAt: string | null;
-    isConsent?: boolean;
-}
-
-interface AccessLog {
-    id: number;
-    recordCid: string;
-    recipientPubkey: string;
-    success: boolean;
-    ipAddress: string | null;
-    userAgent: string | null;
-    errorMessage: string | null;
-    accessedAt: string;
-}
-
-interface Stats {
-    totalKeys: number;
-    totalRecords: number;
-    totalAccesses: number;
-    failedAccesses: number;
-    expiredKeys: number;
-    activeKeys: number;
-}
-
-interface IssuedConsent {
-    id: number;
-    consentCid: string;
-    recordCid: string;
-    recipientPubkey: string;
-    createdAt: string;
-    expiresAt: string | null;
-    revokedAt: string | null;
-    revokedReason: string | null;
-}
+import { AnalyticsData, RewrapKey, AccessLog, Stats, IssuedConsent } from '@/lib/types';
 
 export default function AdminPage() {
     const wallet = useWallet();
@@ -480,14 +430,14 @@ export default function AdminPage() {
                 </TabsList>
 
                 <TabsContent value="keys" className="space-y-4">
-                    {/* Records You Created Section */}
+                    
                     <Card>
                         <CardHeader>
                             <CardTitle>Records You Created</CardTitle>
                             <CardDescription>Health records you have created and their access permissions</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {/* Search and Filter Bar */}
+                            
                             <div className="space-y-4 mb-6">
                                 <div className="flex flex-wrap gap-3">
                                     <div className="relative flex-1 min-w-[200px] max-w-md">

@@ -149,7 +149,7 @@ export default function ConsentPage() {
     return (
         <div className="container mx-auto py-8 px-4">
             <div className="max-w-4xl mx-auto space-y-8">
-                {/* Header Section */}
+                
                 <div className="text-center space-y-4">
                     <div className="inline-block">
                         <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
@@ -162,7 +162,7 @@ export default function ConsentPage() {
                     </p>
                 </div>
 
-                {/* Info Cards */}
+                
                 <div className="grid md:grid-cols-3 gap-4">
                     <Card className="border-2">
                         <CardHeader className="pb-3">
@@ -201,7 +201,7 @@ export default function ConsentPage() {
                     </Card>
                 </div>
 
-                {/* Main Form */}
+                
                 <Card className="border-2 shadow-lg">
                     <CardHeader>
                         <CardTitle>Issue Consent Credential</CardTitle>
@@ -300,7 +300,7 @@ export default function ConsentPage() {
                     </CardContent>
                 </Card>
 
-                {/* Result Display */}
+                
                 {result && (
                     <Card className={`border-2 ${result.error ? 'border-destructive' : 'border-green-500'}`}>
                         <CardContent className="pt-6">

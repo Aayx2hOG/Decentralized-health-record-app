@@ -59,7 +59,7 @@ export async function GET(request: Request) {
         const combinedAccessible = [...accessibleKeys.map(k => ({ ...k, isConsent: false })), ...consentsAsKeys];
         combinedAccessible.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        // Get consents issued BY this user (for revocation management)
+
         const issuedConsents = await prismaClient.consentCredential.findMany({
             where: {
                 issuerPubkey: authResult.pubkey

@@ -1,14 +1,20 @@
-{
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/compressed_health.json`.
+ */
+export type CompressedHealth = {
   "address": "73bxU5B3qZV1UwnMPj4EZQJehSa2ka8vz7DE8WDwA8Lp",
   "metadata": {
-    "name": "compressed_health",
+    "name": "compressedHealth",
     "version": "0.1.0",
     "spec": "0.1.0",
     "description": "Simplified compressed health records using batch operations"
   },
   "instructions": [
     {
-      "name": "anchor_record",
+      "name": "anchorRecord",
       "discriminator": [
         49,
         213,
@@ -21,8 +27,27 @@
       ],
       "accounts": [
         {
-          "name": "record_anchor",
-          "writable": true
+          "name": "recordAnchor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  111,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "recordCid"
+              }
+            ]
+          }
         },
         {
           "name": "payer",
@@ -30,19 +55,19 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "record_cid",
+          "name": "recordCid",
           "type": "string"
         }
       ]
     },
     {
-      "name": "batch_create_records",
+      "name": "batchCreateRecords",
       "discriminator": [
         13,
         147,
@@ -84,7 +109,7 @@
           "type": {
             "vec": {
               "defined": {
-                "name": "RecordData"
+                "name": "recordData"
               }
             }
           }
@@ -92,7 +117,7 @@
       ]
     },
     {
-      "name": "delete_record",
+      "name": "deleteRecord",
       "discriminator": [
         177,
         191,
@@ -130,13 +155,13 @@
       ],
       "args": [
         {
-          "name": "record_index",
+          "name": "recordIndex",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "get_record_count",
+      "name": "getRecordCount",
       "discriminator": [
         133,
         22,
@@ -171,7 +196,7 @@
       "returns": "u64"
     },
     {
-      "name": "initialize_config",
+      "name": "initializeConfig",
       "discriminator": [
         208,
         127,
@@ -208,7 +233,7 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         }
       ],
@@ -217,7 +242,7 @@
   ],
   "accounts": [
     {
-      "name": "Config",
+      "name": "config",
       "discriminator": [
         155,
         12,
@@ -230,7 +255,7 @@
       ]
     },
     {
-      "name": "RecordAnchor",
+      "name": "recordAnchor",
       "discriminator": [
         124,
         103,
@@ -245,7 +270,7 @@
   ],
   "events": [
     {
-      "name": "RecordCreated",
+      "name": "recordCreated",
       "discriminator": [
         7,
         2,
@@ -258,7 +283,7 @@
       ]
     },
     {
-      "name": "RecordDeleted",
+      "name": "recordDeleted",
       "discriminator": [
         126,
         72,
@@ -274,38 +299,38 @@
   "errors": [
     {
       "code": 6000,
-      "name": "CidTooLong",
+      "name": "cidTooLong",
       "msg": "CID too long"
     },
     {
       "code": 6001,
-      "name": "TitleTooLong",
+      "name": "titleTooLong",
       "msg": "Title too long"
     },
     {
       "code": 6002,
-      "name": "BatchTooLarge",
+      "name": "batchTooLarge",
       "msg": "Batch size exceeds maximum"
     },
     {
       "code": 6003,
-      "name": "Overflow",
+      "name": "overflow",
       "msg": "Numeric overflow"
     },
     {
       "code": 6004,
-      "name": "UnauthorizedRecordOwner",
+      "name": "unauthorizedRecordOwner",
       "msg": "Unauthorized: record owner must match signer"
     },
     {
       "code": 6005,
-      "name": "DailyLimitExceeded",
+      "name": "dailyLimitExceeded",
       "msg": "Daily record limit exceeded"
     }
   ],
   "types": [
     {
-      "name": "Config",
+      "name": "config",
       "type": {
         "kind": "struct",
         "fields": [
@@ -314,19 +339,19 @@
             "type": "pubkey"
           },
           {
-            "name": "record_count",
+            "name": "recordCount",
             "type": "u64"
           },
           {
-            "name": "deleted_count",
+            "name": "deletedCount",
             "type": "u64"
           },
           {
-            "name": "daily_record_count",
+            "name": "dailyRecordCount",
             "type": "u64"
           },
           {
-            "name": "last_update_timestamp",
+            "name": "lastUpdateTimestamp",
             "type": "i64"
           },
           {
@@ -337,12 +362,12 @@
       }
     },
     {
-      "name": "RecordAnchor",
+      "name": "recordAnchor",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "record_cid",
+            "name": "recordCid",
             "type": "string"
           },
           {
@@ -361,7 +386,7 @@
       }
     },
     {
-      "name": "RecordCreated",
+      "name": "recordCreated",
       "type": {
         "kind": "struct",
         "fields": [
@@ -370,7 +395,7 @@
             "type": "pubkey"
           },
           {
-            "name": "record_hash",
+            "name": "recordHash",
             "type": {
               "array": [
                 "u8",
@@ -379,7 +404,7 @@
             }
           },
           {
-            "name": "record_index",
+            "name": "recordIndex",
             "type": "u64"
           },
           {
@@ -390,7 +415,7 @@
       }
     },
     {
-      "name": "RecordData",
+      "name": "recordData",
       "type": {
         "kind": "struct",
         "fields": [
@@ -410,7 +435,7 @@
       }
     },
     {
-      "name": "RecordDeleted",
+      "name": "recordDeleted",
       "type": {
         "kind": "struct",
         "fields": [
@@ -419,7 +444,7 @@
             "type": "pubkey"
           },
           {
-            "name": "record_index",
+            "name": "recordIndex",
             "type": "u64"
           },
           {
@@ -430,4 +455,4 @@
       }
     }
   ]
-}
+};

@@ -1,6 +1,7 @@
 import nacl from 'tweetnacl';
 import { didKeyToEd25519Pubkey } from './ssi';
 import bs58 from 'bs58';
+import { ConsentCredential, ConsentVerificationResult } from '@/lib/types';
 
 export function canonicalize(obj: any): string {
     if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
@@ -8,35 +9,6 @@ export function canonicalize(obj: any): string {
     const keys = Object.keys(obj).sort();
     const parts = keys.map(k => JSON.stringify(k) + ':' + canonicalize(obj[k]));
     return '{' + parts.join(',') + '}';
-}
-
-export interface ConsentCredential {
-    '@context': string[];
-    type: string[];
-    issuer: { id: string };
-    issuanceDate: string;
-    expirationDate: string;
-    credentialSubject: {
-        id: string;
-        recordCid: string;
-        scope: string;
-    };
-    proof: {
-        type: string;
-        created: string;
-        proofPurpose: string;
-        verificationMethod: string;
-        signature: string;
-    };
-}
-
-export interface ConsentVerificationResult {
-    valid: boolean;
-    issuer?: string;
-    recipient?: string;
-    recordCid?: string;
-    expirationDate?: string;
-    error?: string;
 }
 
 export async function fetchAndVerifyConsent(consentCid: string): Promise<ConsentVerificationResult> {

@@ -14,6 +14,40 @@ export type CompressedHealth = {
   },
   "instructions": [
     {
+      "name": "anchorRecord",
+      "discriminator": [
+        49,
+        213,
+        61,
+        89,
+        178,
+        123,
+        20,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "recordAnchor",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "recordCid",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "batchCreateRecords",
       "discriminator": [
         13,
@@ -200,6 +234,19 @@ export type CompressedHealth = {
         204,
         130
       ]
+    },
+    {
+      "name": "recordAnchor",
+      "discriminator": [
+        124,
+        103,
+        34,
+        26,
+        130,
+        139,
+        81,
+        172
+      ]
     }
   ],
   "events": [
@@ -286,6 +333,30 @@ export type CompressedHealth = {
           },
           {
             "name": "lastUpdateTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "recordAnchor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "recordCid",
+            "type": "string"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
             "type": "i64"
           },
           {

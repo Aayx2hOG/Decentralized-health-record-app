@@ -33,6 +33,11 @@ export type Admin = $Result.DefaultSelection<Prisma.$AdminPayload>
  * 
  */
 export type ConsentCredential = $Result.DefaultSelection<Prisma.$ConsentCredentialPayload>
+/**
+ * Model RecordAnchor
+ * 
+ */
+export type RecordAnchor = $Result.DefaultSelection<Prisma.$RecordAnchorPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -190,6 +195,16 @@ export class PrismaClient<
     * ```
     */
   get consentCredential(): Prisma.ConsentCredentialDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.recordAnchor`: Exposes CRUD operations for the **RecordAnchor** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RecordAnchors
+    * const recordAnchors = await prisma.recordAnchor.findMany()
+    * ```
+    */
+  get recordAnchor(): Prisma.RecordAnchorDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -627,7 +642,8 @@ export namespace Prisma {
     RewrapKey: 'RewrapKey',
     AccessLog: 'AccessLog',
     Admin: 'Admin',
-    ConsentCredential: 'ConsentCredential'
+    ConsentCredential: 'ConsentCredential',
+    RecordAnchor: 'RecordAnchor'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -643,7 +659,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential"
+      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -943,6 +959,80 @@ export namespace Prisma {
           }
         }
       }
+      RecordAnchor: {
+        payload: Prisma.$RecordAnchorPayload<ExtArgs>
+        fields: Prisma.RecordAnchorFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RecordAnchorFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RecordAnchorFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          findFirst: {
+            args: Prisma.RecordAnchorFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RecordAnchorFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          findMany: {
+            args: Prisma.RecordAnchorFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>[]
+          }
+          create: {
+            args: Prisma.RecordAnchorCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          createMany: {
+            args: Prisma.RecordAnchorCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RecordAnchorCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>[]
+          }
+          delete: {
+            args: Prisma.RecordAnchorDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          update: {
+            args: Prisma.RecordAnchorUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          deleteMany: {
+            args: Prisma.RecordAnchorDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RecordAnchorUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RecordAnchorUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>[]
+          }
+          upsert: {
+            args: Prisma.RecordAnchorUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordAnchorPayload>
+          }
+          aggregate: {
+            args: Prisma.RecordAnchorAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRecordAnchor>
+          }
+          groupBy: {
+            args: Prisma.RecordAnchorGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RecordAnchorGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RecordAnchorCountArgs<ExtArgs>
+            result: $Utils.Optional<RecordAnchorCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1039,6 +1129,7 @@ export namespace Prisma {
     accessLog?: AccessLogOmit
     admin?: AdminOmit
     consentCredential?: ConsentCredentialOmit
+    recordAnchor?: RecordAnchorOmit
   }
 
   /* Types for Logging */
@@ -5600,6 +5691,1048 @@ export namespace Prisma {
 
 
   /**
+   * Model RecordAnchor
+   */
+
+  export type AggregateRecordAnchor = {
+    _count: RecordAnchorCountAggregateOutputType | null
+    _avg: RecordAnchorAvgAggregateOutputType | null
+    _sum: RecordAnchorSumAggregateOutputType | null
+    _min: RecordAnchorMinAggregateOutputType | null
+    _max: RecordAnchorMaxAggregateOutputType | null
+  }
+
+  export type RecordAnchorAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type RecordAnchorSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type RecordAnchorMinAggregateOutputType = {
+    id: number | null
+    recordCid: string | null
+    txSignature: string | null
+    pda: string | null
+    anchoredBy: string | null
+    anchoredAt: Date | null
+  }
+
+  export type RecordAnchorMaxAggregateOutputType = {
+    id: number | null
+    recordCid: string | null
+    txSignature: string | null
+    pda: string | null
+    anchoredBy: string | null
+    anchoredAt: Date | null
+  }
+
+  export type RecordAnchorCountAggregateOutputType = {
+    id: number
+    recordCid: number
+    txSignature: number
+    pda: number
+    anchoredBy: number
+    anchoredAt: number
+    _all: number
+  }
+
+
+  export type RecordAnchorAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type RecordAnchorSumAggregateInputType = {
+    id?: true
+  }
+
+  export type RecordAnchorMinAggregateInputType = {
+    id?: true
+    recordCid?: true
+    txSignature?: true
+    pda?: true
+    anchoredBy?: true
+    anchoredAt?: true
+  }
+
+  export type RecordAnchorMaxAggregateInputType = {
+    id?: true
+    recordCid?: true
+    txSignature?: true
+    pda?: true
+    anchoredBy?: true
+    anchoredAt?: true
+  }
+
+  export type RecordAnchorCountAggregateInputType = {
+    id?: true
+    recordCid?: true
+    txSignature?: true
+    pda?: true
+    anchoredBy?: true
+    anchoredAt?: true
+    _all?: true
+  }
+
+  export type RecordAnchorAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RecordAnchor to aggregate.
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecordAnchors to fetch.
+     */
+    orderBy?: RecordAnchorOrderByWithRelationInput | RecordAnchorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RecordAnchorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecordAnchors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecordAnchors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RecordAnchors
+    **/
+    _count?: true | RecordAnchorCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RecordAnchorAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RecordAnchorSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RecordAnchorMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RecordAnchorMaxAggregateInputType
+  }
+
+  export type GetRecordAnchorAggregateType<T extends RecordAnchorAggregateArgs> = {
+        [P in keyof T & keyof AggregateRecordAnchor]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRecordAnchor[P]>
+      : GetScalarType<T[P], AggregateRecordAnchor[P]>
+  }
+
+
+
+
+  export type RecordAnchorGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecordAnchorWhereInput
+    orderBy?: RecordAnchorOrderByWithAggregationInput | RecordAnchorOrderByWithAggregationInput[]
+    by: RecordAnchorScalarFieldEnum[] | RecordAnchorScalarFieldEnum
+    having?: RecordAnchorScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RecordAnchorCountAggregateInputType | true
+    _avg?: RecordAnchorAvgAggregateInputType
+    _sum?: RecordAnchorSumAggregateInputType
+    _min?: RecordAnchorMinAggregateInputType
+    _max?: RecordAnchorMaxAggregateInputType
+  }
+
+  export type RecordAnchorGroupByOutputType = {
+    id: number
+    recordCid: string
+    txSignature: string
+    pda: string
+    anchoredBy: string
+    anchoredAt: Date
+    _count: RecordAnchorCountAggregateOutputType | null
+    _avg: RecordAnchorAvgAggregateOutputType | null
+    _sum: RecordAnchorSumAggregateOutputType | null
+    _min: RecordAnchorMinAggregateOutputType | null
+    _max: RecordAnchorMaxAggregateOutputType | null
+  }
+
+  type GetRecordAnchorGroupByPayload<T extends RecordAnchorGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RecordAnchorGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RecordAnchorGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RecordAnchorGroupByOutputType[P]>
+            : GetScalarType<T[P], RecordAnchorGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RecordAnchorSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    txSignature?: boolean
+    pda?: boolean
+    anchoredBy?: boolean
+    anchoredAt?: boolean
+  }, ExtArgs["result"]["recordAnchor"]>
+
+  export type RecordAnchorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    txSignature?: boolean
+    pda?: boolean
+    anchoredBy?: boolean
+    anchoredAt?: boolean
+  }, ExtArgs["result"]["recordAnchor"]>
+
+  export type RecordAnchorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    txSignature?: boolean
+    pda?: boolean
+    anchoredBy?: boolean
+    anchoredAt?: boolean
+  }, ExtArgs["result"]["recordAnchor"]>
+
+  export type RecordAnchorSelectScalar = {
+    id?: boolean
+    recordCid?: boolean
+    txSignature?: boolean
+    pda?: boolean
+    anchoredBy?: boolean
+    anchoredAt?: boolean
+  }
+
+  export type RecordAnchorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "recordCid" | "txSignature" | "pda" | "anchoredBy" | "anchoredAt", ExtArgs["result"]["recordAnchor"]>
+
+  export type $RecordAnchorPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RecordAnchor"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      recordCid: string
+      txSignature: string
+      pda: string
+      anchoredBy: string
+      anchoredAt: Date
+    }, ExtArgs["result"]["recordAnchor"]>
+    composites: {}
+  }
+
+  type RecordAnchorGetPayload<S extends boolean | null | undefined | RecordAnchorDefaultArgs> = $Result.GetResult<Prisma.$RecordAnchorPayload, S>
+
+  type RecordAnchorCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RecordAnchorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RecordAnchorCountAggregateInputType | true
+    }
+
+  export interface RecordAnchorDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RecordAnchor'], meta: { name: 'RecordAnchor' } }
+    /**
+     * Find zero or one RecordAnchor that matches the filter.
+     * @param {RecordAnchorFindUniqueArgs} args - Arguments to find a RecordAnchor
+     * @example
+     * // Get one RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RecordAnchorFindUniqueArgs>(args: SelectSubset<T, RecordAnchorFindUniqueArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RecordAnchor that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RecordAnchorFindUniqueOrThrowArgs} args - Arguments to find a RecordAnchor
+     * @example
+     * // Get one RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RecordAnchorFindUniqueOrThrowArgs>(args: SelectSubset<T, RecordAnchorFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RecordAnchor that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorFindFirstArgs} args - Arguments to find a RecordAnchor
+     * @example
+     * // Get one RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RecordAnchorFindFirstArgs>(args?: SelectSubset<T, RecordAnchorFindFirstArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RecordAnchor that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorFindFirstOrThrowArgs} args - Arguments to find a RecordAnchor
+     * @example
+     * // Get one RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RecordAnchorFindFirstOrThrowArgs>(args?: SelectSubset<T, RecordAnchorFindFirstOrThrowArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RecordAnchors that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RecordAnchors
+     * const recordAnchors = await prisma.recordAnchor.findMany()
+     * 
+     * // Get first 10 RecordAnchors
+     * const recordAnchors = await prisma.recordAnchor.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const recordAnchorWithIdOnly = await prisma.recordAnchor.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RecordAnchorFindManyArgs>(args?: SelectSubset<T, RecordAnchorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RecordAnchor.
+     * @param {RecordAnchorCreateArgs} args - Arguments to create a RecordAnchor.
+     * @example
+     * // Create one RecordAnchor
+     * const RecordAnchor = await prisma.recordAnchor.create({
+     *   data: {
+     *     // ... data to create a RecordAnchor
+     *   }
+     * })
+     * 
+     */
+    create<T extends RecordAnchorCreateArgs>(args: SelectSubset<T, RecordAnchorCreateArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RecordAnchors.
+     * @param {RecordAnchorCreateManyArgs} args - Arguments to create many RecordAnchors.
+     * @example
+     * // Create many RecordAnchors
+     * const recordAnchor = await prisma.recordAnchor.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RecordAnchorCreateManyArgs>(args?: SelectSubset<T, RecordAnchorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RecordAnchors and returns the data saved in the database.
+     * @param {RecordAnchorCreateManyAndReturnArgs} args - Arguments to create many RecordAnchors.
+     * @example
+     * // Create many RecordAnchors
+     * const recordAnchor = await prisma.recordAnchor.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RecordAnchors and only return the `id`
+     * const recordAnchorWithIdOnly = await prisma.recordAnchor.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RecordAnchorCreateManyAndReturnArgs>(args?: SelectSubset<T, RecordAnchorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RecordAnchor.
+     * @param {RecordAnchorDeleteArgs} args - Arguments to delete one RecordAnchor.
+     * @example
+     * // Delete one RecordAnchor
+     * const RecordAnchor = await prisma.recordAnchor.delete({
+     *   where: {
+     *     // ... filter to delete one RecordAnchor
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RecordAnchorDeleteArgs>(args: SelectSubset<T, RecordAnchorDeleteArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RecordAnchor.
+     * @param {RecordAnchorUpdateArgs} args - Arguments to update one RecordAnchor.
+     * @example
+     * // Update one RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RecordAnchorUpdateArgs>(args: SelectSubset<T, RecordAnchorUpdateArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RecordAnchors.
+     * @param {RecordAnchorDeleteManyArgs} args - Arguments to filter RecordAnchors to delete.
+     * @example
+     * // Delete a few RecordAnchors
+     * const { count } = await prisma.recordAnchor.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RecordAnchorDeleteManyArgs>(args?: SelectSubset<T, RecordAnchorDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RecordAnchors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RecordAnchors
+     * const recordAnchor = await prisma.recordAnchor.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RecordAnchorUpdateManyArgs>(args: SelectSubset<T, RecordAnchorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RecordAnchors and returns the data updated in the database.
+     * @param {RecordAnchorUpdateManyAndReturnArgs} args - Arguments to update many RecordAnchors.
+     * @example
+     * // Update many RecordAnchors
+     * const recordAnchor = await prisma.recordAnchor.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RecordAnchors and only return the `id`
+     * const recordAnchorWithIdOnly = await prisma.recordAnchor.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RecordAnchorUpdateManyAndReturnArgs>(args: SelectSubset<T, RecordAnchorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RecordAnchor.
+     * @param {RecordAnchorUpsertArgs} args - Arguments to update or create a RecordAnchor.
+     * @example
+     * // Update or create a RecordAnchor
+     * const recordAnchor = await prisma.recordAnchor.upsert({
+     *   create: {
+     *     // ... data to create a RecordAnchor
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RecordAnchor we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RecordAnchorUpsertArgs>(args: SelectSubset<T, RecordAnchorUpsertArgs<ExtArgs>>): Prisma__RecordAnchorClient<$Result.GetResult<Prisma.$RecordAnchorPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RecordAnchors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorCountArgs} args - Arguments to filter RecordAnchors to count.
+     * @example
+     * // Count the number of RecordAnchors
+     * const count = await prisma.recordAnchor.count({
+     *   where: {
+     *     // ... the filter for the RecordAnchors we want to count
+     *   }
+     * })
+    **/
+    count<T extends RecordAnchorCountArgs>(
+      args?: Subset<T, RecordAnchorCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RecordAnchorCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RecordAnchor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RecordAnchorAggregateArgs>(args: Subset<T, RecordAnchorAggregateArgs>): Prisma.PrismaPromise<GetRecordAnchorAggregateType<T>>
+
+    /**
+     * Group by RecordAnchor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordAnchorGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RecordAnchorGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RecordAnchorGroupByArgs['orderBy'] }
+        : { orderBy?: RecordAnchorGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RecordAnchorGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecordAnchorGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RecordAnchor model
+   */
+  readonly fields: RecordAnchorFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RecordAnchor.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RecordAnchorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RecordAnchor model
+   */
+  interface RecordAnchorFieldRefs {
+    readonly id: FieldRef<"RecordAnchor", 'Int'>
+    readonly recordCid: FieldRef<"RecordAnchor", 'String'>
+    readonly txSignature: FieldRef<"RecordAnchor", 'String'>
+    readonly pda: FieldRef<"RecordAnchor", 'String'>
+    readonly anchoredBy: FieldRef<"RecordAnchor", 'String'>
+    readonly anchoredAt: FieldRef<"RecordAnchor", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RecordAnchor findUnique
+   */
+  export type RecordAnchorFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter, which RecordAnchor to fetch.
+     */
+    where: RecordAnchorWhereUniqueInput
+  }
+
+  /**
+   * RecordAnchor findUniqueOrThrow
+   */
+  export type RecordAnchorFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter, which RecordAnchor to fetch.
+     */
+    where: RecordAnchorWhereUniqueInput
+  }
+
+  /**
+   * RecordAnchor findFirst
+   */
+  export type RecordAnchorFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter, which RecordAnchor to fetch.
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecordAnchors to fetch.
+     */
+    orderBy?: RecordAnchorOrderByWithRelationInput | RecordAnchorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RecordAnchors.
+     */
+    cursor?: RecordAnchorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecordAnchors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecordAnchors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RecordAnchors.
+     */
+    distinct?: RecordAnchorScalarFieldEnum | RecordAnchorScalarFieldEnum[]
+  }
+
+  /**
+   * RecordAnchor findFirstOrThrow
+   */
+  export type RecordAnchorFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter, which RecordAnchor to fetch.
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecordAnchors to fetch.
+     */
+    orderBy?: RecordAnchorOrderByWithRelationInput | RecordAnchorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RecordAnchors.
+     */
+    cursor?: RecordAnchorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecordAnchors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecordAnchors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RecordAnchors.
+     */
+    distinct?: RecordAnchorScalarFieldEnum | RecordAnchorScalarFieldEnum[]
+  }
+
+  /**
+   * RecordAnchor findMany
+   */
+  export type RecordAnchorFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter, which RecordAnchors to fetch.
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RecordAnchors to fetch.
+     */
+    orderBy?: RecordAnchorOrderByWithRelationInput | RecordAnchorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RecordAnchors.
+     */
+    cursor?: RecordAnchorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RecordAnchors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RecordAnchors.
+     */
+    skip?: number
+    distinct?: RecordAnchorScalarFieldEnum | RecordAnchorScalarFieldEnum[]
+  }
+
+  /**
+   * RecordAnchor create
+   */
+  export type RecordAnchorCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * The data needed to create a RecordAnchor.
+     */
+    data: XOR<RecordAnchorCreateInput, RecordAnchorUncheckedCreateInput>
+  }
+
+  /**
+   * RecordAnchor createMany
+   */
+  export type RecordAnchorCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RecordAnchors.
+     */
+    data: RecordAnchorCreateManyInput | RecordAnchorCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RecordAnchor createManyAndReturn
+   */
+  export type RecordAnchorCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * The data used to create many RecordAnchors.
+     */
+    data: RecordAnchorCreateManyInput | RecordAnchorCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RecordAnchor update
+   */
+  export type RecordAnchorUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * The data needed to update a RecordAnchor.
+     */
+    data: XOR<RecordAnchorUpdateInput, RecordAnchorUncheckedUpdateInput>
+    /**
+     * Choose, which RecordAnchor to update.
+     */
+    where: RecordAnchorWhereUniqueInput
+  }
+
+  /**
+   * RecordAnchor updateMany
+   */
+  export type RecordAnchorUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RecordAnchors.
+     */
+    data: XOR<RecordAnchorUpdateManyMutationInput, RecordAnchorUncheckedUpdateManyInput>
+    /**
+     * Filter which RecordAnchors to update
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * Limit how many RecordAnchors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecordAnchor updateManyAndReturn
+   */
+  export type RecordAnchorUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * The data used to update RecordAnchors.
+     */
+    data: XOR<RecordAnchorUpdateManyMutationInput, RecordAnchorUncheckedUpdateManyInput>
+    /**
+     * Filter which RecordAnchors to update
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * Limit how many RecordAnchors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecordAnchor upsert
+   */
+  export type RecordAnchorUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * The filter to search for the RecordAnchor to update in case it exists.
+     */
+    where: RecordAnchorWhereUniqueInput
+    /**
+     * In case the RecordAnchor found by the `where` argument doesn't exist, create a new RecordAnchor with this data.
+     */
+    create: XOR<RecordAnchorCreateInput, RecordAnchorUncheckedCreateInput>
+    /**
+     * In case the RecordAnchor was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RecordAnchorUpdateInput, RecordAnchorUncheckedUpdateInput>
+  }
+
+  /**
+   * RecordAnchor delete
+   */
+  export type RecordAnchorDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+    /**
+     * Filter which RecordAnchor to delete.
+     */
+    where: RecordAnchorWhereUniqueInput
+  }
+
+  /**
+   * RecordAnchor deleteMany
+   */
+  export type RecordAnchorDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RecordAnchors to delete
+     */
+    where?: RecordAnchorWhereInput
+    /**
+     * Limit how many RecordAnchors to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RecordAnchor without action
+   */
+  export type RecordAnchorDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecordAnchor
+     */
+    select?: RecordAnchorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RecordAnchor
+     */
+    omit?: RecordAnchorOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -5668,6 +6801,18 @@ export namespace Prisma {
   };
 
   export type ConsentCredentialScalarFieldEnum = (typeof ConsentCredentialScalarFieldEnum)[keyof typeof ConsentCredentialScalarFieldEnum]
+
+
+  export const RecordAnchorScalarFieldEnum: {
+    id: 'id',
+    recordCid: 'recordCid',
+    txSignature: 'txSignature',
+    pda: 'pda',
+    anchoredBy: 'anchoredBy',
+    anchoredAt: 'anchoredAt'
+  };
+
+  export type RecordAnchorScalarFieldEnum = (typeof RecordAnchorScalarFieldEnum)[keyof typeof RecordAnchorScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -6053,6 +7198,65 @@ export namespace Prisma {
     anchoredTxId?: StringNullableWithAggregatesFilter<"ConsentCredential"> | string | null
   }
 
+  export type RecordAnchorWhereInput = {
+    AND?: RecordAnchorWhereInput | RecordAnchorWhereInput[]
+    OR?: RecordAnchorWhereInput[]
+    NOT?: RecordAnchorWhereInput | RecordAnchorWhereInput[]
+    id?: IntFilter<"RecordAnchor"> | number
+    recordCid?: StringFilter<"RecordAnchor"> | string
+    txSignature?: StringFilter<"RecordAnchor"> | string
+    pda?: StringFilter<"RecordAnchor"> | string
+    anchoredBy?: StringFilter<"RecordAnchor"> | string
+    anchoredAt?: DateTimeFilter<"RecordAnchor"> | Date | string
+  }
+
+  export type RecordAnchorOrderByWithRelationInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    txSignature?: SortOrder
+    pda?: SortOrder
+    anchoredBy?: SortOrder
+    anchoredAt?: SortOrder
+  }
+
+  export type RecordAnchorWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    recordCid?: string
+    AND?: RecordAnchorWhereInput | RecordAnchorWhereInput[]
+    OR?: RecordAnchorWhereInput[]
+    NOT?: RecordAnchorWhereInput | RecordAnchorWhereInput[]
+    txSignature?: StringFilter<"RecordAnchor"> | string
+    pda?: StringFilter<"RecordAnchor"> | string
+    anchoredBy?: StringFilter<"RecordAnchor"> | string
+    anchoredAt?: DateTimeFilter<"RecordAnchor"> | Date | string
+  }, "id" | "recordCid">
+
+  export type RecordAnchorOrderByWithAggregationInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    txSignature?: SortOrder
+    pda?: SortOrder
+    anchoredBy?: SortOrder
+    anchoredAt?: SortOrder
+    _count?: RecordAnchorCountOrderByAggregateInput
+    _avg?: RecordAnchorAvgOrderByAggregateInput
+    _max?: RecordAnchorMaxOrderByAggregateInput
+    _min?: RecordAnchorMinOrderByAggregateInput
+    _sum?: RecordAnchorSumOrderByAggregateInput
+  }
+
+  export type RecordAnchorScalarWhereWithAggregatesInput = {
+    AND?: RecordAnchorScalarWhereWithAggregatesInput | RecordAnchorScalarWhereWithAggregatesInput[]
+    OR?: RecordAnchorScalarWhereWithAggregatesInput[]
+    NOT?: RecordAnchorScalarWhereWithAggregatesInput | RecordAnchorScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"RecordAnchor"> | number
+    recordCid?: StringWithAggregatesFilter<"RecordAnchor"> | string
+    txSignature?: StringWithAggregatesFilter<"RecordAnchor"> | string
+    pda?: StringWithAggregatesFilter<"RecordAnchor"> | string
+    anchoredBy?: StringWithAggregatesFilter<"RecordAnchor"> | string
+    anchoredAt?: DateTimeWithAggregatesFilter<"RecordAnchor"> | Date | string
+  }
+
   export type RewrapKeyCreateInput = {
     recordCid: string
     recipientPubkey: string
@@ -6357,6 +7561,66 @@ export namespace Prisma {
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedReason?: NullableStringFieldUpdateOperationsInput | string | null
     anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type RecordAnchorCreateInput = {
+    recordCid: string
+    txSignature: string
+    pda: string
+    anchoredBy: string
+    anchoredAt?: Date | string
+  }
+
+  export type RecordAnchorUncheckedCreateInput = {
+    id?: number
+    recordCid: string
+    txSignature: string
+    pda: string
+    anchoredBy: string
+    anchoredAt?: Date | string
+  }
+
+  export type RecordAnchorUpdateInput = {
+    recordCid?: StringFieldUpdateOperationsInput | string
+    txSignature?: StringFieldUpdateOperationsInput | string
+    pda?: StringFieldUpdateOperationsInput | string
+    anchoredBy?: StringFieldUpdateOperationsInput | string
+    anchoredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordAnchorUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    recordCid?: StringFieldUpdateOperationsInput | string
+    txSignature?: StringFieldUpdateOperationsInput | string
+    pda?: StringFieldUpdateOperationsInput | string
+    anchoredBy?: StringFieldUpdateOperationsInput | string
+    anchoredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordAnchorCreateManyInput = {
+    id?: number
+    recordCid: string
+    txSignature: string
+    pda: string
+    anchoredBy: string
+    anchoredAt?: Date | string
+  }
+
+  export type RecordAnchorUpdateManyMutationInput = {
+    recordCid?: StringFieldUpdateOperationsInput | string
+    txSignature?: StringFieldUpdateOperationsInput | string
+    pda?: StringFieldUpdateOperationsInput | string
+    anchoredBy?: StringFieldUpdateOperationsInput | string
+    anchoredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordAnchorUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    recordCid?: StringFieldUpdateOperationsInput | string
+    txSignature?: StringFieldUpdateOperationsInput | string
+    pda?: StringFieldUpdateOperationsInput | string
+    anchoredBy?: StringFieldUpdateOperationsInput | string
+    anchoredAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -6735,6 +7999,41 @@ export namespace Prisma {
   }
 
   export type ConsentCredentialSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type RecordAnchorCountOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    txSignature?: SortOrder
+    pda?: SortOrder
+    anchoredBy?: SortOrder
+    anchoredAt?: SortOrder
+  }
+
+  export type RecordAnchorAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type RecordAnchorMaxOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    txSignature?: SortOrder
+    pda?: SortOrder
+    anchoredBy?: SortOrder
+    anchoredAt?: SortOrder
+  }
+
+  export type RecordAnchorMinOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    txSignature?: SortOrder
+    pda?: SortOrder
+    anchoredBy?: SortOrder
+    anchoredAt?: SortOrder
+  }
+
+  export type RecordAnchorSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

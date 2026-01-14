@@ -7,17 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FileCheck, Copy, ExternalLink, Loader2 } from 'lucide-react';
-
-interface Consent {
-    id: number;
-    consentCid: string;
-    recordCid: string;
-    issuerPubkey: string;
-    recipientPubkey: string;
-    expiresAt: string | null;
-    createdAt: string;
-    anchoredTxId: string | null;
-}
+import { Consent } from '@/lib/types';
 
 export default function MyConsentsPage() {
     const wallet = useWallet();
@@ -109,7 +99,7 @@ export default function MyConsentsPage() {
                     </div>
                 ) : (
                     <>
-                        {/* Issued Consents */}
+                        
                         <Card className="border-2 shadow-lg">
                             <CardHeader>
                                 <CardTitle>Consents You've Issued</CardTitle>
@@ -182,7 +172,7 @@ export default function MyConsentsPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Received Consents */}
+                        
                         <Card className="border-2 shadow-lg">
                             <CardHeader>
                                 <CardTitle>Consents You've Received</CardTitle>

@@ -1,6 +1,6 @@
 import { WalletContextState } from '@solana/wallet-adapter-react';
 import bs58 from 'bs58';
-import type { AdminAuthPayload } from './admin-auth';
+import type { AdminAuthPayload } from '@/lib/types';
 
 export async function signAdminAuth(wallet: WalletContextState): Promise<string | null> {
     if (!wallet.publicKey || !wallet.signMessage) {

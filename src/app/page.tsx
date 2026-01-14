@@ -76,7 +76,7 @@ const securityHighlights = [
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
+      
       <section className="relative py-20 lg:py-32 overflow-hidden flex flex-col items-center justify-center antialiased">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -117,7 +117,7 @@ export default function Home() {
         <BackgroundBeams />
       </section>
 
-      {/* Features Grid */}
+      
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -131,7 +131,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
+      
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -181,7 +181,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Security Highlights */}
+      
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">

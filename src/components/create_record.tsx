@@ -2,9 +2,11 @@
 
 import { encryptPayloadAESGCM, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
 import { ed25519PubkeyToDidKey } from "../lib/ssi";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, SystemProgram } from "@solana/web3.js";
 import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import bs58 from 'bs58';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Download, FileCheck2, AlertCircle } from "lucide-react";
+import { Upload, Download, FileCheck2, AlertCircle, Anchor } from "lucide-react";
+import IDL from '@/anchor/target/idl/compressed_health.json';
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
@@ -56,6 +59,11 @@ export default function CreateRecord() {
     const [loadedRecordSymKey, setLoadedRecordSymKey] = useState<string | null>(null);
     const [newRecipientsInput, setNewRecipientsInput] = useState("");
     const wallet = useWallet();
+    const { connection } = useConnection();
+    const [anchoring, setAnchoring] = useState(false);
+    const [anchorTx, setAnchorTx] = useState<string | null>(null);
+
+    const PROGRAM_ID = new PublicKey('73bxU5B3qZV1UwnMPj4EZQJehSa2ka8vz7DE8WDwA8Lp');
 
     function canonicalize(obj: any): string {
         if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
@@ -76,7 +84,6 @@ export default function CreateRecord() {
                 const buffer = await file.arrayBuffer();
                 raw = new Uint8Array(buffer);
             } else {
-                // Use description as the payload if no file is provided
                 raw = new TextEncoder().encode(description || "");
             }
 
@@ -567,6 +574,70 @@ export default function CreateRecord() {
                     >
                         View on IPFS Gateway →
                     </a>
+                    
+                    {!anchorTx ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                                if (!wallet.publicKey || !wallet.signTransaction) {
+                                    setError('Wallet not connected');
+                                    return;
+                                }
+                                setAnchoring(true);
+                                setError(null);
+                                try {
+                                    const provider = new AnchorProvider(connection, wallet as any, { commitment: 'confirmed' });
+                                    const program = new Program(IDL as any, provider);
+                                    
+                                    const cidHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(cid!));
+                                    const cidHashBytes = new Uint8Array(cidHash).slice(0, 32);
+                                    
+                                    const [recordAnchorPda] = PublicKey.findProgramAddressSync(
+                                        [Buffer.from('anchor'), cidHashBytes],
+                                        PROGRAM_ID
+                                    );
+                                    
+                                    const signature = await program.methods
+                                        .anchorRecord(cid)
+                                        .accounts({
+                                            recordAnchor: recordAnchorPda,
+                                            payer: wallet.publicKey,
+                                            systemProgram: SystemProgram.programId,
+                                        })
+                                        .rpc();
+
+                                    await fetch('/api/anchor', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            recordCid: cid,
+                                            txSignature: signature,
+                                            pda: recordAnchorPda.toBase58(),
+                                            walletPubkey: wallet.publicKey.toBase58(),
+                                        }),
+                                    });
+
+                                    setAnchorTx(signature);
+                                } catch (e: any) {
+                                    setError('Anchor failed: ' + (e.message || String(e)));
+                                } finally {
+                                    setAnchoring(false);
+                                }
+                            }}
+                            disabled={anchoring}
+                            className="gap-2 mt-2"
+                        >
+                            <Anchor className="h-4 w-4" />
+                            {anchoring ? 'Anchoring...' : 'Anchor on Solana'}
+                        </Button>
+                    ) : (
+                        <div className="mt-2 p-2 rounded bg-green-500/10 border border-green-500/30">
+                            <p className="text-sm text-green-600 font-medium">✓ Anchored on-chain</p>
+                            <code className="text-xs text-muted-foreground break-all">{anchorTx}</code>
+                        </div>
+                    )}
                 </div>
             )}
 
