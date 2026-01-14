@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { X, Search, Calendar, Filter } from 'lucide-react';
 
 interface AnalyticsData {
     timeSeriesData: Array<{ date: string; successful: number; failed: number; total: number }>;
@@ -75,12 +76,27 @@ export default function AdminPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSuccess, setFilterSuccess] = useState<string>('all');
     const [filterType, setFilterType] = useState<string>('all');
+    const [filterConsentStatus, setFilterConsentStatus] = useState<string>('all');
+    const [dateFrom, setDateFrom] = useState<string>('');
+    const [dateTo, setDateTo] = useState<string>('');
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
     const [keysPage, setKeysPage] = useState(1);
     const [logsPage, setLogsPage] = useState(1);
+    const [consentsPage, setConsentsPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(25);
     const fetchingRef = useRef(false);
     const lastWalletRef = useRef<string | null>(null);
+
+    const hasActiveFilters = searchTerm || filterType !== 'all' || filterSuccess !== 'all' || filterConsentStatus !== 'all' || dateFrom || dateTo;
+
+    const clearAllFilters = () => {
+        setSearchTerm('');
+        setFilterType('all');
+        setFilterSuccess('all');
+        setFilterConsentStatus('all');
+        setDateFrom('');
+        setDateTo('');
+    };
 
     useEffect(() => {
         const currentWallet = wallet.publicKey?.toBase58() || null;
@@ -174,30 +190,63 @@ export default function AdminPage() {
             key.recipientPubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (key.creatorPubkey && key.creatorPubkey.toLowerCase().includes(searchTerm.toLowerCase()));
 
+        const keyDate = new Date(key.createdAt);
+        const matchesDateFrom = !dateFrom || keyDate >= new Date(dateFrom);
+        const matchesDateTo = !dateTo || keyDate <= new Date(dateTo + 'T23:59:59');
+        const matchesDateRange = matchesDateFrom && matchesDateTo;
+
         if (filterType === 'expired') {
-            return matchesSearch && key.expiresAt && new Date(key.expiresAt) < new Date();
+            return matchesSearch && matchesDateRange && key.expiresAt && new Date(key.expiresAt) < new Date();
         }
         if (filterType === 'active') {
-            return matchesSearch && (!key.expiresAt || new Date(key.expiresAt) >= new Date());
+            return matchesSearch && matchesDateRange && (!key.expiresAt || new Date(key.expiresAt) >= new Date());
         }
-        return matchesSearch;
+        return matchesSearch && matchesDateRange;
     });
 
     const filteredCreatedKeys = filterKeysBySearch(createdKeys);
     const filteredAccessibleKeys = filterKeysBySearch(accessibleKeys);
+
+    const filteredConsents = issuedConsents.filter((consent) => {
+        const matchesSearch =
+            consent.recordCid.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            consent.recipientPubkey.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            consent.consentCid.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const consentDate = new Date(consent.createdAt);
+        const matchesDateFrom = !dateFrom || consentDate >= new Date(dateFrom);
+        const matchesDateTo = !dateTo || consentDate <= new Date(dateTo + 'T23:59:59');
+        const matchesDateRange = matchesDateFrom && matchesDateTo;
+
+        const isRevoked = !!consent.revokedAt;
+        const isExpired = consent.expiresAt && new Date(consent.expiresAt) < new Date();
+        const isActive = !isRevoked && !isExpired;
+
+        if (filterConsentStatus === 'active') return matchesSearch && matchesDateRange && isActive;
+        if (filterConsentStatus === 'revoked') return matchesSearch && matchesDateRange && isRevoked;
+        if (filterConsentStatus === 'expired') return matchesSearch && matchesDateRange && isExpired;
+
+        return matchesSearch && matchesDateRange;
+    });
 
     const filteredLogs = logs.filter((log) => {
         const matchesSearch =
             log.recordCid.toLowerCase().includes(searchTerm.toLowerCase()) ||
             log.recipientPubkey.toLowerCase().includes(searchTerm.toLowerCase());
 
-        if (filterSuccess === 'success') return matchesSearch && log.success;
-        if (filterSuccess === 'failed') return matchesSearch && !log.success;
-        return matchesSearch;
+        const logDate = new Date(log.accessedAt);
+        const matchesDateFrom = !dateFrom || logDate >= new Date(dateFrom);
+        const matchesDateTo = !dateTo || logDate <= new Date(dateTo + 'T23:59:59');
+        const matchesDateRange = matchesDateFrom && matchesDateTo;
+
+        if (filterSuccess === 'success') return matchesSearch && matchesDateRange && log.success;
+        if (filterSuccess === 'failed') return matchesSearch && matchesDateRange && !log.success;
+        return matchesSearch && matchesDateRange;
     });
 
     const totalCreatedKeysPages = Math.ceil(filteredCreatedKeys.length / itemsPerPage);
     const totalAccessibleKeysPages = Math.ceil(filteredAccessibleKeys.length / itemsPerPage);
+    const totalConsentsPages = Math.ceil(filteredConsents.length / itemsPerPage);
     const totalLogsPages = Math.ceil(filteredLogs.length / itemsPerPage);
 
     const paginatedCreatedKeys = filteredCreatedKeys.slice(
@@ -213,6 +262,11 @@ export default function AdminPage() {
     const paginatedLogs = filteredLogs.slice(
         (logsPage - 1) * itemsPerPage,
         logsPage * itemsPerPage
+    );
+
+    const paginatedConsents = filteredConsents.slice(
+        (consentsPage - 1) * itemsPerPage,
+        consentsPage * itemsPerPage
     );
 
     function formatDate(date: string | null) {
@@ -433,24 +487,69 @@ export default function AdminPage() {
                             <CardDescription>Health records you have created and their access permissions</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="flex gap-4 mb-6">
-                                <Input
-                                    placeholder="Search by CID, recipient, or creator..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="max-w-md"
-                                />
-                                <Select value={filterType} onValueChange={setFilterType}>
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Filter by status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Keys</SelectItem>
-                                        <SelectItem value="active">Active</SelectItem>
-                                        <SelectItem value="expired">Expired</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button onClick={fetchData} variant="outline">Refresh</Button>
+                            {/* Search and Filter Bar */}
+                            <div className="space-y-4 mb-6">
+                                <div className="flex flex-wrap gap-3">
+                                    <div className="relative flex-1 min-w-[200px] max-w-md">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search by CID, recipient, or creator..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-9"
+                                        />
+                                    </div>
+                                    <Select value={filterType} onValueChange={setFilterType}>
+                                        <SelectTrigger className="w-[140px]">
+                                            <Filter className="h-4 w-4 mr-2" />
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Keys</SelectItem>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="expired">Expired</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button onClick={fetchData} variant="outline" size="icon" title="Refresh">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </Button>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm text-muted-foreground">From:</span>
+                                        <Input
+                                            type="date"
+                                            value={dateFrom}
+                                            onChange={(e) => setDateFrom(e.target.value)}
+                                            className="w-[150px]"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-muted-foreground">To:</span>
+                                        <Input
+                                            type="date"
+                                            value={dateTo}
+                                            onChange={(e) => setDateTo(e.target.value)}
+                                            className="w-[150px]"
+                                        />
+                                    </div>
+                                    {hasActiveFilters && (
+                                        <Button onClick={clearAllFilters} variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                            <X className="h-4 w-4 mr-1" />
+                                            Clear Filters
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {hasActiveFilters && (
+                                    <div className="text-sm text-muted-foreground">
+                                        Showing {filteredCreatedKeys.length} of {createdKeys.length} records
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-2 mb-4">
@@ -566,7 +665,6 @@ export default function AdminPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Records You Can Access Section */}
                     <Card className="border-2 border-primary/20">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -681,70 +779,164 @@ export default function AdminPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {issuedConsents.length === 0 ? (
+                            <div className="space-y-4 mb-6">
+                                <div className="flex flex-wrap gap-3">
+                                    <div className="relative flex-1 min-w-[200px] max-w-md">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Search by CID, recipient, or consent CID..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-9"
+                                        />
+                                    </div>
+                                    <Select value={filterConsentStatus} onValueChange={setFilterConsentStatus}>
+                                        <SelectTrigger className="w-[140px]">
+                                            <Filter className="h-4 w-4 mr-2" />
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Consents</SelectItem>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="revoked">Revoked</SelectItem>
+                                            <SelectItem value="expired">Expired</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm text-muted-foreground">From:</span>
+                                        <Input
+                                            type="date"
+                                            value={dateFrom}
+                                            onChange={(e) => setDateFrom(e.target.value)}
+                                            className="w-[150px]"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-muted-foreground">To:</span>
+                                        <Input
+                                            type="date"
+                                            value={dateTo}
+                                            onChange={(e) => setDateTo(e.target.value)}
+                                            className="w-[150px]"
+                                        />
+                                    </div>
+                                    {hasActiveFilters && (
+                                        <Button onClick={clearAllFilters} variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                            <X className="h-4 w-4 mr-1" />
+                                            Clear Filters
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {hasActiveFilters && (
+                                    <div className="text-sm text-muted-foreground">
+                                        Showing {filteredConsents.length} of {issuedConsents.length} consents
+                                    </div>
+                                )}
+                            </div>
+
+                            {filteredConsents.length === 0 ? (
                                 <div className="text-center py-8 text-muted-foreground">
-                                    <p>You haven&apos;t issued any consents yet.</p>
-                                    <Link href="/consent" className="text-primary hover:underline mt-2 inline-block">
-                                        Issue a consent →
-                                    </Link>
+                                    {issuedConsents.length === 0 ? (
+                                        <>
+                                            <p>You haven&apos;t issued any consents yet.</p>
+                                            <Link href="/consent" className="text-primary hover:underline mt-2 inline-block">
+                                                Issue a consent →
+                                            </Link>
+                                        </>
+                                    ) : (
+                                        <p>No consents match your filters.</p>
+                                    )}
                                 </div>
                             ) : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Record CID</TableHead>
-                                            <TableHead>Recipient</TableHead>
-                                            <TableHead>Issued</TableHead>
-                                            <TableHead>Expires</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {issuedConsents.map((consent) => (
-                                            <TableRow key={consent.id}>
-                                                <TableCell className="font-mono text-sm">
-                                                    {truncate(consent.recordCid, 16)}
-                                                </TableCell>
-                                                <TableCell className="font-mono text-sm">
-                                                    {truncate(consent.recipientPubkey, 12)}
-                                                </TableCell>
-                                                <TableCell className="text-sm">
-                                                    {formatDate(consent.createdAt)}
-                                                </TableCell>
-                                                <TableCell className="text-sm">
-                                                    {consent.expiresAt ? formatDate(consent.expiresAt) : 'Never'}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {consent.revokedAt ? (
-                                                        <Badge variant="destructive">Revoked</Badge>
-                                                    ) : consent.expiresAt && new Date(consent.expiresAt) < new Date() ? (
-                                                        <Badge variant="secondary">Expired</Badge>
-                                                    ) : (
-                                                        <Badge variant="default">Active</Badge>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    {!consent.revokedAt && (!consent.expiresAt || new Date(consent.expiresAt) >= new Date()) && (
-                                                        <Button
-                                                            onClick={() => revokeConsent(consent.id)}
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="text-destructive hover:text-destructive"
-                                                        >
-                                                            Revoke
-                                                        </Button>
-                                                    )}
-                                                    {consent.revokedAt && consent.revokedReason && (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {consent.revokedReason}
-                                                        </span>
-                                                    )}
-                                                </TableCell>
+                                <>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Record CID</TableHead>
+                                                <TableHead>Recipient</TableHead>
+                                                <TableHead>Issued</TableHead>
+                                                <TableHead>Expires</TableHead>
+                                                <TableHead>Status</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {paginatedConsents.map((consent) => (
+                                                <TableRow key={consent.id}>
+                                                    <TableCell className="font-mono text-sm">
+                                                        {truncate(consent.recordCid, 16)}
+                                                    </TableCell>
+                                                    <TableCell className="font-mono text-sm">
+                                                        {truncate(consent.recipientPubkey, 12)}
+                                                    </TableCell>
+                                                    <TableCell className="text-sm">
+                                                        {formatDate(consent.createdAt)}
+                                                    </TableCell>
+                                                    <TableCell className="text-sm">
+                                                        {consent.expiresAt ? formatDate(consent.expiresAt) : 'Never'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {consent.revokedAt ? (
+                                                            <Badge variant="destructive">Revoked</Badge>
+                                                        ) : consent.expiresAt && new Date(consent.expiresAt) < new Date() ? (
+                                                            <Badge variant="secondary">Expired</Badge>
+                                                        ) : (
+                                                            <Badge variant="default">Active</Badge>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        {!consent.revokedAt && (!consent.expiresAt || new Date(consent.expiresAt) >= new Date()) && (
+                                                            <Button
+                                                                onClick={() => revokeConsent(consent.id)}
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="text-destructive hover:text-destructive"
+                                                            >
+                                                                Revoke
+                                                            </Button>
+                                                        )}
+                                                        {consent.revokedAt && consent.revokedReason && (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {consent.revokedReason}
+                                                            </span>
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+
+                                    {totalConsentsPages > 1 && (
+                                        <div className="flex items-center justify-between mt-4">
+                                            <span className="text-sm text-muted-foreground">
+                                                Page {consentsPage} of {totalConsentsPages}
+                                            </span>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setConsentsPage(p => Math.max(1, p - 1))}
+                                                    disabled={consentsPage === 1}
+                                                >
+                                                    Previous
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setConsentsPage(p => Math.min(totalConsentsPages, p + 1))}
+                                                    disabled={consentsPage === totalConsentsPages}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </CardContent>
                     </Card>
