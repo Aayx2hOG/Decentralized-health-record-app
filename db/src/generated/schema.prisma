@@ -63,6 +63,8 @@ model ConsentCredential {
   recipientPubkey String
   expiresAt       DateTime?
   createdAt       DateTime  @default(now())
+  revokedAt       DateTime?
+  revokedReason   String?
   anchoredTxId    String?
 
   @@index([issuerPubkey], name: "idx_issuer")

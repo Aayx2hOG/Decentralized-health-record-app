@@ -71,11 +71,14 @@ export default function CreateRecord() {
         setBusy(true);
 
         try {
-            if (!file) {
-                throw new Error('Please select a file to upload');
+            let raw: Uint8Array;
+            if (file) {
+                const buffer = await file.arrayBuffer();
+                raw = new Uint8Array(buffer);
+            } else {
+                // Use description as the payload if no file is provided
+                raw = new TextEncoder().encode(description || "");
             }
-            const buffer = await file.arrayBuffer();
-            const raw = new Uint8Array(buffer);
 
             const sym = generateSymmetricKey();
             const symU8 = sym instanceof Uint8Array ? sym : new Uint8Array(sym as any);
@@ -232,7 +235,20 @@ export default function CreateRecord() {
                 recipients: [...recipientAddress].sort()
             });
             const messageBytes = new TextEncoder().encode(messageToSign);
-            const signature = await wallet.signMessage!(messageBytes);
+            let signature: Uint8Array;
+            try {
+                if (!wallet.signMessage) {
+                    throw new Error('Wallet does not support message signing');
+                }
+                signature = await wallet.signMessage(messageBytes);
+            } catch (err: any) {
+                console.error('Wallet signing failed:', err);
+                if (err.message?.includes('JSON-RPC')) {
+                    throw new Error(`Wallet error: ${err.message}. Please try reconnecting your wallet or switching networks.`);
+                }
+                throw new Error(`Failed to sign message: ${err.message}`);
+            }
+
             const creatorSignature = Buffer.from(signature).toString('base64');
             const creatorPubkey = bs58.encode(wallet.publicKey.toBytes());
 
@@ -254,9 +270,9 @@ export default function CreateRecord() {
             }
             const result = await res.json();
             return result;
-        } catch (e) {
+        } catch (e: any) {
             console.error('Failed to upload rewrap API: ', e);
-            throw e;
+            throw new Error(e.message || String(e));
         }
     }
 
@@ -414,7 +430,7 @@ export default function CreateRecord() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="file">Health Record File</Label>
+                    <Label htmlFor="file">Health Record File <span className="text-muted-foreground font-normal">(Optional)</span></Label>
                     <div className="flex items-center gap-3">
                         <input
                             ref={(el) => { fileInputRef.current = el; }}

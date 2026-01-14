@@ -46,7 +46,7 @@ export type ConsentCredential = $Result.DefaultSelection<Prisma.$ConsentCredenti
  * ```
  *
  *
- * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+ * Read more in our [docs](https://pris.ly/d/client).
  */
 export class PrismaClient<
   ClientOptions extends Prisma.PrismaClientOptions = Prisma.PrismaClientOptions,
@@ -67,7 +67,7 @@ export class PrismaClient<
    * ```
    *
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client).
+   * Read more in our [docs](https://pris.ly/d/client).
    */
 
   constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
@@ -90,7 +90,7 @@ export class PrismaClient<
    * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -102,7 +102,7 @@ export class PrismaClient<
    * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
 
@@ -113,7 +113,7 @@ export class PrismaClient<
    * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -125,7 +125,7 @@ export class PrismaClient<
    * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
    * ```
    *
-   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   * Read more in our [docs](https://pris.ly/d/raw-queries).
    */
   $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
 
@@ -240,8 +240,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.0.0
-   * Query Engine version: 0c19ccc313cf9911a90d99d2ac2eb0280c76c513
+   * Prisma Client JS version: 7.1.0
+   * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
    */
   export type PrismaVersion = {
     client: string
@@ -997,7 +997,7 @@ export namespace Prisma {
      *  { emit: 'stdout', level: 'error' }
      * 
      * ```
-     * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
+     * Read more in our [docs](https://pris.ly/d/logging).
      */
     log?: (LogLevel | LogDefinition)[]
     /**
@@ -1033,6 +1033,22 @@ export namespace Prisma {
      * ```
      */
     omit?: Prisma.GlobalOmitConfig
+    /**
+     * SQL commenter plugins that add metadata to SQL queries as comments.
+     * Comments follow the sqlcommenter format: https://google.github.io/sqlcommenter/
+     * 
+     * @example
+     * ```
+     * const prisma = new PrismaClient({
+     *   adapter,
+     *   comments: [
+     *     traceContext(),
+     *     queryInsights(),
+     *   ],
+     * })
+     * ```
+     */
+    comments?: runtime.SqlCommenterPlugin[]
   }
   export type GlobalOmitConfig = {
     rewrapKey?: RewrapKeyOmit
@@ -4533,6 +4549,8 @@ export namespace Prisma {
     recipientPubkey: string | null
     expiresAt: Date | null
     createdAt: Date | null
+    revokedAt: Date | null
+    revokedReason: string | null
     anchoredTxId: string | null
   }
 
@@ -4544,6 +4562,8 @@ export namespace Prisma {
     recipientPubkey: string | null
     expiresAt: Date | null
     createdAt: Date | null
+    revokedAt: Date | null
+    revokedReason: string | null
     anchoredTxId: string | null
   }
 
@@ -4555,6 +4575,8 @@ export namespace Prisma {
     recipientPubkey: number
     expiresAt: number
     createdAt: number
+    revokedAt: number
+    revokedReason: number
     anchoredTxId: number
     _all: number
   }
@@ -4576,6 +4598,8 @@ export namespace Prisma {
     recipientPubkey?: true
     expiresAt?: true
     createdAt?: true
+    revokedAt?: true
+    revokedReason?: true
     anchoredTxId?: true
   }
 
@@ -4587,6 +4611,8 @@ export namespace Prisma {
     recipientPubkey?: true
     expiresAt?: true
     createdAt?: true
+    revokedAt?: true
+    revokedReason?: true
     anchoredTxId?: true
   }
 
@@ -4598,6 +4624,8 @@ export namespace Prisma {
     recipientPubkey?: true
     expiresAt?: true
     createdAt?: true
+    revokedAt?: true
+    revokedReason?: true
     anchoredTxId?: true
     _all?: true
   }
@@ -4696,6 +4724,8 @@ export namespace Prisma {
     recipientPubkey: string
     expiresAt: Date | null
     createdAt: Date
+    revokedAt: Date | null
+    revokedReason: string | null
     anchoredTxId: string | null
     _count: ConsentCredentialCountAggregateOutputType | null
     _avg: ConsentCredentialAvgAggregateOutputType | null
@@ -4726,6 +4756,8 @@ export namespace Prisma {
     recipientPubkey?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    revokedAt?: boolean
+    revokedReason?: boolean
     anchoredTxId?: boolean
   }, ExtArgs["result"]["consentCredential"]>
 
@@ -4737,6 +4769,8 @@ export namespace Prisma {
     recipientPubkey?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    revokedAt?: boolean
+    revokedReason?: boolean
     anchoredTxId?: boolean
   }, ExtArgs["result"]["consentCredential"]>
 
@@ -4748,6 +4782,8 @@ export namespace Prisma {
     recipientPubkey?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    revokedAt?: boolean
+    revokedReason?: boolean
     anchoredTxId?: boolean
   }, ExtArgs["result"]["consentCredential"]>
 
@@ -4759,10 +4795,12 @@ export namespace Prisma {
     recipientPubkey?: boolean
     expiresAt?: boolean
     createdAt?: boolean
+    revokedAt?: boolean
+    revokedReason?: boolean
     anchoredTxId?: boolean
   }
 
-  export type ConsentCredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "consentCid" | "recordCid" | "issuerPubkey" | "recipientPubkey" | "expiresAt" | "createdAt" | "anchoredTxId", ExtArgs["result"]["consentCredential"]>
+  export type ConsentCredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "consentCid" | "recordCid" | "issuerPubkey" | "recipientPubkey" | "expiresAt" | "createdAt" | "revokedAt" | "revokedReason" | "anchoredTxId", ExtArgs["result"]["consentCredential"]>
 
   export type $ConsentCredentialPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ConsentCredential"
@@ -4775,6 +4813,8 @@ export namespace Prisma {
       recipientPubkey: string
       expiresAt: Date | null
       createdAt: Date
+      revokedAt: Date | null
+      revokedReason: string | null
       anchoredTxId: string | null
     }, ExtArgs["result"]["consentCredential"]>
     composites: {}
@@ -5206,6 +5246,8 @@ export namespace Prisma {
     readonly recipientPubkey: FieldRef<"ConsentCredential", 'String'>
     readonly expiresAt: FieldRef<"ConsentCredential", 'DateTime'>
     readonly createdAt: FieldRef<"ConsentCredential", 'DateTime'>
+    readonly revokedAt: FieldRef<"ConsentCredential", 'DateTime'>
+    readonly revokedReason: FieldRef<"ConsentCredential", 'String'>
     readonly anchoredTxId: FieldRef<"ConsentCredential", 'String'>
   }
     
@@ -5636,6 +5678,8 @@ export namespace Prisma {
     recipientPubkey: 'recipientPubkey',
     expiresAt: 'expiresAt',
     createdAt: 'createdAt',
+    revokedAt: 'revokedAt',
+    revokedReason: 'revokedReason',
     anchoredTxId: 'anchoredTxId'
   };
 
@@ -5957,6 +6001,8 @@ export namespace Prisma {
     recipientPubkey?: StringFilter<"ConsentCredential"> | string
     expiresAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
     createdAt?: DateTimeFilter<"ConsentCredential"> | Date | string
+    revokedAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
+    revokedReason?: StringNullableFilter<"ConsentCredential"> | string | null
     anchoredTxId?: StringNullableFilter<"ConsentCredential"> | string | null
   }
 
@@ -5968,6 +6014,8 @@ export namespace Prisma {
     recipientPubkey?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    revokedReason?: SortOrderInput | SortOrder
     anchoredTxId?: SortOrderInput | SortOrder
   }
 
@@ -5982,6 +6030,8 @@ export namespace Prisma {
     recipientPubkey?: StringFilter<"ConsentCredential"> | string
     expiresAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
     createdAt?: DateTimeFilter<"ConsentCredential"> | Date | string
+    revokedAt?: DateTimeNullableFilter<"ConsentCredential"> | Date | string | null
+    revokedReason?: StringNullableFilter<"ConsentCredential"> | string | null
     anchoredTxId?: StringNullableFilter<"ConsentCredential"> | string | null
   }, "id" | "consentCid">
 
@@ -5993,6 +6043,8 @@ export namespace Prisma {
     recipientPubkey?: SortOrder
     expiresAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    revokedAt?: SortOrderInput | SortOrder
+    revokedReason?: SortOrderInput | SortOrder
     anchoredTxId?: SortOrderInput | SortOrder
     _count?: ConsentCredentialCountOrderByAggregateInput
     _avg?: ConsentCredentialAvgOrderByAggregateInput
@@ -6012,6 +6064,8 @@ export namespace Prisma {
     recipientPubkey?: StringWithAggregatesFilter<"ConsentCredential"> | string
     expiresAt?: DateTimeNullableWithAggregatesFilter<"ConsentCredential"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ConsentCredential"> | Date | string
+    revokedAt?: DateTimeNullableWithAggregatesFilter<"ConsentCredential"> | Date | string | null
+    revokedReason?: StringNullableWithAggregatesFilter<"ConsentCredential"> | string | null
     anchoredTxId?: StringNullableWithAggregatesFilter<"ConsentCredential"> | string | null
   }
 
@@ -6240,6 +6294,8 @@ export namespace Prisma {
     recipientPubkey: string
     expiresAt?: Date | string | null
     createdAt?: Date | string
+    revokedAt?: Date | string | null
+    revokedReason?: string | null
     anchoredTxId?: string | null
   }
 
@@ -6251,6 +6307,8 @@ export namespace Prisma {
     recipientPubkey: string
     expiresAt?: Date | string | null
     createdAt?: Date | string
+    revokedAt?: Date | string | null
+    revokedReason?: string | null
     anchoredTxId?: string | null
   }
 
@@ -6261,6 +6319,8 @@ export namespace Prisma {
     recipientPubkey?: StringFieldUpdateOperationsInput | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedReason?: NullableStringFieldUpdateOperationsInput | string | null
     anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -6272,6 +6332,8 @@ export namespace Prisma {
     recipientPubkey?: StringFieldUpdateOperationsInput | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedReason?: NullableStringFieldUpdateOperationsInput | string | null
     anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -6283,6 +6345,8 @@ export namespace Prisma {
     recipientPubkey: string
     expiresAt?: Date | string | null
     createdAt?: Date | string
+    revokedAt?: Date | string | null
+    revokedReason?: string | null
     anchoredTxId?: string | null
   }
 
@@ -6293,6 +6357,8 @@ export namespace Prisma {
     recipientPubkey?: StringFieldUpdateOperationsInput | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedReason?: NullableStringFieldUpdateOperationsInput | string | null
     anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -6304,6 +6370,8 @@ export namespace Prisma {
     recipientPubkey?: StringFieldUpdateOperationsInput | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedReason?: NullableStringFieldUpdateOperationsInput | string | null
     anchoredTxId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -6647,6 +6715,8 @@ export namespace Prisma {
     recipientPubkey?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    revokedAt?: SortOrder
+    revokedReason?: SortOrder
     anchoredTxId?: SortOrder
   }
 
@@ -6662,6 +6732,8 @@ export namespace Prisma {
     recipientPubkey?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    revokedAt?: SortOrder
+    revokedReason?: SortOrder
     anchoredTxId?: SortOrder
   }
 
@@ -6673,6 +6745,8 @@ export namespace Prisma {
     recipientPubkey?: SortOrder
     expiresAt?: SortOrder
     createdAt?: SortOrder
+    revokedAt?: SortOrder
+    revokedReason?: SortOrder
     anchoredTxId?: SortOrder
   }
 

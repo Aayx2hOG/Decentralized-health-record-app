@@ -52,10 +52,22 @@ interface Stats {
     activeKeys: number;
 }
 
+interface IssuedConsent {
+    id: number;
+    consentCid: string;
+    recordCid: string;
+    recipientPubkey: string;
+    createdAt: string;
+    expiresAt: string | null;
+    revokedAt: string | null;
+    revokedReason: string | null;
+}
+
 export default function AdminPage() {
     const wallet = useWallet();
     const [createdKeys, setCreatedKeys] = useState<RewrapKey[]>([]);
     const [accessibleKeys, setAccessibleKeys] = useState<RewrapKey[]>([]);
+    const [issuedConsents, setIssuedConsents] = useState<IssuedConsent[]>([]);
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -78,6 +90,7 @@ export default function AdminPage() {
             fetchingRef.current = false;
             setCreatedKeys([]);
             setAccessibleKeys([]);
+            setIssuedConsents([]);
             setLogs([]);
             setStats(null);
             setAnalytics(null);
@@ -129,6 +142,7 @@ export default function AdminPage() {
                 const keysData = await keysRes.json();
                 setCreatedKeys(keysData.created || []);
                 setAccessibleKeys(keysData.accessible || []);
+                setIssuedConsents(keysData.issuedConsents || []);
             } else if (keysRes.status === 401) {
                 const errorData = await keysRes.json().catch(() => ({ error: 'Unknown error' }));
                 console.error('Auth error:', errorData);
@@ -235,6 +249,34 @@ export default function AdminPage() {
             }
         } catch (e) {
             alert('Error revoking key');
+        }
+    }
+
+    async function revokeConsent(id: number) {
+        if (!confirm('Are you sure you want to revoke this consent? The recipient will immediately lose access.')) return;
+
+        try {
+            const { signAdminAuth } = await import('@/lib/admin-client');
+            const authToken = await signAdminAuth(wallet);
+
+            const res = await fetch('/api/consent/revoke', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ consentId: id })
+            });
+
+            if (res.ok) {
+                await fetchData();
+                alert('Consent revoked successfully');
+            } else {
+                const error = await res.json();
+                alert('Failed to revoke consent: ' + (error.error || 'Unknown error'));
+            }
+        } catch (e: any) {
+            alert('Error revoking consent: ' + e.message);
         }
     }
 
@@ -378,6 +420,7 @@ export default function AdminPage() {
             <Tabs defaultValue="keys" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="keys">Rewrap Keys</TabsTrigger>
+                    <TabsTrigger value="consents">Issued Consents</TabsTrigger>
                     <TabsTrigger value="logs">Access Logs</TabsTrigger>
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                 </TabsList>
@@ -624,6 +667,84 @@ export default function AdminPage() {
                                         </Button>
                                     </div>
                                 </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="consents" className="space-y-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Consents You&apos;ve Issued</CardTitle>
+                            <CardDescription>
+                                Manage access permissions you&apos;ve granted to others. Revoking a consent will immediately prevent the recipient from accessing the record.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {issuedConsents.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <p>You haven&apos;t issued any consents yet.</p>
+                                    <Link href="/consent" className="text-primary hover:underline mt-2 inline-block">
+                                        Issue a consent →
+                                    </Link>
+                                </div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Record CID</TableHead>
+                                            <TableHead>Recipient</TableHead>
+                                            <TableHead>Issued</TableHead>
+                                            <TableHead>Expires</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {issuedConsents.map((consent) => (
+                                            <TableRow key={consent.id}>
+                                                <TableCell className="font-mono text-sm">
+                                                    {truncate(consent.recordCid, 16)}
+                                                </TableCell>
+                                                <TableCell className="font-mono text-sm">
+                                                    {truncate(consent.recipientPubkey, 12)}
+                                                </TableCell>
+                                                <TableCell className="text-sm">
+                                                    {formatDate(consent.createdAt)}
+                                                </TableCell>
+                                                <TableCell className="text-sm">
+                                                    {consent.expiresAt ? formatDate(consent.expiresAt) : 'Never'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {consent.revokedAt ? (
+                                                        <Badge variant="destructive">Revoked</Badge>
+                                                    ) : consent.expiresAt && new Date(consent.expiresAt) < new Date() ? (
+                                                        <Badge variant="secondary">Expired</Badge>
+                                                    ) : (
+                                                        <Badge variant="default">Active</Badge>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {!consent.revokedAt && (!consent.expiresAt || new Date(consent.expiresAt) >= new Date()) && (
+                                                        <Button
+                                                            onClick={() => revokeConsent(consent.id)}
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="text-destructive hover:text-destructive"
+                                                        >
+                                                            Revoke
+                                                        </Button>
+                                                    )}
+                                                    {consent.revokedAt && consent.revokedReason && (
+                                                        <span className="text-xs text-muted-foreground">
+                                                            {consent.revokedReason}
+                                                        </span>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             )}
                         </CardContent>
                     </Card>

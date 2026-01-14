@@ -184,6 +184,45 @@ export async function POST(req: NextRequest) {
           }, { status: 503 });
         }
 
+        const consent = await prismaClient.consentCredential.findFirst({
+          where: {
+            consentCid: consentCid,
+          }
+        });
+
+        if (consent) {
+          if (consent.revokedAt) {
+            await prismaClient.accessLog.create({
+              data: {
+                recordCid,
+                recipientPubkey: recipientPub,
+                success: false,
+                errorMessage: "Consent has been revoked",
+                ipAddress,
+                userAgent
+              },
+            });
+            return NextResponse.json({
+              error: 'This consent has been revoked by the issuer'
+            }, { status: 403 });
+          }
+
+          if (consent.expiresAt && new Date() > consent.expiresAt) {
+            await prismaClient.accessLog.create({
+              data: {
+                recordCid,
+                recipientPubkey: recipientPub,
+                success: false,
+                errorMessage: "Consent has expired",
+                ipAddress,
+                userAgent
+              },
+            });
+            return NextResponse.json({
+              error: 'Consent has expired'
+            }, { status: 403 });
+          }
+        }
 
         const symKeyBytes = Buffer.from(issuerKey.encryptedSymKey, 'base64');
         const ephemeralPubBytes = bs58.decode(ephemeralPub);
