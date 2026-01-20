@@ -2,6 +2,8 @@
 
 import { encryptPayloadAESGCM, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
 import { ed25519PubkeyToDidKey } from "../lib/ssi";
+import { logRecordCreated } from "@/lib/consent-anchor";
+import { useAnchorProvider } from "@/components/solana/solana-provider";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import React, { useState, useRef } from "react";
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -60,6 +62,7 @@ export default function CreateRecord() {
     const [newRecipientsInput, setNewRecipientsInput] = useState("");
     const wallet = useWallet();
     const { connection } = useConnection();
+    const provider = useAnchorProvider();
     const [anchoring, setAnchoring] = useState(false);
     const [anchorTx, setAnchorTx] = useState<string | null>(null);
 
@@ -581,32 +584,21 @@ export default function CreateRecord() {
                             variant="outline"
                             size="sm"
                             onClick={async () => {
-                                if (!wallet.publicKey || !wallet.signTransaction) {
+                                if (!wallet.publicKey) {
                                     setError('Wallet not connected');
                                     return;
                                 }
                                 setAnchoring(true);
                                 setError(null);
                                 try {
-                                    const provider = new AnchorProvider(connection, wallet as any, { commitment: 'confirmed' });
-                                    const program = new Program(IDL as any, provider);
-                                    
+                                    const signature = await logRecordCreated(provider, cid!, title);
+
                                     const cidHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(cid!));
                                     const cidHashBytes = new Uint8Array(cidHash).slice(0, 32);
-                                    
                                     const [recordAnchorPda] = PublicKey.findProgramAddressSync(
                                         [Buffer.from('anchor'), cidHashBytes],
-                                        PROGRAM_ID
+                                        new PublicKey('73bxU5B3qZV1UwnMPj4EZQJehSa2ka8vz7DE8WDwA8Lp')
                                     );
-                                    
-                                    const signature = await program.methods
-                                        .anchorRecord(cid)
-                                        .accounts({
-                                            recordAnchor: recordAnchorPda,
-                                            payer: wallet.publicKey,
-                                            systemProgram: SystemProgram.programId,
-                                        })
-                                        .rpc();
 
                                     await fetch('/api/anchor', {
                                         method: 'POST',

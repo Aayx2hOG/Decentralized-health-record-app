@@ -219,6 +219,88 @@ export type CompressedHealth = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "logConsentGranted",
+      "discriminator": [
+        171,
+        160,
+        225,
+        180,
+        119,
+        204,
+        183,
+        174
+      ],
+      "accounts": [
+        {
+          "name": "issuer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "consentCidHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "recordCidHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "logConsentRevoked",
+      "discriminator": [
+        35,
+        69,
+        64,
+        92,
+        132,
+        193,
+        117,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "issuer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "consentCidHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "reasonHash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -250,6 +332,45 @@ export type CompressedHealth = {
     }
   ],
   "events": [
+    {
+      "name": "consentGranted",
+      "discriminator": [
+        151,
+        98,
+        229,
+        56,
+        36,
+        111,
+        88,
+        46
+      ]
+    },
+    {
+      "name": "consentRevoked",
+      "discriminator": [
+        56,
+        245,
+        136,
+        57,
+        212,
+        252,
+        122,
+        43
+      ]
+    },
+    {
+      "name": "recordAnchored",
+      "discriminator": [
+        184,
+        128,
+        232,
+        252,
+        105,
+        85,
+        4,
+        125
+      ]
+    },
     {
       "name": "recordCreated",
       "discriminator": [
@@ -343,6 +464,78 @@ export type CompressedHealth = {
       }
     },
     {
+      "name": "consentGranted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "consentCid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "recordCid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "consentRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "consentCid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "reasonHash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "recordAnchor",
       "type": {
         "kind": "struct",
@@ -362,6 +555,31 @@ export type CompressedHealth = {
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "recordAnchored",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "recordCid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }

@@ -213,6 +213,88 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "log_consent_granted",
+      "discriminator": [
+        171,
+        160,
+        225,
+        180,
+        119,
+        204,
+        183,
+        174
+      ],
+      "accounts": [
+        {
+          "name": "issuer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "consent_cid_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "record_cid_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "log_consent_revoked",
+      "discriminator": [
+        35,
+        69,
+        64,
+        92,
+        132,
+        193,
+        117,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "issuer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "consent_cid_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "reason_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -244,6 +326,45 @@
     }
   ],
   "events": [
+    {
+      "name": "ConsentGranted",
+      "discriminator": [
+        151,
+        98,
+        229,
+        56,
+        36,
+        111,
+        88,
+        46
+      ]
+    },
+    {
+      "name": "ConsentRevoked",
+      "discriminator": [
+        56,
+        245,
+        136,
+        57,
+        212,
+        252,
+        122,
+        43
+      ]
+    },
+    {
+      "name": "RecordAnchored",
+      "discriminator": [
+        184,
+        128,
+        232,
+        252,
+        105,
+        85,
+        4,
+        125
+      ]
+    },
     {
       "name": "RecordCreated",
       "discriminator": [
@@ -337,6 +458,78 @@
       }
     },
     {
+      "name": "ConsentGranted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "consent_cid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "record_cid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConsentRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "consent_cid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "reason_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "RecordAnchor",
       "type": {
         "kind": "struct",
@@ -356,6 +549,31 @@
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecordAnchored",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "record_cid",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }

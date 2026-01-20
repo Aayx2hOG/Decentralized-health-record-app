@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { ed25519PubkeyToDidKey, pubkeyBase58ToDidKey } from '../../lib/ssi';
+import { logConsentGranted } from '@/lib/consent-anchor';
+import { useAnchorProvider } from '@/components/solana/solana-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +24,7 @@ function canonicalize(obj: any): string {
 export default function ConsentPage() {
     const wallet = useWallet();
     const { connection } = useConnection();
+    const provider = useAnchorProvider();
     const [recordCid, setRecordCid] = useState('');
     const [recipientPk, setRecipientPk] = useState('');
     const [daysValid, setDaysValid] = useState(7);
@@ -85,26 +88,14 @@ export default function ConsentPage() {
             let txSig: string | undefined = undefined;
             if (anchorOnChain) {
                 try {
-                    const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
-                    const ix = new TransactionInstruction({
-                        programId: MEMO_PROGRAM_ID,
-                        keys: [],
-                        data: Buffer.from(cid)
-                    });
-                    const tx = new Transaction().add(ix);
-                    tx.feePayer = wallet.publicKey;
-
-                    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
-                    tx.recentBlockhash = blockhash;
-
-                    const sigTx = await wallet.sendTransaction(tx, connection);
-                    await connection.confirmTransaction({
-                        signature: sigTx,
-                        blockhash,
-                        lastValidBlockHeight
-                    }, 'confirmed');
-                    txSig = sigTx;
+                    txSig = await logConsentGranted(
+                        provider,
+                        cid,
+                        recordCid,
+                        recipientPk.trim()
+                    );
                 } catch (txError: any) {
+                    console.error('On-chain logging failed:', txError);
                 }
             }
 

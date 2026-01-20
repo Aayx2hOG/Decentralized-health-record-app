@@ -93,10 +93,18 @@ pub mod compressed_health {
 
     pub fn anchor_record(ctx: Context<AnchorRecord>, record_cid: String) -> Result<()> {
         let anchor = &mut ctx.accounts.record_anchor;
+        let cid_hash = hash(record_cid.as_bytes()).to_bytes();
+
         anchor.record_cid = record_cid;
         anchor.creator = ctx.accounts.payer.key();
         anchor.timestamp = Clock::get()?.unix_timestamp;
         anchor.bump = ctx.bumps.record_anchor;
+
+        emit!(RecordAnchored {
+            creator: ctx.accounts.payer.key(),
+            record_cid: cid_hash,
+            timestamp: Clock::get()?.unix_timestamp,
+        });
 
         msg!("Record anchored: {}", anchor.record_cid);
         Ok(())
@@ -104,6 +112,36 @@ pub mod compressed_health {
 
     pub fn get_record_count(ctx: Context<GetRecordCount>) -> Result<u64> {
         Ok(ctx.accounts.config.record_count)
+    }
+
+    pub fn log_consent_granted(
+        ctx: Context<LogConsent>,
+        consent_cid_hash: [u8; 32],
+        record_cid_hash: [u8; 32],
+        recipient: Pubkey,
+    ) -> Result<()> {
+        emit!(ConsentGranted {
+            consent_cid: consent_cid_hash,
+            record_cid: record_cid_hash,
+            recipient,
+            issuer: ctx.accounts.issuer.key(),
+            timestamp: Clock::get()?.unix_timestamp,
+        });
+        Ok(())
+    }
+
+    pub fn log_consent_revoked(
+        ctx: Context<LogConsent>,
+        consent_cid_hash: [u8; 32],
+        reason_hash: [u8; 32],
+    ) -> Result<()> {
+        emit!(ConsentRevoked {
+            consent_cid: consent_cid_hash,
+            reason_hash,
+            issuer: ctx.accounts.issuer.key(),
+            timestamp: Clock::get()?.unix_timestamp,
+        });
+        Ok(())
     }
 }
 
@@ -154,6 +192,11 @@ pub struct AnchorRecord<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct LogConsent<'info> {
+    pub issuer: Signer<'info>,
 }
 
 #[derive(Accounts)]
@@ -212,6 +255,30 @@ pub struct RecordCreated {
     pub owner: Pubkey,
     pub record_hash: [u8; 32],
     pub record_index: u64,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct ConsentGranted {
+    pub consent_cid: [u8; 32],
+    pub record_cid: [u8; 32],
+    pub issuer: Pubkey,
+    pub recipient: Pubkey,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct ConsentRevoked {
+    pub consent_cid: [u8; 32],
+    pub issuer: Pubkey,
+    pub timestamp: i64,
+    pub reason_hash: [u8; 32],
+}
+
+#[event]
+pub struct RecordAnchored {
+    pub record_cid: [u8; 32],
+    pub creator: Pubkey,
     pub timestamp: i64,
 }
 
