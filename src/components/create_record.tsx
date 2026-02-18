@@ -3,9 +3,11 @@
 import { encryptPayloadAESGCM, generateSymmetricKey, encryptSymmetricKeyForRecipientSealed } from "../lib/crypto";
 import { ed25519PubkeyToDidKey } from "../lib/ssi";
 import { logRecordCreated } from "@/lib/consent-anchor";
+import { createRecordFormAtom } from "@/lib/form-state";
 import { useAnchorProvider } from "@/components/solana/solana-provider";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useAtom } from 'jotai';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider } from '@coral-xyz/anchor';
@@ -17,8 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Download, FileCheck2, AlertCircle, Anchor } from "lucide-react";
+import { Upload, Download, FileCheck2, AlertCircle, Anchor, Sparkles, Loader2 } from "lucide-react";
 import IDL from '@/anchor/target/idl/compressed_health.json';
+import { DocumentSection, ParsedDocument } from '@/lib/document-ai';
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
@@ -49,6 +52,8 @@ function fromBase64(b64: string): Uint8Array {
 }
 
 export default function CreateRecord() {
+    const [formState, setFormState] = useAtom(createRecordFormAtom);
+    
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [file, setFile] = useState<File | null>(null);
@@ -60,6 +65,132 @@ export default function CreateRecord() {
     const [enableRewrap, setEnableRewrap] = useState(true);
     const [loadedRecordSymKey, setLoadedRecordSymKey] = useState<string | null>(null);
     const [newRecipientsInput, setNewRecipientsInput] = useState("");
+    
+    // AI Extraction state
+    const [useAIExtraction, setUseAIExtraction] = useState(false);
+    const [aiParsing, setAiParsing] = useState(false);
+    const [parsedDoc, setParsedDoc] = useState<ParsedDocument | null>(null);
+    const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
+    const [aiError, setAiError] = useState<string | null>(null);
+
+    // Auto-parse file when uploaded with AI mode enabled
+    const handleFileUpload = async (selectedFile: File | null) => {
+        setFile(selectedFile);
+        setParsedDoc(null);
+        setSelectedSections(new Set());
+        setAiError(null);
+        
+        if (selectedFile && useAIExtraction) {
+            await parseFileWithAI(selectedFile);
+        }
+    };
+
+    const parseFileWithAI = async (fileToparse: File) => {
+        setAiParsing(true);
+        setAiError(null);
+        
+        try {
+            const formData = new FormData();
+            formData.append('file', fileToparse);
+            
+            const res = await fetch('/api/ai/parse-document', {
+                method: 'POST',
+                body: formData,
+            });
+            
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to parse document');
+            }
+            
+            const result: ParsedDocument = await res.json();
+            
+            if (result.sections.length === 0) {
+                throw new Error('No sections found in the document.');
+            }
+            
+            setParsedDoc(result);
+            // Auto-select all sections
+            setSelectedSections(new Set(result.sections.map(s => s.id)));
+        } catch (err: any) {
+            setAiError(err.message || 'Failed to parse document');
+        } finally {
+            setAiParsing(false);
+        }
+    };
+
+    const toggleSection = (sectionId: string) => {
+        setSelectedSections(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(sectionId)) {
+                newSet.delete(sectionId);
+            } else {
+                newSet.add(sectionId);
+            }
+            return newSet;
+        });
+    };
+
+    const applySelectedSections = async () => {
+        if (!parsedDoc || selectedSections.size === 0) return;
+        
+        setAiParsing(true);
+        try {
+            const sectionsToInclude = parsedDoc.sections.filter(s => selectedSections.has(s.id));
+            
+            const res = await fetch('/api/ai/generate-partial', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    selectedSections: sectionsToInclude,
+                    metadata: parsedDoc.metadata,
+                }),
+            });
+            
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to generate partial document');
+            }
+            
+            const { pdfBase64 } = await res.json();
+            
+            // Convert base64 PDF to a File object
+            const pdfBytes = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
+            const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const trimmedFileName = `trimmed_${file?.name || 'document'}.pdf`;
+            const trimmedFile = new File([pdfBlob], trimmedFileName, { type: 'application/pdf' });
+            
+            setFile(trimmedFile);
+            setDescription(`Trimmed PDF with ${sectionsToInclude.length} section(s): ${sectionsToInclude.map(s => s.name).join(', ')}`);
+            setParsedDoc(null); // Hide section picker after applying
+        } catch (err: any) {
+            setAiError(err.message || 'Failed to generate partial document');
+        } finally {
+            setAiParsing(false);
+        }
+    };
+    
+    // Load saved form state from Jotai when it hydrates
+    useEffect(() => {
+        if (formState.title && !title) setTitle(formState.title);
+        if (formState.description && !description) setDescription(formState.description);
+        if (formState.cid && !cid) setCid(formState.cid);
+        if (formState.packedKeys.length > 0 && packedKeys.length === 0) setPackedKeys(formState.packedKeys);
+        if (formState.loadedRecordSymKey && !loadedRecordSymKey) setLoadedRecordSymKey(formState.loadedRecordSymKey);
+    }, [formState]);
+
+    // Save form state to Jotai when it changes
+    useEffect(() => {
+        setFormState(prev => ({
+            ...prev,
+            title,
+            description,
+            cid,
+            packedKeys,
+            loadedRecordSymKey,
+        }));
+    }, [title, description, cid, packedKeys, loadedRecordSymKey, setFormState]);
+
     const wallet = useWallet();
     const { connection } = useConnection();
     const provider = useAnchorProvider();
@@ -446,7 +577,8 @@ export default function CreateRecord() {
                             ref={(el) => { fileInputRef.current = el; }}
                             type="file"
                             className="hidden"
-                            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                            accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.txt"
+                            onChange={(e) => handleFileUpload(e.target.files?.[0] ?? null)}
                         />
                         <Button
                             type="button"
@@ -454,6 +586,7 @@ export default function CreateRecord() {
                             size="sm"
                             onClick={() => fileInputRef.current?.click()}
                             className="gap-2"
+                            disabled={aiParsing}
                         >
                             <Upload className="h-4 w-4" />
                             Choose File
@@ -468,7 +601,7 @@ export default function CreateRecord() {
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => setFile(null)}
+                                    onClick={() => handleFileUpload(null)}
                                 >
                                     Clear
                                 </Button>
@@ -476,8 +609,97 @@ export default function CreateRecord() {
                         ) : (
                             <span className="text-sm text-muted-foreground italic">No file selected</span>
                         )}
+                        {aiParsing && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Analyzing with AI...
+                            </div>
+                        )}
                     </div>
                     <p className="text-xs text-muted-foreground">Upload medical documents, lab reports, images, or any health-related files</p>
+
+                    {/* AI Selective Sharing Toggle */}
+                    <div className="flex items-center space-x-3 p-3 rounded-lg border bg-gradient-to-r from-primary/5 to-transparent mt-3">
+                        <Checkbox
+                            id="use-ai-extraction"
+                            checked={useAIExtraction}
+                            onCheckedChange={(checked: boolean) => {
+                                setUseAIExtraction(checked);
+                                if (checked && file) {
+                                    parseFileWithAI(file);
+                                } else {
+                                    setParsedDoc(null);
+                                }
+                            }}
+                        />
+                        <div className="flex-1">
+                            <Label htmlFor="use-ai-extraction" className="cursor-pointer font-medium flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-primary" />
+                                Smart Extraction: Share specific sections only
+                            </Label>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Extract sections from your PDF and choose which parts to share as a trimmed document.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* AI Error */}
+                    {aiError && (
+                        <Alert variant="destructive" className="mt-3">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{aiError}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    {/* Section Selection */}
+                    {parsedDoc && (
+                        <div className="mt-4 p-4 rounded-lg border bg-muted/20 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <Label className="font-semibold">Select Sections to Share</Label>
+                                    <p className="text-xs text-muted-foreground">
+                                        {selectedSections.size} of {parsedDoc.sections.length} selected
+                                    </p>
+                                </div>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={applySelectedSections}
+                                    disabled={selectedSections.size === 0 || aiParsing}
+                                    className="gap-2"
+                                >
+                                    {aiParsing ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="h-4 w-4" />
+                                    )}
+                                    Apply Selection
+                                </Button>
+                            </div>
+                            <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                                {parsedDoc.sections.map((section) => (
+                                    <div
+                                        key={section.id}
+                                        className={`p-2 rounded border cursor-pointer transition-colors ${
+                                            selectedSections.has(section.id)
+                                                ? 'bg-primary/10 border-primary/30'
+                                                : 'bg-background hover:bg-muted/50'
+                                        }`}
+                                    >
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <Checkbox
+                                                checked={selectedSections.has(section.id)}
+                                                onCheckedChange={() => toggleSection(section.id)}
+                                            />
+                                            <span className="font-medium text-sm">{section.name}</span>
+                                            <Badge variant="outline" className="text-xs">{section.category}</Badge>
+                                        </label>
+                                        <p className="text-xs text-muted-foreground ml-6 mt-1">{section.summary}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <Alert>

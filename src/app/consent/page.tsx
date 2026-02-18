@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAtom } from 'jotai';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { ed25519PubkeyToDidKey, pubkeyBase58ToDidKey } from '../../lib/ssi';
 import { logConsentGranted } from '@/lib/consent-anchor';
+import { consentFormAtom } from '@/lib/form-state';
 import { useAnchorProvider } from '@/components/solana/solana-provider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,12 +27,35 @@ export default function ConsentPage() {
     const wallet = useWallet();
     const { connection } = useConnection();
     const provider = useAnchorProvider();
+    const [formState, setFormState] = useAtom(consentFormAtom);
+    
     const [recordCid, setRecordCid] = useState('');
     const [recipientPk, setRecipientPk] = useState('');
     const [daysValid, setDaysValid] = useState(7);
     const [anchorOnChain, setAnchorOnChain] = useState(false);
     const [busy, setBusy] = useState(false);
     const [result, setResult] = useState<{ cid?: string; tx?: string; error?: string } | null>(null);
+
+    // Load saved form state from Jotai when it hydrates
+    useEffect(() => {
+        if (formState.recordCid && !recordCid) setRecordCid(formState.recordCid);
+        if (formState.recipientPk && !recipientPk) setRecipientPk(formState.recipientPk);
+        if (formState.daysValid !== 7 && daysValid === 7) setDaysValid(formState.daysValid);
+        if (formState.anchorOnChain && !anchorOnChain) setAnchorOnChain(formState.anchorOnChain);
+        if (formState.lastResult && !result) setResult(formState.lastResult);
+    }, [formState]);
+
+    // Save form state to Jotai when it changes
+    useEffect(() => {
+        setFormState(prev => ({
+            ...prev,
+            recordCid,
+            recipientPk,
+            daysValid,
+            anchorOnChain,
+            lastResult: result,
+        }));
+    }, [recordCid, recipientPk, daysValid, anchorOnChain, result, setFormState]);
 
     async function onIssue(e?: React.FormEvent) {
         e?.preventDefault();
