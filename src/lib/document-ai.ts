@@ -109,7 +109,7 @@ function detectSections(text: string): DocumentSection[] {
                 });
             }
             currentSection = {
-                name: trimmed.replace(/:$/, '').trim(),
+                name: trimmed.replace(/:$/, '').replace(/^[\u2022\u25cf\u25cb\u25a0\u25a1\u25aa\u25ab\u2023\u2043\u2219\u25e6*\-–—•]+\s*/, '').trim(),
                 lines: [],
             };
         } else {

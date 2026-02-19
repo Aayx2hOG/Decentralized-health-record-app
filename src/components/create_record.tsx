@@ -161,7 +161,6 @@ export default function CreateRecord() {
             const trimmedFile = new File([pdfBlob], trimmedFileName, { type: 'application/pdf' });
             
             setFile(trimmedFile);
-            setDescription(`Trimmed PDF with ${sectionsToInclude.length} section(s): ${sectionsToInclude.map(s => s.name).join(', ')}`);
             setParsedDoc(null); // Hide section picker after applying
         } catch (err: any) {
             setAiError(err.message || 'Failed to generate partial document');
