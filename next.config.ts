@@ -2,6 +2,10 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pdfjs-dist', 'pdf-parse'],
+  outputFileTracingIncludes: {
+    '/api/ai/parse-document': ['./node_modules/pdfjs-dist/**/*', './node_modules/pdf-parse/**/*'],
+    '/api/ai/generate-partial': ['./node_modules/pdfjs-dist/**/*', './node_modules/pdf-parse/**/*'],
+  },
   turbopack: {
     root: __dirname,
     resolveAlias: {

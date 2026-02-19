@@ -1,9 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
-interface PdfTextItem {
-    str: string;
-    transform: number[];
-}
 
 function sanitizeForWinAnsi(text: string): string {
     return text
@@ -195,73 +191,19 @@ function extractMetadata(text: string): ParsedDocument['metadata'] {
 }
 
 async function extractTextFromPdf(buffer: Buffer): Promise<string> {
-    // Dynamic import - pdfjs-dist is excluded from bundling via serverExternalPackages
-    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    // Use pdf-parse which wraps pdfjs-dist with better Vercel/serverless compatibility
+    const { PDFParse } = await import('pdf-parse');
 
-    const data = new Uint8Array(buffer);
-    const doc = await pdfjs.getDocument({
-        data,
-        verbosity: 0,
-        isEvalSupported: false,
-        disableFontFace: true,
-    }).promise;
+    const parser = new PDFParse({
+        data: new Uint8Array(buffer),
+    });
 
-    const pageTexts: string[] = [];
+    const textResult = await parser.getText();
+    const text = textResult.text || textResult.pages.map(p => p.text).join('\n\n');
 
-    for (let i = 1; i <= doc.numPages; i++) {
-        const page = await doc.getPage(i);
-        const content = await page.getTextContent();
+    await parser.destroy();
 
-        // Filter to only TextItem (has str + transform), skip TextMarkedContent
-        const items: PdfTextItem[] = content.items
-            .filter((item: any) => item.str && item.str.trim() && item.transform)
-            .map((item: any) => ({ str: item.str, transform: item.transform }));
-        if (items.length === 0) continue;
-
-        items.sort((a, b) => {
-            const yDiff = b.transform[5] - a.transform[5];
-            if (Math.abs(yDiff) > 2) return yDiff;
-            return a.transform[4] - b.transform[4];
-        });
-
-        const lines: string[] = [];
-        let currentLine: string[] = [];
-        let lastY = items[0].transform[5];
-        let lastLineY = lastY;
-
-        for (const item of items) {
-            const y = item.transform[5];
-            const yDiff = Math.abs(lastY - y);
-
-            if (yDiff > 2) {
-                // New line detected
-                if (currentLine.length > 0) {
-                    lines.push(currentLine.join(' '));
-                }
-
-                // If large Y gap, add an empty line (paragraph break)
-                const gap = Math.abs(lastLineY - y);
-                if (gap > 20 && lines.length > 0) {
-                    lines.push('');
-                }
-
-                currentLine = [item.str];
-                lastLineY = lastY;
-                lastY = y;
-            } else {
-                currentLine.push(item.str);
-                lastY = y;
-            }
-        }
-
-        if (currentLine.length > 0) {
-            lines.push(currentLine.join(' '));
-        }
-
-        pageTexts.push(lines.join('\n'));
-    }
-
-    return pageTexts.join('\n\n');
+    return text;
 }
 
 export async function parseHealthDocument(
