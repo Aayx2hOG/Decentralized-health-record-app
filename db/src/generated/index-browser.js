@@ -174,6 +174,31 @@ exports.Prisma.RecordAnchorScalarFieldEnum = {
   anchoredAt: 'anchoredAt'
 };
 
+exports.Prisma.AccessRequestScalarFieldEnum = {
+  id: 'id',
+  recordCid: 'recordCid',
+  requesterPubkey: 'requesterPubkey',
+  ownerPubkey: 'ownerPubkey',
+  purpose: 'purpose',
+  status: 'status',
+  respondedAt: 'respondedAt',
+  responseNote: 'responseNote',
+  consentId: 'consentId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AuditEventScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  actorPubkey: 'actorPubkey',
+  recordCid: 'recordCid',
+  targetPubkey: 'targetPubkey',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  txSignature: 'txSignature',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -195,7 +220,9 @@ exports.Prisma.ModelName = {
   AccessLog: 'AccessLog',
   Admin: 'Admin',
   ConsentCredential: 'ConsentCredential',
-  RecordAnchor: 'RecordAnchor'
+  RecordAnchor: 'RecordAnchor',
+  AccessRequest: 'AccessRequest',
+  AuditEvent: 'AuditEvent'
 };
 
 /**

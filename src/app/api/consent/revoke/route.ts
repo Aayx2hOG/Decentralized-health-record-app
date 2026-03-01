@@ -51,6 +51,21 @@ export async function POST (req: Request){
                 revokedReason: reason || null
             }
         });
+
+        await prismaClient.auditEvent.create({
+            data: {
+                action: 'CONSENT_REVOKED',
+                actorPubkey: consent.issuerPubkey,
+                recordCid: consent.recordCid,
+                targetPubkey: consent.recipientPubkey,
+                metadata: JSON.stringify({
+                    consentId,
+                    consentCid: consent.consentCid,
+                    reason: reason || null,
+                }),
+            },
+        });
+
         return NextResponse.json({
             success: true,
             message: "Consent revoked successfully",

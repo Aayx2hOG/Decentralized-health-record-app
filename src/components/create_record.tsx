@@ -21,7 +21,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Upload, Download, FileCheck2, AlertCircle, Anchor, Sparkles, Loader2 } from "lucide-react";
 import IDL from '@/anchor/target/idl/compressed_health.json';
-import { DocumentSection, ParsedDocument } from '@/lib/document-ai';
+import { DocumentSection, ParsedDocument } from '@/lib/extractor';
 
 export function parseSecretKeyJson(text: string): Uint8Array {
     try {
@@ -611,7 +611,7 @@ export default function CreateRecord() {
                         {aiParsing && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                Analyzing with AI...
+                                Extracting...
                             </div>
                         )}
                     </div>

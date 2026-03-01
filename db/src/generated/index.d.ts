@@ -38,6 +38,16 @@ export type ConsentCredential = $Result.DefaultSelection<Prisma.$ConsentCredenti
  * 
  */
 export type RecordAnchor = $Result.DefaultSelection<Prisma.$RecordAnchorPayload>
+/**
+ * Model AccessRequest
+ * 
+ */
+export type AccessRequest = $Result.DefaultSelection<Prisma.$AccessRequestPayload>
+/**
+ * Model AuditEvent
+ * 
+ */
+export type AuditEvent = $Result.DefaultSelection<Prisma.$AuditEventPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -205,6 +215,26 @@ export class PrismaClient<
     * ```
     */
   get recordAnchor(): Prisma.RecordAnchorDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.accessRequest`: Exposes CRUD operations for the **AccessRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AccessRequests
+    * const accessRequests = await prisma.accessRequest.findMany()
+    * ```
+    */
+  get accessRequest(): Prisma.AccessRequestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditEvent`: Exposes CRUD operations for the **AuditEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditEvents
+    * const auditEvents = await prisma.auditEvent.findMany()
+    * ```
+    */
+  get auditEvent(): Prisma.AuditEventDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -643,7 +673,9 @@ export namespace Prisma {
     AccessLog: 'AccessLog',
     Admin: 'Admin',
     ConsentCredential: 'ConsentCredential',
-    RecordAnchor: 'RecordAnchor'
+    RecordAnchor: 'RecordAnchor',
+    AccessRequest: 'AccessRequest',
+    AuditEvent: 'AuditEvent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -659,7 +691,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor"
+      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor" | "accessRequest" | "auditEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1033,6 +1065,154 @@ export namespace Prisma {
           }
         }
       }
+      AccessRequest: {
+        payload: Prisma.$AccessRequestPayload<ExtArgs>
+        fields: Prisma.AccessRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AccessRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AccessRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.AccessRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AccessRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          findMany: {
+            args: Prisma.AccessRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+          }
+          create: {
+            args: Prisma.AccessRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          createMany: {
+            args: Prisma.AccessRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AccessRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.AccessRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          update: {
+            args: Prisma.AccessRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.AccessRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AccessRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AccessRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.AccessRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccessRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.AccessRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAccessRequest>
+          }
+          groupBy: {
+            args: Prisma.AccessRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AccessRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AccessRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<AccessRequestCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuditEvent: {
+        payload: Prisma.$AuditEventPayload<ExtArgs>
+        fields: Prisma.AuditEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          findMany: {
+            args: Prisma.AuditEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>[]
+          }
+          create: {
+            args: Prisma.AuditEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          createMany: {
+            args: Prisma.AuditEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>[]
+          }
+          delete: {
+            args: Prisma.AuditEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          update: {
+            args: Prisma.AuditEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditEventPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditEvent>
+          }
+          groupBy: {
+            args: Prisma.AuditEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditEventCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditEventCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1130,6 +1310,8 @@ export namespace Prisma {
     admin?: AdminOmit
     consentCredential?: ConsentCredentialOmit
     recordAnchor?: RecordAnchorOmit
+    accessRequest?: AccessRequestOmit
+    auditEvent?: AuditEventOmit
   }
 
   /* Types for Logging */
@@ -6733,6 +6915,2185 @@ export namespace Prisma {
 
 
   /**
+   * Model AccessRequest
+   */
+
+  export type AggregateAccessRequest = {
+    _count: AccessRequestCountAggregateOutputType | null
+    _avg: AccessRequestAvgAggregateOutputType | null
+    _sum: AccessRequestSumAggregateOutputType | null
+    _min: AccessRequestMinAggregateOutputType | null
+    _max: AccessRequestMaxAggregateOutputType | null
+  }
+
+  export type AccessRequestAvgAggregateOutputType = {
+    id: number | null
+    consentId: number | null
+  }
+
+  export type AccessRequestSumAggregateOutputType = {
+    id: number | null
+    consentId: number | null
+  }
+
+  export type AccessRequestMinAggregateOutputType = {
+    id: number | null
+    recordCid: string | null
+    requesterPubkey: string | null
+    ownerPubkey: string | null
+    purpose: string | null
+    status: string | null
+    respondedAt: Date | null
+    responseNote: string | null
+    consentId: number | null
+    createdAt: Date | null
+  }
+
+  export type AccessRequestMaxAggregateOutputType = {
+    id: number | null
+    recordCid: string | null
+    requesterPubkey: string | null
+    ownerPubkey: string | null
+    purpose: string | null
+    status: string | null
+    respondedAt: Date | null
+    responseNote: string | null
+    consentId: number | null
+    createdAt: Date | null
+  }
+
+  export type AccessRequestCountAggregateOutputType = {
+    id: number
+    recordCid: number
+    requesterPubkey: number
+    ownerPubkey: number
+    purpose: number
+    status: number
+    respondedAt: number
+    responseNote: number
+    consentId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AccessRequestAvgAggregateInputType = {
+    id?: true
+    consentId?: true
+  }
+
+  export type AccessRequestSumAggregateInputType = {
+    id?: true
+    consentId?: true
+  }
+
+  export type AccessRequestMinAggregateInputType = {
+    id?: true
+    recordCid?: true
+    requesterPubkey?: true
+    ownerPubkey?: true
+    purpose?: true
+    status?: true
+    respondedAt?: true
+    responseNote?: true
+    consentId?: true
+    createdAt?: true
+  }
+
+  export type AccessRequestMaxAggregateInputType = {
+    id?: true
+    recordCid?: true
+    requesterPubkey?: true
+    ownerPubkey?: true
+    purpose?: true
+    status?: true
+    respondedAt?: true
+    responseNote?: true
+    consentId?: true
+    createdAt?: true
+  }
+
+  export type AccessRequestCountAggregateInputType = {
+    id?: true
+    recordCid?: true
+    requesterPubkey?: true
+    ownerPubkey?: true
+    purpose?: true
+    status?: true
+    respondedAt?: true
+    responseNote?: true
+    consentId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AccessRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AccessRequest to aggregate.
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AccessRequests to fetch.
+     */
+    orderBy?: AccessRequestOrderByWithRelationInput | AccessRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AccessRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AccessRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AccessRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AccessRequests
+    **/
+    _count?: true | AccessRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AccessRequestAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AccessRequestSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AccessRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AccessRequestMaxAggregateInputType
+  }
+
+  export type GetAccessRequestAggregateType<T extends AccessRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateAccessRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAccessRequest[P]>
+      : GetScalarType<T[P], AggregateAccessRequest[P]>
+  }
+
+
+
+
+  export type AccessRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AccessRequestWhereInput
+    orderBy?: AccessRequestOrderByWithAggregationInput | AccessRequestOrderByWithAggregationInput[]
+    by: AccessRequestScalarFieldEnum[] | AccessRequestScalarFieldEnum
+    having?: AccessRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AccessRequestCountAggregateInputType | true
+    _avg?: AccessRequestAvgAggregateInputType
+    _sum?: AccessRequestSumAggregateInputType
+    _min?: AccessRequestMinAggregateInputType
+    _max?: AccessRequestMaxAggregateInputType
+  }
+
+  export type AccessRequestGroupByOutputType = {
+    id: number
+    recordCid: string
+    requesterPubkey: string
+    ownerPubkey: string
+    purpose: string
+    status: string
+    respondedAt: Date | null
+    responseNote: string | null
+    consentId: number | null
+    createdAt: Date
+    _count: AccessRequestCountAggregateOutputType | null
+    _avg: AccessRequestAvgAggregateOutputType | null
+    _sum: AccessRequestSumAggregateOutputType | null
+    _min: AccessRequestMinAggregateOutputType | null
+    _max: AccessRequestMaxAggregateOutputType | null
+  }
+
+  type GetAccessRequestGroupByPayload<T extends AccessRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AccessRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AccessRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AccessRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], AccessRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AccessRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    requesterPubkey?: boolean
+    ownerPubkey?: boolean
+    purpose?: boolean
+    status?: boolean
+    respondedAt?: boolean
+    responseNote?: boolean
+    consentId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["accessRequest"]>
+
+  export type AccessRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    requesterPubkey?: boolean
+    ownerPubkey?: boolean
+    purpose?: boolean
+    status?: boolean
+    respondedAt?: boolean
+    responseNote?: boolean
+    consentId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["accessRequest"]>
+
+  export type AccessRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recordCid?: boolean
+    requesterPubkey?: boolean
+    ownerPubkey?: boolean
+    purpose?: boolean
+    status?: boolean
+    respondedAt?: boolean
+    responseNote?: boolean
+    consentId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["accessRequest"]>
+
+  export type AccessRequestSelectScalar = {
+    id?: boolean
+    recordCid?: boolean
+    requesterPubkey?: boolean
+    ownerPubkey?: boolean
+    purpose?: boolean
+    status?: boolean
+    respondedAt?: boolean
+    responseNote?: boolean
+    consentId?: boolean
+    createdAt?: boolean
+  }
+
+  export type AccessRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "recordCid" | "requesterPubkey" | "ownerPubkey" | "purpose" | "status" | "respondedAt" | "responseNote" | "consentId" | "createdAt", ExtArgs["result"]["accessRequest"]>
+
+  export type $AccessRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AccessRequest"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      recordCid: string
+      requesterPubkey: string
+      ownerPubkey: string
+      purpose: string
+      status: string
+      respondedAt: Date | null
+      responseNote: string | null
+      consentId: number | null
+      createdAt: Date
+    }, ExtArgs["result"]["accessRequest"]>
+    composites: {}
+  }
+
+  type AccessRequestGetPayload<S extends boolean | null | undefined | AccessRequestDefaultArgs> = $Result.GetResult<Prisma.$AccessRequestPayload, S>
+
+  type AccessRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AccessRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AccessRequestCountAggregateInputType | true
+    }
+
+  export interface AccessRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AccessRequest'], meta: { name: 'AccessRequest' } }
+    /**
+     * Find zero or one AccessRequest that matches the filter.
+     * @param {AccessRequestFindUniqueArgs} args - Arguments to find a AccessRequest
+     * @example
+     * // Get one AccessRequest
+     * const accessRequest = await prisma.accessRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AccessRequestFindUniqueArgs>(args: SelectSubset<T, AccessRequestFindUniqueArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AccessRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AccessRequestFindUniqueOrThrowArgs} args - Arguments to find a AccessRequest
+     * @example
+     * // Get one AccessRequest
+     * const accessRequest = await prisma.accessRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AccessRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, AccessRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AccessRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestFindFirstArgs} args - Arguments to find a AccessRequest
+     * @example
+     * // Get one AccessRequest
+     * const accessRequest = await prisma.accessRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AccessRequestFindFirstArgs>(args?: SelectSubset<T, AccessRequestFindFirstArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AccessRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestFindFirstOrThrowArgs} args - Arguments to find a AccessRequest
+     * @example
+     * // Get one AccessRequest
+     * const accessRequest = await prisma.accessRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AccessRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, AccessRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AccessRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AccessRequests
+     * const accessRequests = await prisma.accessRequest.findMany()
+     * 
+     * // Get first 10 AccessRequests
+     * const accessRequests = await prisma.accessRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const accessRequestWithIdOnly = await prisma.accessRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AccessRequestFindManyArgs>(args?: SelectSubset<T, AccessRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AccessRequest.
+     * @param {AccessRequestCreateArgs} args - Arguments to create a AccessRequest.
+     * @example
+     * // Create one AccessRequest
+     * const AccessRequest = await prisma.accessRequest.create({
+     *   data: {
+     *     // ... data to create a AccessRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends AccessRequestCreateArgs>(args: SelectSubset<T, AccessRequestCreateArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AccessRequests.
+     * @param {AccessRequestCreateManyArgs} args - Arguments to create many AccessRequests.
+     * @example
+     * // Create many AccessRequests
+     * const accessRequest = await prisma.accessRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AccessRequestCreateManyArgs>(args?: SelectSubset<T, AccessRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AccessRequests and returns the data saved in the database.
+     * @param {AccessRequestCreateManyAndReturnArgs} args - Arguments to create many AccessRequests.
+     * @example
+     * // Create many AccessRequests
+     * const accessRequest = await prisma.accessRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AccessRequests and only return the `id`
+     * const accessRequestWithIdOnly = await prisma.accessRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AccessRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, AccessRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AccessRequest.
+     * @param {AccessRequestDeleteArgs} args - Arguments to delete one AccessRequest.
+     * @example
+     * // Delete one AccessRequest
+     * const AccessRequest = await prisma.accessRequest.delete({
+     *   where: {
+     *     // ... filter to delete one AccessRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AccessRequestDeleteArgs>(args: SelectSubset<T, AccessRequestDeleteArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AccessRequest.
+     * @param {AccessRequestUpdateArgs} args - Arguments to update one AccessRequest.
+     * @example
+     * // Update one AccessRequest
+     * const accessRequest = await prisma.accessRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AccessRequestUpdateArgs>(args: SelectSubset<T, AccessRequestUpdateArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AccessRequests.
+     * @param {AccessRequestDeleteManyArgs} args - Arguments to filter AccessRequests to delete.
+     * @example
+     * // Delete a few AccessRequests
+     * const { count } = await prisma.accessRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AccessRequestDeleteManyArgs>(args?: SelectSubset<T, AccessRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AccessRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AccessRequests
+     * const accessRequest = await prisma.accessRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AccessRequestUpdateManyArgs>(args: SelectSubset<T, AccessRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AccessRequests and returns the data updated in the database.
+     * @param {AccessRequestUpdateManyAndReturnArgs} args - Arguments to update many AccessRequests.
+     * @example
+     * // Update many AccessRequests
+     * const accessRequest = await prisma.accessRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AccessRequests and only return the `id`
+     * const accessRequestWithIdOnly = await prisma.accessRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AccessRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, AccessRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AccessRequest.
+     * @param {AccessRequestUpsertArgs} args - Arguments to update or create a AccessRequest.
+     * @example
+     * // Update or create a AccessRequest
+     * const accessRequest = await prisma.accessRequest.upsert({
+     *   create: {
+     *     // ... data to create a AccessRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AccessRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AccessRequestUpsertArgs>(args: SelectSubset<T, AccessRequestUpsertArgs<ExtArgs>>): Prisma__AccessRequestClient<$Result.GetResult<Prisma.$AccessRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AccessRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestCountArgs} args - Arguments to filter AccessRequests to count.
+     * @example
+     * // Count the number of AccessRequests
+     * const count = await prisma.accessRequest.count({
+     *   where: {
+     *     // ... the filter for the AccessRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends AccessRequestCountArgs>(
+      args?: Subset<T, AccessRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AccessRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AccessRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AccessRequestAggregateArgs>(args: Subset<T, AccessRequestAggregateArgs>): Prisma.PrismaPromise<GetAccessRequestAggregateType<T>>
+
+    /**
+     * Group by AccessRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AccessRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AccessRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AccessRequestGroupByArgs['orderBy'] }
+        : { orderBy?: AccessRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AccessRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAccessRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AccessRequest model
+   */
+  readonly fields: AccessRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AccessRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AccessRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AccessRequest model
+   */
+  interface AccessRequestFieldRefs {
+    readonly id: FieldRef<"AccessRequest", 'Int'>
+    readonly recordCid: FieldRef<"AccessRequest", 'String'>
+    readonly requesterPubkey: FieldRef<"AccessRequest", 'String'>
+    readonly ownerPubkey: FieldRef<"AccessRequest", 'String'>
+    readonly purpose: FieldRef<"AccessRequest", 'String'>
+    readonly status: FieldRef<"AccessRequest", 'String'>
+    readonly respondedAt: FieldRef<"AccessRequest", 'DateTime'>
+    readonly responseNote: FieldRef<"AccessRequest", 'String'>
+    readonly consentId: FieldRef<"AccessRequest", 'Int'>
+    readonly createdAt: FieldRef<"AccessRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AccessRequest findUnique
+   */
+  export type AccessRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which AccessRequest to fetch.
+     */
+    where: AccessRequestWhereUniqueInput
+  }
+
+  /**
+   * AccessRequest findUniqueOrThrow
+   */
+  export type AccessRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which AccessRequest to fetch.
+     */
+    where: AccessRequestWhereUniqueInput
+  }
+
+  /**
+   * AccessRequest findFirst
+   */
+  export type AccessRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which AccessRequest to fetch.
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AccessRequests to fetch.
+     */
+    orderBy?: AccessRequestOrderByWithRelationInput | AccessRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AccessRequests.
+     */
+    cursor?: AccessRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AccessRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AccessRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AccessRequests.
+     */
+    distinct?: AccessRequestScalarFieldEnum | AccessRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AccessRequest findFirstOrThrow
+   */
+  export type AccessRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which AccessRequest to fetch.
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AccessRequests to fetch.
+     */
+    orderBy?: AccessRequestOrderByWithRelationInput | AccessRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AccessRequests.
+     */
+    cursor?: AccessRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AccessRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AccessRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AccessRequests.
+     */
+    distinct?: AccessRequestScalarFieldEnum | AccessRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AccessRequest findMany
+   */
+  export type AccessRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter, which AccessRequests to fetch.
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AccessRequests to fetch.
+     */
+    orderBy?: AccessRequestOrderByWithRelationInput | AccessRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AccessRequests.
+     */
+    cursor?: AccessRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AccessRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AccessRequests.
+     */
+    skip?: number
+    distinct?: AccessRequestScalarFieldEnum | AccessRequestScalarFieldEnum[]
+  }
+
+  /**
+   * AccessRequest create
+   */
+  export type AccessRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AccessRequest.
+     */
+    data: XOR<AccessRequestCreateInput, AccessRequestUncheckedCreateInput>
+  }
+
+  /**
+   * AccessRequest createMany
+   */
+  export type AccessRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AccessRequests.
+     */
+    data: AccessRequestCreateManyInput | AccessRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AccessRequest createManyAndReturn
+   */
+  export type AccessRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many AccessRequests.
+     */
+    data: AccessRequestCreateManyInput | AccessRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AccessRequest update
+   */
+  export type AccessRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AccessRequest.
+     */
+    data: XOR<AccessRequestUpdateInput, AccessRequestUncheckedUpdateInput>
+    /**
+     * Choose, which AccessRequest to update.
+     */
+    where: AccessRequestWhereUniqueInput
+  }
+
+  /**
+   * AccessRequest updateMany
+   */
+  export type AccessRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AccessRequests.
+     */
+    data: XOR<AccessRequestUpdateManyMutationInput, AccessRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which AccessRequests to update
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * Limit how many AccessRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AccessRequest updateManyAndReturn
+   */
+  export type AccessRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update AccessRequests.
+     */
+    data: XOR<AccessRequestUpdateManyMutationInput, AccessRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which AccessRequests to update
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * Limit how many AccessRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AccessRequest upsert
+   */
+  export type AccessRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AccessRequest to update in case it exists.
+     */
+    where: AccessRequestWhereUniqueInput
+    /**
+     * In case the AccessRequest found by the `where` argument doesn't exist, create a new AccessRequest with this data.
+     */
+    create: XOR<AccessRequestCreateInput, AccessRequestUncheckedCreateInput>
+    /**
+     * In case the AccessRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AccessRequestUpdateInput, AccessRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * AccessRequest delete
+   */
+  export type AccessRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+    /**
+     * Filter which AccessRequest to delete.
+     */
+    where: AccessRequestWhereUniqueInput
+  }
+
+  /**
+   * AccessRequest deleteMany
+   */
+  export type AccessRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AccessRequests to delete
+     */
+    where?: AccessRequestWhereInput
+    /**
+     * Limit how many AccessRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AccessRequest without action
+   */
+  export type AccessRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AccessRequest
+     */
+    select?: AccessRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AccessRequest
+     */
+    omit?: AccessRequestOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuditEvent
+   */
+
+  export type AggregateAuditEvent = {
+    _count: AuditEventCountAggregateOutputType | null
+    _avg: AuditEventAvgAggregateOutputType | null
+    _sum: AuditEventSumAggregateOutputType | null
+    _min: AuditEventMinAggregateOutputType | null
+    _max: AuditEventMaxAggregateOutputType | null
+  }
+
+  export type AuditEventAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type AuditEventSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type AuditEventMinAggregateOutputType = {
+    id: number | null
+    action: string | null
+    actorPubkey: string | null
+    recordCid: string | null
+    targetPubkey: string | null
+    metadata: string | null
+    ipAddress: string | null
+    txSignature: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditEventMaxAggregateOutputType = {
+    id: number | null
+    action: string | null
+    actorPubkey: string | null
+    recordCid: string | null
+    targetPubkey: string | null
+    metadata: string | null
+    ipAddress: string | null
+    txSignature: string | null
+    createdAt: Date | null
+  }
+
+  export type AuditEventCountAggregateOutputType = {
+    id: number
+    action: number
+    actorPubkey: number
+    recordCid: number
+    targetPubkey: number
+    metadata: number
+    ipAddress: number
+    txSignature: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuditEventAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type AuditEventSumAggregateInputType = {
+    id?: true
+  }
+
+  export type AuditEventMinAggregateInputType = {
+    id?: true
+    action?: true
+    actorPubkey?: true
+    recordCid?: true
+    targetPubkey?: true
+    metadata?: true
+    ipAddress?: true
+    txSignature?: true
+    createdAt?: true
+  }
+
+  export type AuditEventMaxAggregateInputType = {
+    id?: true
+    action?: true
+    actorPubkey?: true
+    recordCid?: true
+    targetPubkey?: true
+    metadata?: true
+    ipAddress?: true
+    txSignature?: true
+    createdAt?: true
+  }
+
+  export type AuditEventCountAggregateInputType = {
+    id?: true
+    action?: true
+    actorPubkey?: true
+    recordCid?: true
+    targetPubkey?: true
+    metadata?: true
+    ipAddress?: true
+    txSignature?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuditEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditEvent to aggregate.
+     */
+    where?: AuditEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditEvents to fetch.
+     */
+    orderBy?: AuditEventOrderByWithRelationInput | AuditEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditEvents
+    **/
+    _count?: true | AuditEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AuditEventAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AuditEventSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditEventMaxAggregateInputType
+  }
+
+  export type GetAuditEventAggregateType<T extends AuditEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditEvent[P]>
+      : GetScalarType<T[P], AggregateAuditEvent[P]>
+  }
+
+
+
+
+  export type AuditEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditEventWhereInput
+    orderBy?: AuditEventOrderByWithAggregationInput | AuditEventOrderByWithAggregationInput[]
+    by: AuditEventScalarFieldEnum[] | AuditEventScalarFieldEnum
+    having?: AuditEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditEventCountAggregateInputType | true
+    _avg?: AuditEventAvgAggregateInputType
+    _sum?: AuditEventSumAggregateInputType
+    _min?: AuditEventMinAggregateInputType
+    _max?: AuditEventMaxAggregateInputType
+  }
+
+  export type AuditEventGroupByOutputType = {
+    id: number
+    action: string
+    actorPubkey: string
+    recordCid: string | null
+    targetPubkey: string | null
+    metadata: string | null
+    ipAddress: string | null
+    txSignature: string | null
+    createdAt: Date
+    _count: AuditEventCountAggregateOutputType | null
+    _avg: AuditEventAvgAggregateOutputType | null
+    _sum: AuditEventSumAggregateOutputType | null
+    _min: AuditEventMinAggregateOutputType | null
+    _max: AuditEventMaxAggregateOutputType | null
+  }
+
+  type GetAuditEventGroupByPayload<T extends AuditEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditEventGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    actorPubkey?: boolean
+    recordCid?: boolean
+    targetPubkey?: boolean
+    metadata?: boolean
+    ipAddress?: boolean
+    txSignature?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditEvent"]>
+
+  export type AuditEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    actorPubkey?: boolean
+    recordCid?: boolean
+    targetPubkey?: boolean
+    metadata?: boolean
+    ipAddress?: boolean
+    txSignature?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditEvent"]>
+
+  export type AuditEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    actorPubkey?: boolean
+    recordCid?: boolean
+    targetPubkey?: boolean
+    metadata?: boolean
+    ipAddress?: boolean
+    txSignature?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["auditEvent"]>
+
+  export type AuditEventSelectScalar = {
+    id?: boolean
+    action?: boolean
+    actorPubkey?: boolean
+    recordCid?: boolean
+    targetPubkey?: boolean
+    metadata?: boolean
+    ipAddress?: boolean
+    txSignature?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuditEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "actorPubkey" | "recordCid" | "targetPubkey" | "metadata" | "ipAddress" | "txSignature" | "createdAt", ExtArgs["result"]["auditEvent"]>
+
+  export type $AuditEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditEvent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      action: string
+      actorPubkey: string
+      recordCid: string | null
+      targetPubkey: string | null
+      metadata: string | null
+      ipAddress: string | null
+      txSignature: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["auditEvent"]>
+    composites: {}
+  }
+
+  type AuditEventGetPayload<S extends boolean | null | undefined | AuditEventDefaultArgs> = $Result.GetResult<Prisma.$AuditEventPayload, S>
+
+  type AuditEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditEventCountAggregateInputType | true
+    }
+
+  export interface AuditEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditEvent'], meta: { name: 'AuditEvent' } }
+    /**
+     * Find zero or one AuditEvent that matches the filter.
+     * @param {AuditEventFindUniqueArgs} args - Arguments to find a AuditEvent
+     * @example
+     * // Get one AuditEvent
+     * const auditEvent = await prisma.auditEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditEventFindUniqueArgs>(args: SelectSubset<T, AuditEventFindUniqueArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditEventFindUniqueOrThrowArgs} args - Arguments to find a AuditEvent
+     * @example
+     * // Get one AuditEvent
+     * const auditEvent = await prisma.auditEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditEventFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventFindFirstArgs} args - Arguments to find a AuditEvent
+     * @example
+     * // Get one AuditEvent
+     * const auditEvent = await prisma.auditEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditEventFindFirstArgs>(args?: SelectSubset<T, AuditEventFindFirstArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventFindFirstOrThrowArgs} args - Arguments to find a AuditEvent
+     * @example
+     * // Get one AuditEvent
+     * const auditEvent = await prisma.auditEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditEventFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditEvents
+     * const auditEvents = await prisma.auditEvent.findMany()
+     * 
+     * // Get first 10 AuditEvents
+     * const auditEvents = await prisma.auditEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditEventWithIdOnly = await prisma.auditEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditEventFindManyArgs>(args?: SelectSubset<T, AuditEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditEvent.
+     * @param {AuditEventCreateArgs} args - Arguments to create a AuditEvent.
+     * @example
+     * // Create one AuditEvent
+     * const AuditEvent = await prisma.auditEvent.create({
+     *   data: {
+     *     // ... data to create a AuditEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditEventCreateArgs>(args: SelectSubset<T, AuditEventCreateArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditEvents.
+     * @param {AuditEventCreateManyArgs} args - Arguments to create many AuditEvents.
+     * @example
+     * // Create many AuditEvents
+     * const auditEvent = await prisma.auditEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditEventCreateManyArgs>(args?: SelectSubset<T, AuditEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditEvents and returns the data saved in the database.
+     * @param {AuditEventCreateManyAndReturnArgs} args - Arguments to create many AuditEvents.
+     * @example
+     * // Create many AuditEvents
+     * const auditEvent = await prisma.auditEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuditEvents and only return the `id`
+     * const auditEventWithIdOnly = await prisma.auditEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuditEventCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditEvent.
+     * @param {AuditEventDeleteArgs} args - Arguments to delete one AuditEvent.
+     * @example
+     * // Delete one AuditEvent
+     * const AuditEvent = await prisma.auditEvent.delete({
+     *   where: {
+     *     // ... filter to delete one AuditEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditEventDeleteArgs>(args: SelectSubset<T, AuditEventDeleteArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditEvent.
+     * @param {AuditEventUpdateArgs} args - Arguments to update one AuditEvent.
+     * @example
+     * // Update one AuditEvent
+     * const auditEvent = await prisma.auditEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditEventUpdateArgs>(args: SelectSubset<T, AuditEventUpdateArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditEvents.
+     * @param {AuditEventDeleteManyArgs} args - Arguments to filter AuditEvents to delete.
+     * @example
+     * // Delete a few AuditEvents
+     * const { count } = await prisma.auditEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditEventDeleteManyArgs>(args?: SelectSubset<T, AuditEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditEvents
+     * const auditEvent = await prisma.auditEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditEventUpdateManyArgs>(args: SelectSubset<T, AuditEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditEvents and returns the data updated in the database.
+     * @param {AuditEventUpdateManyAndReturnArgs} args - Arguments to update many AuditEvents.
+     * @example
+     * // Update many AuditEvents
+     * const auditEvent = await prisma.auditEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuditEvents and only return the `id`
+     * const auditEventWithIdOnly = await prisma.auditEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuditEventUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditEvent.
+     * @param {AuditEventUpsertArgs} args - Arguments to update or create a AuditEvent.
+     * @example
+     * // Update or create a AuditEvent
+     * const auditEvent = await prisma.auditEvent.upsert({
+     *   create: {
+     *     // ... data to create a AuditEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditEventUpsertArgs>(args: SelectSubset<T, AuditEventUpsertArgs<ExtArgs>>): Prisma__AuditEventClient<$Result.GetResult<Prisma.$AuditEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventCountArgs} args - Arguments to filter AuditEvents to count.
+     * @example
+     * // Count the number of AuditEvents
+     * const count = await prisma.auditEvent.count({
+     *   where: {
+     *     // ... the filter for the AuditEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditEventCountArgs>(
+      args?: Subset<T, AuditEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditEventAggregateArgs>(args: Subset<T, AuditEventAggregateArgs>): Prisma.PrismaPromise<GetAuditEventAggregateType<T>>
+
+    /**
+     * Group by AuditEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditEventGroupByArgs['orderBy'] }
+        : { orderBy?: AuditEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditEvent model
+   */
+  readonly fields: AuditEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditEvent model
+   */
+  interface AuditEventFieldRefs {
+    readonly id: FieldRef<"AuditEvent", 'Int'>
+    readonly action: FieldRef<"AuditEvent", 'String'>
+    readonly actorPubkey: FieldRef<"AuditEvent", 'String'>
+    readonly recordCid: FieldRef<"AuditEvent", 'String'>
+    readonly targetPubkey: FieldRef<"AuditEvent", 'String'>
+    readonly metadata: FieldRef<"AuditEvent", 'String'>
+    readonly ipAddress: FieldRef<"AuditEvent", 'String'>
+    readonly txSignature: FieldRef<"AuditEvent", 'String'>
+    readonly createdAt: FieldRef<"AuditEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditEvent findUnique
+   */
+  export type AuditEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditEvent to fetch.
+     */
+    where: AuditEventWhereUniqueInput
+  }
+
+  /**
+   * AuditEvent findUniqueOrThrow
+   */
+  export type AuditEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditEvent to fetch.
+     */
+    where: AuditEventWhereUniqueInput
+  }
+
+  /**
+   * AuditEvent findFirst
+   */
+  export type AuditEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditEvent to fetch.
+     */
+    where?: AuditEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditEvents to fetch.
+     */
+    orderBy?: AuditEventOrderByWithRelationInput | AuditEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditEvents.
+     */
+    cursor?: AuditEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditEvents.
+     */
+    distinct?: AuditEventScalarFieldEnum | AuditEventScalarFieldEnum[]
+  }
+
+  /**
+   * AuditEvent findFirstOrThrow
+   */
+  export type AuditEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditEvent to fetch.
+     */
+    where?: AuditEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditEvents to fetch.
+     */
+    orderBy?: AuditEventOrderByWithRelationInput | AuditEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditEvents.
+     */
+    cursor?: AuditEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditEvents.
+     */
+    distinct?: AuditEventScalarFieldEnum | AuditEventScalarFieldEnum[]
+  }
+
+  /**
+   * AuditEvent findMany
+   */
+  export type AuditEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter, which AuditEvents to fetch.
+     */
+    where?: AuditEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditEvents to fetch.
+     */
+    orderBy?: AuditEventOrderByWithRelationInput | AuditEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditEvents.
+     */
+    cursor?: AuditEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditEvents.
+     */
+    skip?: number
+    distinct?: AuditEventScalarFieldEnum | AuditEventScalarFieldEnum[]
+  }
+
+  /**
+   * AuditEvent create
+   */
+  export type AuditEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AuditEvent.
+     */
+    data: XOR<AuditEventCreateInput, AuditEventUncheckedCreateInput>
+  }
+
+  /**
+   * AuditEvent createMany
+   */
+  export type AuditEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditEvents.
+     */
+    data: AuditEventCreateManyInput | AuditEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditEvent createManyAndReturn
+   */
+  export type AuditEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditEvents.
+     */
+    data: AuditEventCreateManyInput | AuditEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditEvent update
+   */
+  export type AuditEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AuditEvent.
+     */
+    data: XOR<AuditEventUpdateInput, AuditEventUncheckedUpdateInput>
+    /**
+     * Choose, which AuditEvent to update.
+     */
+    where: AuditEventWhereUniqueInput
+  }
+
+  /**
+   * AuditEvent updateMany
+   */
+  export type AuditEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditEvents.
+     */
+    data: XOR<AuditEventUpdateManyMutationInput, AuditEventUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditEvents to update
+     */
+    where?: AuditEventWhereInput
+    /**
+     * Limit how many AuditEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditEvent updateManyAndReturn
+   */
+  export type AuditEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditEvents.
+     */
+    data: XOR<AuditEventUpdateManyMutationInput, AuditEventUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditEvents to update
+     */
+    where?: AuditEventWhereInput
+    /**
+     * Limit how many AuditEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditEvent upsert
+   */
+  export type AuditEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AuditEvent to update in case it exists.
+     */
+    where: AuditEventWhereUniqueInput
+    /**
+     * In case the AuditEvent found by the `where` argument doesn't exist, create a new AuditEvent with this data.
+     */
+    create: XOR<AuditEventCreateInput, AuditEventUncheckedCreateInput>
+    /**
+     * In case the AuditEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditEventUpdateInput, AuditEventUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditEvent delete
+   */
+  export type AuditEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+    /**
+     * Filter which AuditEvent to delete.
+     */
+    where: AuditEventWhereUniqueInput
+  }
+
+  /**
+   * AuditEvent deleteMany
+   */
+  export type AuditEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditEvents to delete
+     */
+    where?: AuditEventWhereInput
+    /**
+     * Limit how many AuditEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditEvent without action
+   */
+  export type AuditEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditEvent
+     */
+    select?: AuditEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditEvent
+     */
+    omit?: AuditEventOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -6813,6 +9174,37 @@ export namespace Prisma {
   };
 
   export type RecordAnchorScalarFieldEnum = (typeof RecordAnchorScalarFieldEnum)[keyof typeof RecordAnchorScalarFieldEnum]
+
+
+  export const AccessRequestScalarFieldEnum: {
+    id: 'id',
+    recordCid: 'recordCid',
+    requesterPubkey: 'requesterPubkey',
+    ownerPubkey: 'ownerPubkey',
+    purpose: 'purpose',
+    status: 'status',
+    respondedAt: 'respondedAt',
+    responseNote: 'responseNote',
+    consentId: 'consentId',
+    createdAt: 'createdAt'
+  };
+
+  export type AccessRequestScalarFieldEnum = (typeof AccessRequestScalarFieldEnum)[keyof typeof AccessRequestScalarFieldEnum]
+
+
+  export const AuditEventScalarFieldEnum: {
+    id: 'id',
+    action: 'action',
+    actorPubkey: 'actorPubkey',
+    recordCid: 'recordCid',
+    targetPubkey: 'targetPubkey',
+    metadata: 'metadata',
+    ipAddress: 'ipAddress',
+    txSignature: 'txSignature',
+    createdAt: 'createdAt'
+  };
+
+  export type AuditEventScalarFieldEnum = (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7257,6 +9649,159 @@ export namespace Prisma {
     anchoredAt?: DateTimeWithAggregatesFilter<"RecordAnchor"> | Date | string
   }
 
+  export type AccessRequestWhereInput = {
+    AND?: AccessRequestWhereInput | AccessRequestWhereInput[]
+    OR?: AccessRequestWhereInput[]
+    NOT?: AccessRequestWhereInput | AccessRequestWhereInput[]
+    id?: IntFilter<"AccessRequest"> | number
+    recordCid?: StringFilter<"AccessRequest"> | string
+    requesterPubkey?: StringFilter<"AccessRequest"> | string
+    ownerPubkey?: StringFilter<"AccessRequest"> | string
+    purpose?: StringFilter<"AccessRequest"> | string
+    status?: StringFilter<"AccessRequest"> | string
+    respondedAt?: DateTimeNullableFilter<"AccessRequest"> | Date | string | null
+    responseNote?: StringNullableFilter<"AccessRequest"> | string | null
+    consentId?: IntNullableFilter<"AccessRequest"> | number | null
+    createdAt?: DateTimeFilter<"AccessRequest"> | Date | string
+  }
+
+  export type AccessRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    requesterPubkey?: SortOrder
+    ownerPubkey?: SortOrder
+    purpose?: SortOrder
+    status?: SortOrder
+    respondedAt?: SortOrderInput | SortOrder
+    responseNote?: SortOrderInput | SortOrder
+    consentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AccessRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: AccessRequestWhereInput | AccessRequestWhereInput[]
+    OR?: AccessRequestWhereInput[]
+    NOT?: AccessRequestWhereInput | AccessRequestWhereInput[]
+    recordCid?: StringFilter<"AccessRequest"> | string
+    requesterPubkey?: StringFilter<"AccessRequest"> | string
+    ownerPubkey?: StringFilter<"AccessRequest"> | string
+    purpose?: StringFilter<"AccessRequest"> | string
+    status?: StringFilter<"AccessRequest"> | string
+    respondedAt?: DateTimeNullableFilter<"AccessRequest"> | Date | string | null
+    responseNote?: StringNullableFilter<"AccessRequest"> | string | null
+    consentId?: IntNullableFilter<"AccessRequest"> | number | null
+    createdAt?: DateTimeFilter<"AccessRequest"> | Date | string
+  }, "id">
+
+  export type AccessRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    requesterPubkey?: SortOrder
+    ownerPubkey?: SortOrder
+    purpose?: SortOrder
+    status?: SortOrder
+    respondedAt?: SortOrderInput | SortOrder
+    responseNote?: SortOrderInput | SortOrder
+    consentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AccessRequestCountOrderByAggregateInput
+    _avg?: AccessRequestAvgOrderByAggregateInput
+    _max?: AccessRequestMaxOrderByAggregateInput
+    _min?: AccessRequestMinOrderByAggregateInput
+    _sum?: AccessRequestSumOrderByAggregateInput
+  }
+
+  export type AccessRequestScalarWhereWithAggregatesInput = {
+    AND?: AccessRequestScalarWhereWithAggregatesInput | AccessRequestScalarWhereWithAggregatesInput[]
+    OR?: AccessRequestScalarWhereWithAggregatesInput[]
+    NOT?: AccessRequestScalarWhereWithAggregatesInput | AccessRequestScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"AccessRequest"> | number
+    recordCid?: StringWithAggregatesFilter<"AccessRequest"> | string
+    requesterPubkey?: StringWithAggregatesFilter<"AccessRequest"> | string
+    ownerPubkey?: StringWithAggregatesFilter<"AccessRequest"> | string
+    purpose?: StringWithAggregatesFilter<"AccessRequest"> | string
+    status?: StringWithAggregatesFilter<"AccessRequest"> | string
+    respondedAt?: DateTimeNullableWithAggregatesFilter<"AccessRequest"> | Date | string | null
+    responseNote?: StringNullableWithAggregatesFilter<"AccessRequest"> | string | null
+    consentId?: IntNullableWithAggregatesFilter<"AccessRequest"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"AccessRequest"> | Date | string
+  }
+
+  export type AuditEventWhereInput = {
+    AND?: AuditEventWhereInput | AuditEventWhereInput[]
+    OR?: AuditEventWhereInput[]
+    NOT?: AuditEventWhereInput | AuditEventWhereInput[]
+    id?: IntFilter<"AuditEvent"> | number
+    action?: StringFilter<"AuditEvent"> | string
+    actorPubkey?: StringFilter<"AuditEvent"> | string
+    recordCid?: StringNullableFilter<"AuditEvent"> | string | null
+    targetPubkey?: StringNullableFilter<"AuditEvent"> | string | null
+    metadata?: StringNullableFilter<"AuditEvent"> | string | null
+    ipAddress?: StringNullableFilter<"AuditEvent"> | string | null
+    txSignature?: StringNullableFilter<"AuditEvent"> | string | null
+    createdAt?: DateTimeFilter<"AuditEvent"> | Date | string
+  }
+
+  export type AuditEventOrderByWithRelationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    actorPubkey?: SortOrder
+    recordCid?: SortOrderInput | SortOrder
+    targetPubkey?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    txSignature?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: AuditEventWhereInput | AuditEventWhereInput[]
+    OR?: AuditEventWhereInput[]
+    NOT?: AuditEventWhereInput | AuditEventWhereInput[]
+    action?: StringFilter<"AuditEvent"> | string
+    actorPubkey?: StringFilter<"AuditEvent"> | string
+    recordCid?: StringNullableFilter<"AuditEvent"> | string | null
+    targetPubkey?: StringNullableFilter<"AuditEvent"> | string | null
+    metadata?: StringNullableFilter<"AuditEvent"> | string | null
+    ipAddress?: StringNullableFilter<"AuditEvent"> | string | null
+    txSignature?: StringNullableFilter<"AuditEvent"> | string | null
+    createdAt?: DateTimeFilter<"AuditEvent"> | Date | string
+  }, "id">
+
+  export type AuditEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    actorPubkey?: SortOrder
+    recordCid?: SortOrderInput | SortOrder
+    targetPubkey?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    txSignature?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AuditEventCountOrderByAggregateInput
+    _avg?: AuditEventAvgOrderByAggregateInput
+    _max?: AuditEventMaxOrderByAggregateInput
+    _min?: AuditEventMinOrderByAggregateInput
+    _sum?: AuditEventSumOrderByAggregateInput
+  }
+
+  export type AuditEventScalarWhereWithAggregatesInput = {
+    AND?: AuditEventScalarWhereWithAggregatesInput | AuditEventScalarWhereWithAggregatesInput[]
+    OR?: AuditEventScalarWhereWithAggregatesInput[]
+    NOT?: AuditEventScalarWhereWithAggregatesInput | AuditEventScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"AuditEvent"> | number
+    action?: StringWithAggregatesFilter<"AuditEvent"> | string
+    actorPubkey?: StringWithAggregatesFilter<"AuditEvent"> | string
+    recordCid?: StringNullableWithAggregatesFilter<"AuditEvent"> | string | null
+    targetPubkey?: StringNullableWithAggregatesFilter<"AuditEvent"> | string | null
+    metadata?: StringNullableWithAggregatesFilter<"AuditEvent"> | string | null
+    ipAddress?: StringNullableWithAggregatesFilter<"AuditEvent"> | string | null
+    txSignature?: StringNullableWithAggregatesFilter<"AuditEvent"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AuditEvent"> | Date | string
+  }
+
   export type RewrapKeyCreateInput = {
     recordCid: string
     recipientPubkey: string
@@ -7621,6 +10166,175 @@ export namespace Prisma {
     pda?: StringFieldUpdateOperationsInput | string
     anchoredBy?: StringFieldUpdateOperationsInput | string
     anchoredAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AccessRequestCreateInput = {
+    recordCid: string
+    requesterPubkey: string
+    ownerPubkey: string
+    purpose: string
+    status?: string
+    respondedAt?: Date | string | null
+    responseNote?: string | null
+    consentId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type AccessRequestUncheckedCreateInput = {
+    id?: number
+    recordCid: string
+    requesterPubkey: string
+    ownerPubkey: string
+    purpose: string
+    status?: string
+    respondedAt?: Date | string | null
+    responseNote?: string | null
+    consentId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type AccessRequestUpdateInput = {
+    recordCid?: StringFieldUpdateOperationsInput | string
+    requesterPubkey?: StringFieldUpdateOperationsInput | string
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    responseNote?: NullableStringFieldUpdateOperationsInput | string | null
+    consentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AccessRequestUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    recordCid?: StringFieldUpdateOperationsInput | string
+    requesterPubkey?: StringFieldUpdateOperationsInput | string
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    responseNote?: NullableStringFieldUpdateOperationsInput | string | null
+    consentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AccessRequestCreateManyInput = {
+    id?: number
+    recordCid: string
+    requesterPubkey: string
+    ownerPubkey: string
+    purpose: string
+    status?: string
+    respondedAt?: Date | string | null
+    responseNote?: string | null
+    consentId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type AccessRequestUpdateManyMutationInput = {
+    recordCid?: StringFieldUpdateOperationsInput | string
+    requesterPubkey?: StringFieldUpdateOperationsInput | string
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    responseNote?: NullableStringFieldUpdateOperationsInput | string | null
+    consentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AccessRequestUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    recordCid?: StringFieldUpdateOperationsInput | string
+    requesterPubkey?: StringFieldUpdateOperationsInput | string
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    responseNote?: NullableStringFieldUpdateOperationsInput | string | null
+    consentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditEventCreateInput = {
+    action: string
+    actorPubkey: string
+    recordCid?: string | null
+    targetPubkey?: string | null
+    metadata?: string | null
+    ipAddress?: string | null
+    txSignature?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditEventUncheckedCreateInput = {
+    id?: number
+    action: string
+    actorPubkey: string
+    recordCid?: string | null
+    targetPubkey?: string | null
+    metadata?: string | null
+    ipAddress?: string | null
+    txSignature?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditEventUpdateInput = {
+    action?: StringFieldUpdateOperationsInput | string
+    actorPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: NullableStringFieldUpdateOperationsInput | string | null
+    targetPubkey?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    txSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditEventUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    action?: StringFieldUpdateOperationsInput | string
+    actorPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: NullableStringFieldUpdateOperationsInput | string | null
+    targetPubkey?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    txSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditEventCreateManyInput = {
+    id?: number
+    action: string
+    actorPubkey: string
+    recordCid?: string | null
+    targetPubkey?: string | null
+    metadata?: string | null
+    ipAddress?: string | null
+    txSignature?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AuditEventUpdateManyMutationInput = {
+    action?: StringFieldUpdateOperationsInput | string
+    actorPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: NullableStringFieldUpdateOperationsInput | string | null
+    targetPubkey?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    txSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditEventUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    action?: StringFieldUpdateOperationsInput | string
+    actorPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: NullableStringFieldUpdateOperationsInput | string | null
+    targetPubkey?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    txSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -8034,6 +10748,99 @@ export namespace Prisma {
   }
 
   export type RecordAnchorSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type AccessRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    requesterPubkey?: SortOrder
+    ownerPubkey?: SortOrder
+    purpose?: SortOrder
+    status?: SortOrder
+    respondedAt?: SortOrder
+    responseNote?: SortOrder
+    consentId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AccessRequestAvgOrderByAggregateInput = {
+    id?: SortOrder
+    consentId?: SortOrder
+  }
+
+  export type AccessRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    requesterPubkey?: SortOrder
+    ownerPubkey?: SortOrder
+    purpose?: SortOrder
+    status?: SortOrder
+    respondedAt?: SortOrder
+    responseNote?: SortOrder
+    consentId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AccessRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    recordCid?: SortOrder
+    requesterPubkey?: SortOrder
+    ownerPubkey?: SortOrder
+    purpose?: SortOrder
+    status?: SortOrder
+    respondedAt?: SortOrder
+    responseNote?: SortOrder
+    consentId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AccessRequestSumOrderByAggregateInput = {
+    id?: SortOrder
+    consentId?: SortOrder
+  }
+
+  export type AuditEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    actorPubkey?: SortOrder
+    recordCid?: SortOrder
+    targetPubkey?: SortOrder
+    metadata?: SortOrder
+    ipAddress?: SortOrder
+    txSignature?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditEventAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type AuditEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    actorPubkey?: SortOrder
+    recordCid?: SortOrder
+    targetPubkey?: SortOrder
+    metadata?: SortOrder
+    ipAddress?: SortOrder
+    txSignature?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    actorPubkey?: SortOrder
+    recordCid?: SortOrder
+    targetPubkey?: SortOrder
+    metadata?: SortOrder
+    ipAddress?: SortOrder
+    txSignature?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuditEventSumOrderByAggregateInput = {
     id?: SortOrder
   }
 

@@ -24,6 +24,17 @@ export async function POST(request: Request) {
             },
         });
 
+        await prismaClient.auditEvent.create({
+            data: {
+                action: 'CONSENT_GRANTED',
+                actorPubkey: issuerPubkey.trim(),
+                recordCid,
+                targetPubkey: recipientPubkey.trim(),
+                metadata: JSON.stringify({ consentCid, consentId: consent.id }),
+                txSignature: anchoredTxId || null,
+            },
+        });
+
         return NextResponse.json({ success: true, id: consent.id });
     } catch (e: any) {
         console.error('Failed to store consent:', e);

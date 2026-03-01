@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseHealthDocument } from "@/lib/document-ai";
+import { parseHealthDocument } from "@/lib/extractor";
 
 export const maxDuration = 60;
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generatePartialPdf, DocumentSection } from "@/lib/document-ai";
+import { generatePartialPdf, DocumentSection } from "@/lib/extractor";
 
 export async function POST(request: NextRequest) {
     try {

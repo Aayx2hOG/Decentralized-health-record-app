@@ -83,3 +83,39 @@ model RecordAnchor {
 
   @@map("record_anchors")
 }
+
+model AccessRequest {
+  id              Int       @id @default(autoincrement())
+  recordCid       String
+  requesterPubkey String
+  ownerPubkey     String
+  purpose         String    @db.Text
+  status          String    @default("pending")
+  respondedAt     DateTime?
+  responseNote    String?   @db.Text
+  consentId       Int?
+  createdAt       DateTime  @default(now())
+
+  @@index([ownerPubkey])
+  @@index([requesterPubkey])
+  @@index([recordCid])
+  @@map("access_requests")
+}
+
+model AuditEvent {
+  id           Int      @id @default(autoincrement())
+  action       String
+  actorPubkey  String
+  recordCid    String?
+  targetPubkey String?
+  metadata     String?  @db.Text
+  ipAddress    String?
+  txSignature  String?
+  createdAt    DateTime @default(now())
+
+  @@index([recordCid])
+  @@index([actorPubkey])
+  @@index([targetPubkey])
+  @@index([createdAt])
+  @@map("audit_events")
+}
