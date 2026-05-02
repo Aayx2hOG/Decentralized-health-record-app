@@ -48,6 +48,11 @@ export type AccessRequest = $Result.DefaultSelection<Prisma.$AccessRequestPayloa
  * 
  */
 export type AuditEvent = $Result.DefaultSelection<Prisma.$AuditEventPayload>
+/**
+ * Model MerkleLeaf
+ * 
+ */
+export type MerkleLeaf = $Result.DefaultSelection<Prisma.$MerkleLeafPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -235,6 +240,16 @@ export class PrismaClient<
     * ```
     */
   get auditEvent(): Prisma.AuditEventDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.merkleLeaf`: Exposes CRUD operations for the **MerkleLeaf** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MerkleLeaves
+    * const merkleLeaves = await prisma.merkleLeaf.findMany()
+    * ```
+    */
+  get merkleLeaf(): Prisma.MerkleLeafDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -675,7 +690,8 @@ export namespace Prisma {
     ConsentCredential: 'ConsentCredential',
     RecordAnchor: 'RecordAnchor',
     AccessRequest: 'AccessRequest',
-    AuditEvent: 'AuditEvent'
+    AuditEvent: 'AuditEvent',
+    MerkleLeaf: 'MerkleLeaf'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -691,7 +707,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor" | "accessRequest" | "auditEvent"
+      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor" | "accessRequest" | "auditEvent" | "merkleLeaf"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1213,6 +1229,80 @@ export namespace Prisma {
           }
         }
       }
+      MerkleLeaf: {
+        payload: Prisma.$MerkleLeafPayload<ExtArgs>
+        fields: Prisma.MerkleLeafFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MerkleLeafFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MerkleLeafFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          findFirst: {
+            args: Prisma.MerkleLeafFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MerkleLeafFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          findMany: {
+            args: Prisma.MerkleLeafFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>[]
+          }
+          create: {
+            args: Prisma.MerkleLeafCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          createMany: {
+            args: Prisma.MerkleLeafCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MerkleLeafCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>[]
+          }
+          delete: {
+            args: Prisma.MerkleLeafDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          update: {
+            args: Prisma.MerkleLeafUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          deleteMany: {
+            args: Prisma.MerkleLeafDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MerkleLeafUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MerkleLeafUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>[]
+          }
+          upsert: {
+            args: Prisma.MerkleLeafUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleLeafPayload>
+          }
+          aggregate: {
+            args: Prisma.MerkleLeafAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMerkleLeaf>
+          }
+          groupBy: {
+            args: Prisma.MerkleLeafGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MerkleLeafGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MerkleLeafCountArgs<ExtArgs>
+            result: $Utils.Optional<MerkleLeafCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1312,6 +1402,7 @@ export namespace Prisma {
     recordAnchor?: RecordAnchorOmit
     accessRequest?: AccessRequestOmit
     auditEvent?: AuditEventOmit
+    merkleLeaf?: MerkleLeafOmit
   }
 
   /* Types for Logging */
@@ -9094,6 +9185,1052 @@ export namespace Prisma {
 
 
   /**
+   * Model MerkleLeaf
+   */
+
+  export type AggregateMerkleLeaf = {
+    _count: MerkleLeafCountAggregateOutputType | null
+    _avg: MerkleLeafAvgAggregateOutputType | null
+    _sum: MerkleLeafSumAggregateOutputType | null
+    _min: MerkleLeafMinAggregateOutputType | null
+    _max: MerkleLeafMaxAggregateOutputType | null
+  }
+
+  export type MerkleLeafAvgAggregateOutputType = {
+    id: number | null
+    leafIndex: number | null
+  }
+
+  export type MerkleLeafSumAggregateOutputType = {
+    id: number | null
+    leafIndex: number | null
+  }
+
+  export type MerkleLeafMinAggregateOutputType = {
+    id: number | null
+    ownerPubkey: string | null
+    recordCid: string | null
+    leafHash: string | null
+    leafIndex: number | null
+    createdAt: Date | null
+  }
+
+  export type MerkleLeafMaxAggregateOutputType = {
+    id: number | null
+    ownerPubkey: string | null
+    recordCid: string | null
+    leafHash: string | null
+    leafIndex: number | null
+    createdAt: Date | null
+  }
+
+  export type MerkleLeafCountAggregateOutputType = {
+    id: number
+    ownerPubkey: number
+    recordCid: number
+    leafHash: number
+    leafIndex: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type MerkleLeafAvgAggregateInputType = {
+    id?: true
+    leafIndex?: true
+  }
+
+  export type MerkleLeafSumAggregateInputType = {
+    id?: true
+    leafIndex?: true
+  }
+
+  export type MerkleLeafMinAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    recordCid?: true
+    leafHash?: true
+    leafIndex?: true
+    createdAt?: true
+  }
+
+  export type MerkleLeafMaxAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    recordCid?: true
+    leafHash?: true
+    leafIndex?: true
+    createdAt?: true
+  }
+
+  export type MerkleLeafCountAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    recordCid?: true
+    leafHash?: true
+    leafIndex?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type MerkleLeafAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MerkleLeaf to aggregate.
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleLeaves to fetch.
+     */
+    orderBy?: MerkleLeafOrderByWithRelationInput | MerkleLeafOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MerkleLeafWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleLeaves from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleLeaves.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MerkleLeaves
+    **/
+    _count?: true | MerkleLeafCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MerkleLeafAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MerkleLeafSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MerkleLeafMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MerkleLeafMaxAggregateInputType
+  }
+
+  export type GetMerkleLeafAggregateType<T extends MerkleLeafAggregateArgs> = {
+        [P in keyof T & keyof AggregateMerkleLeaf]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMerkleLeaf[P]>
+      : GetScalarType<T[P], AggregateMerkleLeaf[P]>
+  }
+
+
+
+
+  export type MerkleLeafGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MerkleLeafWhereInput
+    orderBy?: MerkleLeafOrderByWithAggregationInput | MerkleLeafOrderByWithAggregationInput[]
+    by: MerkleLeafScalarFieldEnum[] | MerkleLeafScalarFieldEnum
+    having?: MerkleLeafScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MerkleLeafCountAggregateInputType | true
+    _avg?: MerkleLeafAvgAggregateInputType
+    _sum?: MerkleLeafSumAggregateInputType
+    _min?: MerkleLeafMinAggregateInputType
+    _max?: MerkleLeafMaxAggregateInputType
+  }
+
+  export type MerkleLeafGroupByOutputType = {
+    id: number
+    ownerPubkey: string
+    recordCid: string
+    leafHash: string
+    leafIndex: number | null
+    createdAt: Date
+    _count: MerkleLeafCountAggregateOutputType | null
+    _avg: MerkleLeafAvgAggregateOutputType | null
+    _sum: MerkleLeafSumAggregateOutputType | null
+    _min: MerkleLeafMinAggregateOutputType | null
+    _max: MerkleLeafMaxAggregateOutputType | null
+  }
+
+  type GetMerkleLeafGroupByPayload<T extends MerkleLeafGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MerkleLeafGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MerkleLeafGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MerkleLeafGroupByOutputType[P]>
+            : GetScalarType<T[P], MerkleLeafGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MerkleLeafSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    recordCid?: boolean
+    leafHash?: boolean
+    leafIndex?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleLeaf"]>
+
+  export type MerkleLeafSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    recordCid?: boolean
+    leafHash?: boolean
+    leafIndex?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleLeaf"]>
+
+  export type MerkleLeafSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    recordCid?: boolean
+    leafHash?: boolean
+    leafIndex?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleLeaf"]>
+
+  export type MerkleLeafSelectScalar = {
+    id?: boolean
+    ownerPubkey?: boolean
+    recordCid?: boolean
+    leafHash?: boolean
+    leafIndex?: boolean
+    createdAt?: boolean
+  }
+
+  export type MerkleLeafOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerPubkey" | "recordCid" | "leafHash" | "leafIndex" | "createdAt", ExtArgs["result"]["merkleLeaf"]>
+
+  export type $MerkleLeafPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MerkleLeaf"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      ownerPubkey: string
+      recordCid: string
+      leafHash: string
+      leafIndex: number | null
+      createdAt: Date
+    }, ExtArgs["result"]["merkleLeaf"]>
+    composites: {}
+  }
+
+  type MerkleLeafGetPayload<S extends boolean | null | undefined | MerkleLeafDefaultArgs> = $Result.GetResult<Prisma.$MerkleLeafPayload, S>
+
+  type MerkleLeafCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MerkleLeafFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MerkleLeafCountAggregateInputType | true
+    }
+
+  export interface MerkleLeafDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MerkleLeaf'], meta: { name: 'MerkleLeaf' } }
+    /**
+     * Find zero or one MerkleLeaf that matches the filter.
+     * @param {MerkleLeafFindUniqueArgs} args - Arguments to find a MerkleLeaf
+     * @example
+     * // Get one MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MerkleLeafFindUniqueArgs>(args: SelectSubset<T, MerkleLeafFindUniqueArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MerkleLeaf that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MerkleLeafFindUniqueOrThrowArgs} args - Arguments to find a MerkleLeaf
+     * @example
+     * // Get one MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MerkleLeafFindUniqueOrThrowArgs>(args: SelectSubset<T, MerkleLeafFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MerkleLeaf that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafFindFirstArgs} args - Arguments to find a MerkleLeaf
+     * @example
+     * // Get one MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MerkleLeafFindFirstArgs>(args?: SelectSubset<T, MerkleLeafFindFirstArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MerkleLeaf that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafFindFirstOrThrowArgs} args - Arguments to find a MerkleLeaf
+     * @example
+     * // Get one MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MerkleLeafFindFirstOrThrowArgs>(args?: SelectSubset<T, MerkleLeafFindFirstOrThrowArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MerkleLeaves that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MerkleLeaves
+     * const merkleLeaves = await prisma.merkleLeaf.findMany()
+     * 
+     * // Get first 10 MerkleLeaves
+     * const merkleLeaves = await prisma.merkleLeaf.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const merkleLeafWithIdOnly = await prisma.merkleLeaf.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MerkleLeafFindManyArgs>(args?: SelectSubset<T, MerkleLeafFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MerkleLeaf.
+     * @param {MerkleLeafCreateArgs} args - Arguments to create a MerkleLeaf.
+     * @example
+     * // Create one MerkleLeaf
+     * const MerkleLeaf = await prisma.merkleLeaf.create({
+     *   data: {
+     *     // ... data to create a MerkleLeaf
+     *   }
+     * })
+     * 
+     */
+    create<T extends MerkleLeafCreateArgs>(args: SelectSubset<T, MerkleLeafCreateArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MerkleLeaves.
+     * @param {MerkleLeafCreateManyArgs} args - Arguments to create many MerkleLeaves.
+     * @example
+     * // Create many MerkleLeaves
+     * const merkleLeaf = await prisma.merkleLeaf.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MerkleLeafCreateManyArgs>(args?: SelectSubset<T, MerkleLeafCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MerkleLeaves and returns the data saved in the database.
+     * @param {MerkleLeafCreateManyAndReturnArgs} args - Arguments to create many MerkleLeaves.
+     * @example
+     * // Create many MerkleLeaves
+     * const merkleLeaf = await prisma.merkleLeaf.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MerkleLeaves and only return the `id`
+     * const merkleLeafWithIdOnly = await prisma.merkleLeaf.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MerkleLeafCreateManyAndReturnArgs>(args?: SelectSubset<T, MerkleLeafCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MerkleLeaf.
+     * @param {MerkleLeafDeleteArgs} args - Arguments to delete one MerkleLeaf.
+     * @example
+     * // Delete one MerkleLeaf
+     * const MerkleLeaf = await prisma.merkleLeaf.delete({
+     *   where: {
+     *     // ... filter to delete one MerkleLeaf
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MerkleLeafDeleteArgs>(args: SelectSubset<T, MerkleLeafDeleteArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MerkleLeaf.
+     * @param {MerkleLeafUpdateArgs} args - Arguments to update one MerkleLeaf.
+     * @example
+     * // Update one MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MerkleLeafUpdateArgs>(args: SelectSubset<T, MerkleLeafUpdateArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MerkleLeaves.
+     * @param {MerkleLeafDeleteManyArgs} args - Arguments to filter MerkleLeaves to delete.
+     * @example
+     * // Delete a few MerkleLeaves
+     * const { count } = await prisma.merkleLeaf.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MerkleLeafDeleteManyArgs>(args?: SelectSubset<T, MerkleLeafDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MerkleLeaves.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MerkleLeaves
+     * const merkleLeaf = await prisma.merkleLeaf.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MerkleLeafUpdateManyArgs>(args: SelectSubset<T, MerkleLeafUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MerkleLeaves and returns the data updated in the database.
+     * @param {MerkleLeafUpdateManyAndReturnArgs} args - Arguments to update many MerkleLeaves.
+     * @example
+     * // Update many MerkleLeaves
+     * const merkleLeaf = await prisma.merkleLeaf.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MerkleLeaves and only return the `id`
+     * const merkleLeafWithIdOnly = await prisma.merkleLeaf.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MerkleLeafUpdateManyAndReturnArgs>(args: SelectSubset<T, MerkleLeafUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MerkleLeaf.
+     * @param {MerkleLeafUpsertArgs} args - Arguments to update or create a MerkleLeaf.
+     * @example
+     * // Update or create a MerkleLeaf
+     * const merkleLeaf = await prisma.merkleLeaf.upsert({
+     *   create: {
+     *     // ... data to create a MerkleLeaf
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MerkleLeaf we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MerkleLeafUpsertArgs>(args: SelectSubset<T, MerkleLeafUpsertArgs<ExtArgs>>): Prisma__MerkleLeafClient<$Result.GetResult<Prisma.$MerkleLeafPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MerkleLeaves.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafCountArgs} args - Arguments to filter MerkleLeaves to count.
+     * @example
+     * // Count the number of MerkleLeaves
+     * const count = await prisma.merkleLeaf.count({
+     *   where: {
+     *     // ... the filter for the MerkleLeaves we want to count
+     *   }
+     * })
+    **/
+    count<T extends MerkleLeafCountArgs>(
+      args?: Subset<T, MerkleLeafCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MerkleLeafCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MerkleLeaf.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MerkleLeafAggregateArgs>(args: Subset<T, MerkleLeafAggregateArgs>): Prisma.PrismaPromise<GetMerkleLeafAggregateType<T>>
+
+    /**
+     * Group by MerkleLeaf.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleLeafGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MerkleLeafGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MerkleLeafGroupByArgs['orderBy'] }
+        : { orderBy?: MerkleLeafGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MerkleLeafGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMerkleLeafGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MerkleLeaf model
+   */
+  readonly fields: MerkleLeafFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MerkleLeaf.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MerkleLeafClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MerkleLeaf model
+   */
+  interface MerkleLeafFieldRefs {
+    readonly id: FieldRef<"MerkleLeaf", 'Int'>
+    readonly ownerPubkey: FieldRef<"MerkleLeaf", 'String'>
+    readonly recordCid: FieldRef<"MerkleLeaf", 'String'>
+    readonly leafHash: FieldRef<"MerkleLeaf", 'String'>
+    readonly leafIndex: FieldRef<"MerkleLeaf", 'Int'>
+    readonly createdAt: FieldRef<"MerkleLeaf", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MerkleLeaf findUnique
+   */
+  export type MerkleLeafFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleLeaf to fetch.
+     */
+    where: MerkleLeafWhereUniqueInput
+  }
+
+  /**
+   * MerkleLeaf findUniqueOrThrow
+   */
+  export type MerkleLeafFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleLeaf to fetch.
+     */
+    where: MerkleLeafWhereUniqueInput
+  }
+
+  /**
+   * MerkleLeaf findFirst
+   */
+  export type MerkleLeafFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleLeaf to fetch.
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleLeaves to fetch.
+     */
+    orderBy?: MerkleLeafOrderByWithRelationInput | MerkleLeafOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MerkleLeaves.
+     */
+    cursor?: MerkleLeafWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleLeaves from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleLeaves.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MerkleLeaves.
+     */
+    distinct?: MerkleLeafScalarFieldEnum | MerkleLeafScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleLeaf findFirstOrThrow
+   */
+  export type MerkleLeafFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleLeaf to fetch.
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleLeaves to fetch.
+     */
+    orderBy?: MerkleLeafOrderByWithRelationInput | MerkleLeafOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MerkleLeaves.
+     */
+    cursor?: MerkleLeafWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleLeaves from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleLeaves.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MerkleLeaves.
+     */
+    distinct?: MerkleLeafScalarFieldEnum | MerkleLeafScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleLeaf findMany
+   */
+  export type MerkleLeafFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleLeaves to fetch.
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleLeaves to fetch.
+     */
+    orderBy?: MerkleLeafOrderByWithRelationInput | MerkleLeafOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MerkleLeaves.
+     */
+    cursor?: MerkleLeafWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleLeaves from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleLeaves.
+     */
+    skip?: number
+    distinct?: MerkleLeafScalarFieldEnum | MerkleLeafScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleLeaf create
+   */
+  export type MerkleLeafCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * The data needed to create a MerkleLeaf.
+     */
+    data: XOR<MerkleLeafCreateInput, MerkleLeafUncheckedCreateInput>
+  }
+
+  /**
+   * MerkleLeaf createMany
+   */
+  export type MerkleLeafCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MerkleLeaves.
+     */
+    data: MerkleLeafCreateManyInput | MerkleLeafCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MerkleLeaf createManyAndReturn
+   */
+  export type MerkleLeafCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * The data used to create many MerkleLeaves.
+     */
+    data: MerkleLeafCreateManyInput | MerkleLeafCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MerkleLeaf update
+   */
+  export type MerkleLeafUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * The data needed to update a MerkleLeaf.
+     */
+    data: XOR<MerkleLeafUpdateInput, MerkleLeafUncheckedUpdateInput>
+    /**
+     * Choose, which MerkleLeaf to update.
+     */
+    where: MerkleLeafWhereUniqueInput
+  }
+
+  /**
+   * MerkleLeaf updateMany
+   */
+  export type MerkleLeafUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MerkleLeaves.
+     */
+    data: XOR<MerkleLeafUpdateManyMutationInput, MerkleLeafUncheckedUpdateManyInput>
+    /**
+     * Filter which MerkleLeaves to update
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * Limit how many MerkleLeaves to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleLeaf updateManyAndReturn
+   */
+  export type MerkleLeafUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * The data used to update MerkleLeaves.
+     */
+    data: XOR<MerkleLeafUpdateManyMutationInput, MerkleLeafUncheckedUpdateManyInput>
+    /**
+     * Filter which MerkleLeaves to update
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * Limit how many MerkleLeaves to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleLeaf upsert
+   */
+  export type MerkleLeafUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * The filter to search for the MerkleLeaf to update in case it exists.
+     */
+    where: MerkleLeafWhereUniqueInput
+    /**
+     * In case the MerkleLeaf found by the `where` argument doesn't exist, create a new MerkleLeaf with this data.
+     */
+    create: XOR<MerkleLeafCreateInput, MerkleLeafUncheckedCreateInput>
+    /**
+     * In case the MerkleLeaf was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MerkleLeafUpdateInput, MerkleLeafUncheckedUpdateInput>
+  }
+
+  /**
+   * MerkleLeaf delete
+   */
+  export type MerkleLeafDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+    /**
+     * Filter which MerkleLeaf to delete.
+     */
+    where: MerkleLeafWhereUniqueInput
+  }
+
+  /**
+   * MerkleLeaf deleteMany
+   */
+  export type MerkleLeafDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MerkleLeaves to delete
+     */
+    where?: MerkleLeafWhereInput
+    /**
+     * Limit how many MerkleLeaves to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleLeaf without action
+   */
+  export type MerkleLeafDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleLeaf
+     */
+    select?: MerkleLeafSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleLeaf
+     */
+    omit?: MerkleLeafOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9205,6 +10342,18 @@ export namespace Prisma {
   };
 
   export type AuditEventScalarFieldEnum = (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum]
+
+
+  export const MerkleLeafScalarFieldEnum: {
+    id: 'id',
+    ownerPubkey: 'ownerPubkey',
+    recordCid: 'recordCid',
+    leafHash: 'leafHash',
+    leafIndex: 'leafIndex',
+    createdAt: 'createdAt'
+  };
+
+  export type MerkleLeafScalarFieldEnum = (typeof MerkleLeafScalarFieldEnum)[keyof typeof MerkleLeafScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -9802,6 +10951,65 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AuditEvent"> | Date | string
   }
 
+  export type MerkleLeafWhereInput = {
+    AND?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
+    OR?: MerkleLeafWhereInput[]
+    NOT?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
+    id?: IntFilter<"MerkleLeaf"> | number
+    ownerPubkey?: StringFilter<"MerkleLeaf"> | string
+    recordCid?: StringFilter<"MerkleLeaf"> | string
+    leafHash?: StringFilter<"MerkleLeaf"> | string
+    leafIndex?: IntNullableFilter<"MerkleLeaf"> | number | null
+    createdAt?: DateTimeFilter<"MerkleLeaf"> | Date | string
+  }
+
+  export type MerkleLeafOrderByWithRelationInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    recordCid?: SortOrder
+    leafHash?: SortOrder
+    leafIndex?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleLeafWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
+    OR?: MerkleLeafWhereInput[]
+    NOT?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
+    ownerPubkey?: StringFilter<"MerkleLeaf"> | string
+    recordCid?: StringFilter<"MerkleLeaf"> | string
+    leafHash?: StringFilter<"MerkleLeaf"> | string
+    leafIndex?: IntNullableFilter<"MerkleLeaf"> | number | null
+    createdAt?: DateTimeFilter<"MerkleLeaf"> | Date | string
+  }, "id">
+
+  export type MerkleLeafOrderByWithAggregationInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    recordCid?: SortOrder
+    leafHash?: SortOrder
+    leafIndex?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: MerkleLeafCountOrderByAggregateInput
+    _avg?: MerkleLeafAvgOrderByAggregateInput
+    _max?: MerkleLeafMaxOrderByAggregateInput
+    _min?: MerkleLeafMinOrderByAggregateInput
+    _sum?: MerkleLeafSumOrderByAggregateInput
+  }
+
+  export type MerkleLeafScalarWhereWithAggregatesInput = {
+    AND?: MerkleLeafScalarWhereWithAggregatesInput | MerkleLeafScalarWhereWithAggregatesInput[]
+    OR?: MerkleLeafScalarWhereWithAggregatesInput[]
+    NOT?: MerkleLeafScalarWhereWithAggregatesInput | MerkleLeafScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"MerkleLeaf"> | number
+    ownerPubkey?: StringWithAggregatesFilter<"MerkleLeaf"> | string
+    recordCid?: StringWithAggregatesFilter<"MerkleLeaf"> | string
+    leafHash?: StringWithAggregatesFilter<"MerkleLeaf"> | string
+    leafIndex?: IntNullableWithAggregatesFilter<"MerkleLeaf"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"MerkleLeaf"> | Date | string
+  }
+
   export type RewrapKeyCreateInput = {
     recordCid: string
     recipientPubkey: string
@@ -10337,6 +11545,66 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MerkleLeafCreateInput = {
+    ownerPubkey: string
+    recordCid: string
+    leafHash: string
+    leafIndex?: number | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleLeafUncheckedCreateInput = {
+    id?: number
+    ownerPubkey: string
+    recordCid: string
+    leafHash: string
+    leafIndex?: number | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleLeafUpdateInput = {
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    leafHash?: StringFieldUpdateOperationsInput | string
+    leafIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleLeafUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    leafHash?: StringFieldUpdateOperationsInput | string
+    leafIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleLeafCreateManyInput = {
+    id?: number
+    ownerPubkey: string
+    recordCid: string
+    leafHash: string
+    leafIndex?: number | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleLeafUpdateManyMutationInput = {
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    leafHash?: StringFieldUpdateOperationsInput | string
+    leafIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleLeafUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    recordCid?: StringFieldUpdateOperationsInput | string
+    leafHash?: StringFieldUpdateOperationsInput | string
+    leafIndex?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -10842,6 +12110,43 @@ export namespace Prisma {
 
   export type AuditEventSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type MerkleLeafCountOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    recordCid?: SortOrder
+    leafHash?: SortOrder
+    leafIndex?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleLeafAvgOrderByAggregateInput = {
+    id?: SortOrder
+    leafIndex?: SortOrder
+  }
+
+  export type MerkleLeafMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    recordCid?: SortOrder
+    leafHash?: SortOrder
+    leafIndex?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleLeafMinOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    recordCid?: SortOrder
+    leafHash?: SortOrder
+    leafIndex?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleLeafSumOrderByAggregateInput = {
+    id?: SortOrder
+    leafIndex?: SortOrder
   }
 
   export type AccessLogCreateNestedManyWithoutRewrapKeyInput = {

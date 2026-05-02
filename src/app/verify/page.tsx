@@ -13,6 +13,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { FileCheck, Shield, Lock, CheckCircle, AlertCircle, Loader2, Download, FileImage, FileText } from 'lucide-react'
 
+type MerkleSnapshot = {
+  ownerPubkey: string
+  leafCount: number
+  rootHex: string | null
+}
+
+type MerkleProof = {
+  ownerPubkey: string
+  recordCid: string
+  leafHex: string
+  leafIndex: number
+  rootHex: string
+  proofHex: string[]
+}
+
 function fromBase64(s: string) {
   if (typeof Buffer !== 'undefined') return Buffer.from(s, 'base64')
   const binary = atob(s)
@@ -96,6 +111,12 @@ export default function VerifyPage() {
   const [signatureStatus, setSignatureStatus] = useState<{ valid: boolean; signer?: string; error?: string } | null>(
     null,
   )
+  const [ownerPubkey, setOwnerPubkey] = useState('')
+  const [merkleSnapshot, setMerkleSnapshot] = useState<MerkleSnapshot | null>(null)
+  const [merkleProof, setMerkleProof] = useState<MerkleProof | null>(null)
+  const [merkleVerifyValid, setMerkleVerifyValid] = useState<boolean | null>(null)
+  const [merkleLoading, setMerkleLoading] = useState(false)
+  const [merkleError, setMerkleError] = useState('')
 
   useEffect(() => {
     const savedConsentCid = localStorage.getItem('consentCid')
@@ -127,6 +148,12 @@ export default function VerifyPage() {
 
       const verification = verifyRecordSignature(json)
       setSignatureStatus(verification)
+      const defaultOwner = json.signer || json.walletPubkey || ''
+      setOwnerPubkey(defaultOwner)
+      setMerkleSnapshot(null)
+      setMerkleProof(null)
+      setMerkleVerifyValid(null)
+      setMerkleError('')
 
       if (!verification.valid) {
         setError(`Signature verification failed: ${verification.error}`)
@@ -134,6 +161,93 @@ export default function VerifyPage() {
     } catch (err: any) {
       setError('Invalid JSON file: ' + err.message)
       setSignatureStatus(null)
+    }
+  }
+
+  const fetchMerkleRoot = async () => {
+    if (!ownerPubkey) {
+      setMerkleError('Owner public key is required')
+      return
+    }
+
+    setMerkleLoading(true)
+    setMerkleError('')
+    try {
+      const res = await fetch(`/api/merkle/root?ownerPubkey=${encodeURIComponent(ownerPubkey)}`)
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to fetch Merkle root')
+      }
+
+      setMerkleSnapshot({
+        ownerPubkey: data.ownerPubkey,
+        leafCount: data.leafCount,
+        rootHex: data.rootHex,
+      })
+    } catch (err: any) {
+      setMerkleError(err?.message || 'Failed to fetch Merkle root')
+    } finally {
+      setMerkleLoading(false)
+    }
+  }
+
+  const fetchMerkleProof = async () => {
+    if (!ownerPubkey) {
+      setMerkleError('Owner public key is required')
+      return
+    }
+    if (!jsonFile?.cid) {
+      setMerkleError('Load a signed record first')
+      return
+    }
+
+    setMerkleLoading(true)
+    setMerkleError('')
+    try {
+      const query = `ownerPubkey=${encodeURIComponent(ownerPubkey)}&recordCid=${encodeURIComponent(jsonFile.cid)}`
+      const res = await fetch(`/api/merkle/proof?${query}`)
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to fetch Merkle proof')
+      }
+
+      setMerkleProof(data)
+    } catch (err: any) {
+      setMerkleError(err?.message || 'Failed to fetch Merkle proof')
+    } finally {
+      setMerkleLoading(false)
+    }
+  }
+
+  const verifyMerkleInclusion = async () => {
+    if (!merkleProof?.rootHex || !merkleProof?.proofHex) {
+      setMerkleError('Fetch Merkle proof first')
+      return
+    }
+
+    setMerkleLoading(true)
+    setMerkleError('')
+    try {
+      const res = await fetch('/api/merkle/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rootHex: merkleProof.rootHex,
+          proofHex: merkleProof.proofHex,
+          ownerPubkey,
+          recordCid: jsonFile?.cid,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data?.error || 'Merkle verification failed')
+      }
+      setMerkleVerifyValid(Boolean(data.valid))
+    } catch (err: any) {
+      setMerkleError(err?.message || 'Merkle verification failed')
+    } finally {
+      setMerkleLoading(false)
     }
   }
 
@@ -435,6 +549,78 @@ export default function VerifyPage() {
                   <Badge variant="secondary" className="text-lg px-3 py-1">
                     2
                   </Badge>
+                  <CardTitle>Merkle Integrity Check</CardTitle>
+                </div>
+                <CardDescription>Fetch Merkle root/proof from DB and verify this record CID inclusion</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ownerPubkey">Owner Public Key</Label>
+                  <Input
+                    id="ownerPubkey"
+                    type="text"
+                    value={ownerPubkey}
+                    onChange={(e) => setOwnerPubkey(e.target.value)}
+                    placeholder="Owner wallet pubkey"
+                    className="font-mono"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-2">
+                  <Button type="button" variant="outline" onClick={fetchMerkleRoot} disabled={merkleLoading}>
+                    Fetch Root
+                  </Button>
+                  <Button type="button" variant="outline" onClick={fetchMerkleProof} disabled={merkleLoading}>
+                    Fetch Proof
+                  </Button>
+                  <Button type="button" onClick={verifyMerkleInclusion} disabled={merkleLoading || !merkleProof}>
+                    Verify Inclusion
+                  </Button>
+                </div>
+
+                {merkleError && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{merkleError}</AlertDescription>
+                  </Alert>
+                )}
+
+                {merkleSnapshot && (
+                  <div className="rounded-md border bg-muted/30 p-3 space-y-2">
+                    <p className="text-xs text-muted-foreground">Root</p>
+                    <code className="block text-xs break-all">{merkleSnapshot.rootHex || 'No leaves yet'}</code>
+                    <p className="text-xs text-muted-foreground">Leaf count: {merkleSnapshot.leafCount}</p>
+                  </div>
+                )}
+
+                {merkleProof && (
+                  <div className="rounded-md border bg-muted/30 p-3 space-y-2">
+                    <p className="text-xs text-muted-foreground">Proof for CID</p>
+                    <code className="block text-xs break-all">{merkleProof.recordCid}</code>
+                    <p className="text-xs text-muted-foreground">Leaf index: {merkleProof.leafIndex}</p>
+                    <p className="text-xs text-muted-foreground">Proof nodes: {merkleProof.proofHex.length}</p>
+                  </div>
+                )}
+
+                {merkleVerifyValid !== null && (
+                  <Alert variant={merkleVerifyValid ? 'default' : 'destructive'}>
+                    {merkleVerifyValid ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                    <AlertDescription>
+                      {merkleVerifyValid
+                        ? 'Merkle verification passed: this CID is included in the owner tree.'
+                        : 'Merkle verification failed.'}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 shadow-lg">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-lg px-3 py-1">
+                    3
+                  </Badge>
                   <CardTitle>Decrypt with Wallet</CardTitle>
                 </div>
                 <CardDescription>
@@ -653,7 +839,7 @@ export default function VerifyPage() {
                               const parts = trimmedLine.split(/\*\*(.*?)\*\*/g);
                               return (
                                 <p key={idx} className="text-gray-700 dark:text-gray-300 my-2 leading-relaxed">
-                                  {parts.map((part, i) => 
+                                  {parts.map((part, i) =>
                                     i % 2 === 1 ? <strong key={i} className="font-semibold">{part}</strong> : part
                                   )}
                                 </p>

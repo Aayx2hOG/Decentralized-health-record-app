@@ -3,6 +3,7 @@ import * as sodium from 'libsodium-wrappers';
 import { prismaClient } from 'db/src';
 import bs58 from 'bs58';
 import { fetchAndVerifyConsent } from '@/lib/verify-consent';
+import { ensureMerkleLeaf } from '@/lib/merkle-db';
 
 export async function POST(req: NextRequest) {
   const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip') || 'unknown';
@@ -365,6 +366,8 @@ export async function PUT(req: NextRequest) {
     if (!valid) {
       return NextResponse.json({ error: 'Invalid creator signature - unauthorized' }, { status: 403 });
     }
+
+    await ensureMerkleLeaf(creatorPubkey, recordCid);
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);

@@ -1,9 +1,10 @@
 import { prismaClient } from "db/src";
 import { NextRequest, NextResponse } from "next/server";
+import { ensureMerkleLeaf } from "@/lib/merkle-db";
 
-export async function POST(req: NextRequest){
-    try{
-        const {recordCid, txSignature, pda, walletPubkey} = await req.json();
+export async function POST(req: NextRequest) {
+    try {
+        const { recordCid, txSignature, pda, walletPubkey } = await req.json();
 
         const anchor = await prismaClient.recordAnchor.create({
             data: {
@@ -13,11 +14,14 @@ export async function POST(req: NextRequest){
                 anchoredBy: walletPubkey,
             },
         });
+
+        await ensureMerkleLeaf(walletPubkey, recordCid);
+
         return NextResponse.json({
             success: true,
             id: anchor.id,
         });
-    }catch(e){
+    } catch (e) {
         return NextResponse.json({
             success: false,
             error: e,
@@ -27,9 +31,9 @@ export async function POST(req: NextRequest){
     }
 }
 
-export async function GET(req: NextRequest){
+export async function GET(req: NextRequest) {
     const cid = req.nextUrl.searchParams.get('cid');
-    if (!cid){
+    if (!cid) {
         return NextResponse.json({
             success: false,
             error: 'No cid provided',
@@ -38,7 +42,7 @@ export async function GET(req: NextRequest){
         });
     }
     const anchor = await prismaClient.recordAnchor.findUnique({
-        where: {recordCid: cid},
+        where: { recordCid: cid },
     });
     return NextResponse.json({
         success: true,

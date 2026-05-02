@@ -119,3 +119,16 @@ model AuditEvent {
   @@index([createdAt])
   @@map("audit_events")
 }
+
+model MerkleLeaf {
+  id          Int      @id @default(autoincrement())
+  ownerPubkey String   @db.VarChar(44)
+  recordCid   String
+  leafHash    String   @db.VarChar(128)
+  leafIndex   Int?
+  createdAt   DateTime @default(now())
+
+  @@index([ownerPubkey], name: "idx_merkle_owner")
+  @@index([recordCid], name: "idx_merkle_record")
+  @@map("merkle_leaves")
+}

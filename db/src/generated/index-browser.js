@@ -199,6 +199,15 @@ exports.Prisma.AuditEventScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MerkleLeafScalarFieldEnum = {
+  id: 'id',
+  ownerPubkey: 'ownerPubkey',
+  recordCid: 'recordCid',
+  leafHash: 'leafHash',
+  leafIndex: 'leafIndex',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -222,7 +231,8 @@ exports.Prisma.ModelName = {
   ConsentCredential: 'ConsentCredential',
   RecordAnchor: 'RecordAnchor',
   AccessRequest: 'AccessRequest',
-  AuditEvent: 'AuditEvent'
+  AuditEvent: 'AuditEvent',
+  MerkleLeaf: 'MerkleLeaf'
 };
 
 /**
