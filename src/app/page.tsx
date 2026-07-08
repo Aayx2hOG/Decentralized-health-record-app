@@ -12,28 +12,28 @@ import { HoverEffect } from '@/components/ui/card-hover-effect'
 
 const features = [
   {
-    title: 'End-to-End Encryption',
-    description: 'AES-256-GCM symmetric encryption ensures your health records remain private',
+    title: 'Client-Side Encryption',
+    description: 'AES-256-GCM keeps medical files encrypted before they leave the browser',
     link: '#',
   },
   {
-    title: 'Zero-Knowledge',
-    description: 'Server never sees your plaintext data - true privacy by design',
+    title: 'Verifiable Consent',
+    description: 'W3C-style credentials grant time-limited access to specific recipients',
     link: '#',
   },
   {
     title: 'IPFS Storage',
-    description: 'Immutable, decentralized content-addressed storage for your records',
+    description: 'Encrypted records are stored as content-addressed IPFS payloads',
     link: '#',
   },
   {
-    title: 'Cryptographic Signatures',
-    description: 'Ed25519 signatures provide proof of authenticity and integrity',
+    title: 'Wallet Signatures',
+    description: 'Solana signatures prove record authenticity and consent intent',
     link: '#',
   },
   {
-    title: 'Multi-Recipient Sharing',
-    description: 'Share records securely using sealed box encryption',
+    title: 'Auditable Access',
+    description: 'Access requests, approvals, revocations, and decrypt attempts are logged',
     link: '#',
   },
 ]
@@ -85,18 +85,18 @@ export default function Home() {
                 className="px-4 py-2 gap-2 text-sm font-medium border-primary/20 bg-primary/10"
               >
                 <Shield className="h-4 w-4" />
-                Military-Grade Security
+                Encrypted Records + Verifiable Consent
               </Badge>
             </div>
 
             <h1 className="text-4xl lg:text-7xl font-bold tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-150 bg-clip-text text-transparent bg-gradient-to-b from-neutral-900 to-neutral-600 dark:from-neutral-200 dark:to-neutral-600">
-              Decentralized Health Records
-              <span className="block text-primary mt-2">Built on Solana</span>
+              Private Health Records
+              <span className="block mt-2">Encrypted on IPFS</span>
+              <span className="block text-primary mt-2">Anchored on Solana</span>
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-              Store, manage, and share your medical records with end-to-end encryption, cryptographic signatures, and
-              zero-knowledge architecture on the blockchain.
+              Encrypted locally. Stored on IPFS. Verified with Solana. Shared through cryptographic consent.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500 pt-4">
@@ -124,7 +124,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">Enterprise-Grade Features</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Built with security, privacy, and user control at the core
+              Built around private records, explicit consent, and verifiable integrity
             </p>
           </div>
 
@@ -137,7 +137,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">How It Works</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Simple, secure, and decentralized health record management in three steps
+              Private record management without putting medical data on-chain
             </p>
           </div>
 
@@ -186,7 +186,9 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Security First</h2>
-              <p className="text-lg text-muted-foreground">Your health data deserves military-grade protection</p>
+              <p className="text-lg text-muted-foreground">
+                Encryption, wallet signatures, consent checks, and access logs work together
+              </p>
             </div>
 
             <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-md antialiased group">

@@ -4,7 +4,7 @@ Decentralized health records management system built on Solana with end-to-end e
 
 ## Key Features
 
-- **End-to-End Encryption**: AES-256-GCM encryption, zero-knowledge architecture
+- **End-to-End Encryption**: AES-256-GCM encryption with client-side plaintext handling
 - **Consent Management**: W3C Verifiable Credentials with time-limited, revocable access
 - **Consent Tracking**: Database-backed tracking of issued and received consents
 - **Blockchain Integration**: Solana wallet signatures and optional on-chain anchoring

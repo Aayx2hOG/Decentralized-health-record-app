@@ -20,25 +20,21 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity" href="/">
+      <div className="flex h-16 w-full items-center justify-between gap-4 px-4">
+        <div className="flex min-w-0 items-center gap-6">
+          <Link className="flex shrink-0 items-center gap-2 hover:opacity-80 transition-opacity" href="/">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <Activity className="h-5 w-5 text-primary" />
             </div>
             <span className="font-bold text-xl hidden sm:inline-block">MediChain</span>
           </Link>
 
-          <Separator orientation="vertical" className="h-6 hidden md:block" />
+          <Separator orientation="vertical" className="h-6 hidden lg:block" />
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex min-w-0 items-center gap-1">
             {links.map(({ label, path }) => (
               <Link key={path} href={path}>
-                <Button
-                  variant={isActive(path) ? "secondary" : "ghost"}
-                  size="sm"
-                  className="relative"
-                >
+                <Button variant={isActive(path) ? 'secondary' : 'ghost'} size="sm" className="relative">
                   {label}
                   {isActive(path) && (
                     <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
@@ -49,35 +45,26 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <div className="hidden md:flex items-center gap-2">
             <WalletButton />
             <ClusterUiSelect />
             <ThemeSelect />
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setShowMenu(!showMenu)}
-          >
+          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setShowMenu(!showMenu)}>
             {showMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </div>
 
       {showMenu && (
-        <div className="md:hidden border-t">
-          <div className="container py-4 px-4 space-y-4">
+        <div className="lg:hidden border-t">
+          <div className="w-full py-4 px-4 space-y-4">
             <nav className="flex flex-col gap-2">
               {links.map(({ label, path }) => (
                 <Link key={path} href={path} onClick={() => setShowMenu(false)}>
-                  <Button
-                    variant={isActive(path) ? "secondary" : "ghost"}
-                    className="w-full justify-start"
-                    size="lg"
-                  >
+                  <Button variant={isActive(path) ? 'secondary' : 'ghost'} className="w-full justify-start" size="lg">
                     {label}
                   </Button>
                 </Link>
