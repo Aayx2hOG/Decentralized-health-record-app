@@ -208,6 +208,16 @@ exports.Prisma.MerkleLeafScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MerkleRootSnapshotScalarFieldEnum = {
+  id: 'id',
+  ownerPubkey: 'ownerPubkey',
+  rootHex: 'rootHex',
+  leafCount: 'leafCount',
+  anchorTxSignature: 'anchorTxSignature',
+  anchorPda: 'anchorPda',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -232,7 +242,8 @@ exports.Prisma.ModelName = {
   RecordAnchor: 'RecordAnchor',
   AccessRequest: 'AccessRequest',
   AuditEvent: 'AuditEvent',
-  MerkleLeaf: 'MerkleLeaf'
+  MerkleLeaf: 'MerkleLeaf',
+  MerkleRootSnapshot: 'MerkleRootSnapshot'
 };
 
 /**

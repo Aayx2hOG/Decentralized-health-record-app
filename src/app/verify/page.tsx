@@ -17,6 +17,13 @@ type MerkleSnapshot = {
   ownerPubkey: string
   leafCount: number
   rootHex: string | null
+  latestSnapshot?: {
+    id: number
+    rootHex: string
+    leafCount: number
+    anchorTxSignature: string | null
+    createdAt: string
+  } | null
 }
 
 type MerkleProof = {
@@ -26,6 +33,10 @@ type MerkleProof = {
   leafIndex: number
   rootHex: string
   proofHex: string[]
+  leafCount: number
+  snapshotId: number | null
+  snapshotCreatedAt: string | null
+  anchorTxSignature: string | null
 }
 
 function fromBase64(s: string) {
@@ -183,6 +194,7 @@ export default function VerifyPage() {
         ownerPubkey: data.ownerPubkey,
         leafCount: data.leafCount,
         rootHex: data.rootHex,
+        latestSnapshot: data.latestSnapshot ?? null,
       })
     } catch (err: any) {
       setMerkleError(err?.message || 'Failed to fetch Merkle root')
@@ -220,20 +232,49 @@ export default function VerifyPage() {
   }
 
   const verifyMerkleInclusion = async () => {
-    if (!merkleProof?.rootHex || !merkleProof?.proofHex) {
-      setMerkleError('Fetch Merkle proof first')
+    if (!ownerPubkey) {
+      setMerkleError('Owner public key is required')
+      return
+    }
+    if (!jsonFile?.cid) {
+      setMerkleError('Load a signed record first')
       return
     }
 
     setMerkleLoading(true)
     setMerkleError('')
+    setMerkleSnapshot(null)
+    setMerkleProof(null)
+    setMerkleVerifyValid(null)
     try {
+      const rootRes = await fetch(`/api/merkle/root?ownerPubkey=${encodeURIComponent(ownerPubkey)}`)
+      const rootData = await rootRes.json()
+      if (!rootRes.ok) {
+        throw new Error(rootData?.error || 'Failed to fetch Merkle root')
+      }
+
+      setMerkleSnapshot({
+        ownerPubkey: rootData.ownerPubkey,
+        leafCount: rootData.leafCount,
+        rootHex: rootData.rootHex,
+        latestSnapshot: rootData.latestSnapshot ?? null,
+      })
+
+      const query = `ownerPubkey=${encodeURIComponent(ownerPubkey)}&recordCid=${encodeURIComponent(jsonFile.cid)}`
+      const proofRes = await fetch(`/api/merkle/proof?${query}`)
+      const proofData = await proofRes.json()
+      if (!proofRes.ok) {
+        throw new Error(proofData?.error || 'Failed to fetch Merkle proof')
+      }
+
+      setMerkleProof(proofData)
+
       const res = await fetch('/api/merkle/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          rootHex: merkleProof.rootHex,
-          proofHex: merkleProof.proofHex,
+          rootHex: proofData.rootHex,
+          proofHex: proofData.proofHex,
           ownerPubkey,
           recordCid: jsonFile?.cid,
         }),
@@ -566,15 +607,21 @@ export default function VerifyPage() {
                   />
                 </div>
 
-                <div className="grid sm:grid-cols-3 gap-2">
+                <div className="grid sm:grid-cols-[1fr_auto_auto] gap-2">
+                  <Button type="button" onClick={verifyMerkleInclusion} disabled={merkleLoading || !jsonFile?.cid}>
+                    {merkleLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    Verify Inclusion
+                  </Button>
                   <Button type="button" variant="outline" onClick={fetchMerkleRoot} disabled={merkleLoading}>
                     Fetch Root
                   </Button>
-                  <Button type="button" variant="outline" onClick={fetchMerkleProof} disabled={merkleLoading}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={fetchMerkleProof}
+                    disabled={merkleLoading || !jsonFile?.cid}
+                  >
                     Fetch Proof
-                  </Button>
-                  <Button type="button" onClick={verifyMerkleInclusion} disabled={merkleLoading || !merkleProof}>
-                    Verify Inclusion
                   </Button>
                 </div>
 
@@ -590,6 +637,9 @@ export default function VerifyPage() {
                     <p className="text-xs text-muted-foreground">Root</p>
                     <code className="block text-xs break-all">{merkleSnapshot.rootHex || 'No leaves yet'}</code>
                     <p className="text-xs text-muted-foreground">Leaf count: {merkleSnapshot.leafCount}</p>
+                    {merkleSnapshot.latestSnapshot && (
+                      <p className="text-xs text-muted-foreground">Snapshot #{merkleSnapshot.latestSnapshot.id}</p>
+                    )}
                   </div>
                 )}
 
@@ -598,7 +648,19 @@ export default function VerifyPage() {
                     <p className="text-xs text-muted-foreground">Proof for CID</p>
                     <code className="block text-xs break-all">{merkleProof.recordCid}</code>
                     <p className="text-xs text-muted-foreground">Leaf index: {merkleProof.leafIndex}</p>
+                    <p className="text-xs text-muted-foreground">Tree leaves: {merkleProof.leafCount}</p>
                     <p className="text-xs text-muted-foreground">Proof nodes: {merkleProof.proofHex.length}</p>
+                    <p className="text-xs text-muted-foreground">Root used for proof</p>
+                    <code className="block text-xs break-all">{merkleProof.rootHex}</code>
+                    {merkleProof.snapshotId && (
+                      <p className="text-xs text-muted-foreground">Snapshot #{merkleProof.snapshotId}</p>
+                    )}
+                    {merkleProof.anchorTxSignature && (
+                      <>
+                        <p className="text-xs text-muted-foreground">Record anchor transaction</p>
+                        <code className="block text-xs break-all">{merkleProof.anchorTxSignature}</code>
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -793,37 +855,44 @@ export default function VerifyPage() {
                         <FileText className="h-5 w-5 text-primary" />
                         <span className="font-semibold text-primary">Medical Report Excerpt</span>
                       </div>
-                      {jsonFile?.title && (
-                        <p className="text-sm text-muted-foreground mt-1">{jsonFile.title}</p>
-                      )}
+                      {jsonFile?.title && <p className="text-sm text-muted-foreground mt-1">{jsonFile.title}</p>}
                     </div>
                     {/* Document Content */}
                     <div className="p-6 max-h-[600px] overflow-auto">
                       <div className="prose prose-sm dark:prose-invert max-w-none">
                         {decrypted ? (
                           decrypted.split('\n').map((line, idx) => {
-                            const trimmedLine = line.trim();
+                            const trimmedLine = line.trim()
                             // Render headers
                             if (trimmedLine.startsWith('# ')) {
                               return (
-                                <h1 key={idx} className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-4 mb-2 pb-2 border-b">
+                                <h1
+                                  key={idx}
+                                  className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-4 mb-2 pb-2 border-b"
+                                >
                                   {trimmedLine.slice(2)}
                                 </h1>
-                              );
+                              )
                             }
                             if (trimmedLine.startsWith('## ')) {
                               return (
-                                <h2 key={idx} className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2">
+                                <h2
+                                  key={idx}
+                                  className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2"
+                                >
                                   {trimmedLine.slice(3)}
                                 </h2>
-                              );
+                              )
                             }
                             if (trimmedLine.startsWith('### ')) {
                               return (
-                                <h3 key={idx} className="text-base font-medium text-gray-700 dark:text-gray-300 mt-3 mb-1">
+                                <h3
+                                  key={idx}
+                                  className="text-base font-medium text-gray-700 dark:text-gray-300 mt-3 mb-1"
+                                >
                                   {trimmedLine.slice(4)}
                                 </h3>
-                              );
+                              )
                             }
                             // Render list items
                             if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
@@ -832,29 +901,35 @@ export default function VerifyPage() {
                                   <span className="text-primary">•</span>
                                   <span className="text-gray-700 dark:text-gray-300">{trimmedLine.slice(2)}</span>
                                 </div>
-                              );
+                              )
                             }
                             // Render bold text (simple **text** pattern)
                             if (trimmedLine.includes('**')) {
-                              const parts = trimmedLine.split(/\*\*(.*?)\*\*/g);
+                              const parts = trimmedLine.split(/\*\*(.*?)\*\*/g)
                               return (
                                 <p key={idx} className="text-gray-700 dark:text-gray-300 my-2 leading-relaxed">
                                   {parts.map((part, i) =>
-                                    i % 2 === 1 ? <strong key={i} className="font-semibold">{part}</strong> : part
+                                    i % 2 === 1 ? (
+                                      <strong key={i} className="font-semibold">
+                                        {part}
+                                      </strong>
+                                    ) : (
+                                      part
+                                    ),
                                   )}
                                 </p>
-                              );
+                              )
                             }
                             // Empty lines as spacing
                             if (!trimmedLine) {
-                              return <div key={idx} className="h-2" />;
+                              return <div key={idx} className="h-2" />
                             }
                             // Regular paragraphs
                             return (
                               <p key={idx} className="text-gray-700 dark:text-gray-300 my-2 leading-relaxed">
                                 {line}
                               </p>
-                            );
+                            )
                           })
                         ) : (
                           <p className="text-muted-foreground italic">(waiting...)</p>

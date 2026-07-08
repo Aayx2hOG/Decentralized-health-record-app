@@ -53,6 +53,11 @@ export type AuditEvent = $Result.DefaultSelection<Prisma.$AuditEventPayload>
  * 
  */
 export type MerkleLeaf = $Result.DefaultSelection<Prisma.$MerkleLeafPayload>
+/**
+ * Model MerkleRootSnapshot
+ * 
+ */
+export type MerkleRootSnapshot = $Result.DefaultSelection<Prisma.$MerkleRootSnapshotPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -250,6 +255,16 @@ export class PrismaClient<
     * ```
     */
   get merkleLeaf(): Prisma.MerkleLeafDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.merkleRootSnapshot`: Exposes CRUD operations for the **MerkleRootSnapshot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MerkleRootSnapshots
+    * const merkleRootSnapshots = await prisma.merkleRootSnapshot.findMany()
+    * ```
+    */
+  get merkleRootSnapshot(): Prisma.MerkleRootSnapshotDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -691,7 +706,8 @@ export namespace Prisma {
     RecordAnchor: 'RecordAnchor',
     AccessRequest: 'AccessRequest',
     AuditEvent: 'AuditEvent',
-    MerkleLeaf: 'MerkleLeaf'
+    MerkleLeaf: 'MerkleLeaf',
+    MerkleRootSnapshot: 'MerkleRootSnapshot'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -707,7 +723,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor" | "accessRequest" | "auditEvent" | "merkleLeaf"
+      modelProps: "rewrapKey" | "accessLog" | "admin" | "consentCredential" | "recordAnchor" | "accessRequest" | "auditEvent" | "merkleLeaf" | "merkleRootSnapshot"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1303,6 +1319,80 @@ export namespace Prisma {
           }
         }
       }
+      MerkleRootSnapshot: {
+        payload: Prisma.$MerkleRootSnapshotPayload<ExtArgs>
+        fields: Prisma.MerkleRootSnapshotFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MerkleRootSnapshotFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MerkleRootSnapshotFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          findFirst: {
+            args: Prisma.MerkleRootSnapshotFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MerkleRootSnapshotFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          findMany: {
+            args: Prisma.MerkleRootSnapshotFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>[]
+          }
+          create: {
+            args: Prisma.MerkleRootSnapshotCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          createMany: {
+            args: Prisma.MerkleRootSnapshotCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MerkleRootSnapshotCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>[]
+          }
+          delete: {
+            args: Prisma.MerkleRootSnapshotDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          update: {
+            args: Prisma.MerkleRootSnapshotUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          deleteMany: {
+            args: Prisma.MerkleRootSnapshotDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MerkleRootSnapshotUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MerkleRootSnapshotUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>[]
+          }
+          upsert: {
+            args: Prisma.MerkleRootSnapshotUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MerkleRootSnapshotPayload>
+          }
+          aggregate: {
+            args: Prisma.MerkleRootSnapshotAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMerkleRootSnapshot>
+          }
+          groupBy: {
+            args: Prisma.MerkleRootSnapshotGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MerkleRootSnapshotGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MerkleRootSnapshotCountArgs<ExtArgs>
+            result: $Utils.Optional<MerkleRootSnapshotCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1403,6 +1493,7 @@ export namespace Prisma {
     accessRequest?: AccessRequestOmit
     auditEvent?: AuditEventOmit
     merkleLeaf?: MerkleLeafOmit
+    merkleRootSnapshot?: MerkleRootSnapshotOmit
   }
 
   /* Types for Logging */
@@ -10231,6 +10322,1065 @@ export namespace Prisma {
 
 
   /**
+   * Model MerkleRootSnapshot
+   */
+
+  export type AggregateMerkleRootSnapshot = {
+    _count: MerkleRootSnapshotCountAggregateOutputType | null
+    _avg: MerkleRootSnapshotAvgAggregateOutputType | null
+    _sum: MerkleRootSnapshotSumAggregateOutputType | null
+    _min: MerkleRootSnapshotMinAggregateOutputType | null
+    _max: MerkleRootSnapshotMaxAggregateOutputType | null
+  }
+
+  export type MerkleRootSnapshotAvgAggregateOutputType = {
+    id: number | null
+    leafCount: number | null
+  }
+
+  export type MerkleRootSnapshotSumAggregateOutputType = {
+    id: number | null
+    leafCount: number | null
+  }
+
+  export type MerkleRootSnapshotMinAggregateOutputType = {
+    id: number | null
+    ownerPubkey: string | null
+    rootHex: string | null
+    leafCount: number | null
+    anchorTxSignature: string | null
+    anchorPda: string | null
+    createdAt: Date | null
+  }
+
+  export type MerkleRootSnapshotMaxAggregateOutputType = {
+    id: number | null
+    ownerPubkey: string | null
+    rootHex: string | null
+    leafCount: number | null
+    anchorTxSignature: string | null
+    anchorPda: string | null
+    createdAt: Date | null
+  }
+
+  export type MerkleRootSnapshotCountAggregateOutputType = {
+    id: number
+    ownerPubkey: number
+    rootHex: number
+    leafCount: number
+    anchorTxSignature: number
+    anchorPda: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type MerkleRootSnapshotAvgAggregateInputType = {
+    id?: true
+    leafCount?: true
+  }
+
+  export type MerkleRootSnapshotSumAggregateInputType = {
+    id?: true
+    leafCount?: true
+  }
+
+  export type MerkleRootSnapshotMinAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    rootHex?: true
+    leafCount?: true
+    anchorTxSignature?: true
+    anchorPda?: true
+    createdAt?: true
+  }
+
+  export type MerkleRootSnapshotMaxAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    rootHex?: true
+    leafCount?: true
+    anchorTxSignature?: true
+    anchorPda?: true
+    createdAt?: true
+  }
+
+  export type MerkleRootSnapshotCountAggregateInputType = {
+    id?: true
+    ownerPubkey?: true
+    rootHex?: true
+    leafCount?: true
+    anchorTxSignature?: true
+    anchorPda?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type MerkleRootSnapshotAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MerkleRootSnapshot to aggregate.
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleRootSnapshots to fetch.
+     */
+    orderBy?: MerkleRootSnapshotOrderByWithRelationInput | MerkleRootSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MerkleRootSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleRootSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleRootSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MerkleRootSnapshots
+    **/
+    _count?: true | MerkleRootSnapshotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MerkleRootSnapshotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MerkleRootSnapshotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MerkleRootSnapshotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MerkleRootSnapshotMaxAggregateInputType
+  }
+
+  export type GetMerkleRootSnapshotAggregateType<T extends MerkleRootSnapshotAggregateArgs> = {
+        [P in keyof T & keyof AggregateMerkleRootSnapshot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMerkleRootSnapshot[P]>
+      : GetScalarType<T[P], AggregateMerkleRootSnapshot[P]>
+  }
+
+
+
+
+  export type MerkleRootSnapshotGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MerkleRootSnapshotWhereInput
+    orderBy?: MerkleRootSnapshotOrderByWithAggregationInput | MerkleRootSnapshotOrderByWithAggregationInput[]
+    by: MerkleRootSnapshotScalarFieldEnum[] | MerkleRootSnapshotScalarFieldEnum
+    having?: MerkleRootSnapshotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MerkleRootSnapshotCountAggregateInputType | true
+    _avg?: MerkleRootSnapshotAvgAggregateInputType
+    _sum?: MerkleRootSnapshotSumAggregateInputType
+    _min?: MerkleRootSnapshotMinAggregateInputType
+    _max?: MerkleRootSnapshotMaxAggregateInputType
+  }
+
+  export type MerkleRootSnapshotGroupByOutputType = {
+    id: number
+    ownerPubkey: string
+    rootHex: string
+    leafCount: number
+    anchorTxSignature: string | null
+    anchorPda: string | null
+    createdAt: Date
+    _count: MerkleRootSnapshotCountAggregateOutputType | null
+    _avg: MerkleRootSnapshotAvgAggregateOutputType | null
+    _sum: MerkleRootSnapshotSumAggregateOutputType | null
+    _min: MerkleRootSnapshotMinAggregateOutputType | null
+    _max: MerkleRootSnapshotMaxAggregateOutputType | null
+  }
+
+  type GetMerkleRootSnapshotGroupByPayload<T extends MerkleRootSnapshotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MerkleRootSnapshotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MerkleRootSnapshotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MerkleRootSnapshotGroupByOutputType[P]>
+            : GetScalarType<T[P], MerkleRootSnapshotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MerkleRootSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    rootHex?: boolean
+    leafCount?: boolean
+    anchorTxSignature?: boolean
+    anchorPda?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleRootSnapshot"]>
+
+  export type MerkleRootSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    rootHex?: boolean
+    leafCount?: boolean
+    anchorTxSignature?: boolean
+    anchorPda?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleRootSnapshot"]>
+
+  export type MerkleRootSnapshotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerPubkey?: boolean
+    rootHex?: boolean
+    leafCount?: boolean
+    anchorTxSignature?: boolean
+    anchorPda?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["merkleRootSnapshot"]>
+
+  export type MerkleRootSnapshotSelectScalar = {
+    id?: boolean
+    ownerPubkey?: boolean
+    rootHex?: boolean
+    leafCount?: boolean
+    anchorTxSignature?: boolean
+    anchorPda?: boolean
+    createdAt?: boolean
+  }
+
+  export type MerkleRootSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerPubkey" | "rootHex" | "leafCount" | "anchorTxSignature" | "anchorPda" | "createdAt", ExtArgs["result"]["merkleRootSnapshot"]>
+
+  export type $MerkleRootSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MerkleRootSnapshot"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      ownerPubkey: string
+      rootHex: string
+      leafCount: number
+      anchorTxSignature: string | null
+      anchorPda: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["merkleRootSnapshot"]>
+    composites: {}
+  }
+
+  type MerkleRootSnapshotGetPayload<S extends boolean | null | undefined | MerkleRootSnapshotDefaultArgs> = $Result.GetResult<Prisma.$MerkleRootSnapshotPayload, S>
+
+  type MerkleRootSnapshotCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MerkleRootSnapshotFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MerkleRootSnapshotCountAggregateInputType | true
+    }
+
+  export interface MerkleRootSnapshotDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MerkleRootSnapshot'], meta: { name: 'MerkleRootSnapshot' } }
+    /**
+     * Find zero or one MerkleRootSnapshot that matches the filter.
+     * @param {MerkleRootSnapshotFindUniqueArgs} args - Arguments to find a MerkleRootSnapshot
+     * @example
+     * // Get one MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MerkleRootSnapshotFindUniqueArgs>(args: SelectSubset<T, MerkleRootSnapshotFindUniqueArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MerkleRootSnapshot that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MerkleRootSnapshotFindUniqueOrThrowArgs} args - Arguments to find a MerkleRootSnapshot
+     * @example
+     * // Get one MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MerkleRootSnapshotFindUniqueOrThrowArgs>(args: SelectSubset<T, MerkleRootSnapshotFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MerkleRootSnapshot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotFindFirstArgs} args - Arguments to find a MerkleRootSnapshot
+     * @example
+     * // Get one MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MerkleRootSnapshotFindFirstArgs>(args?: SelectSubset<T, MerkleRootSnapshotFindFirstArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MerkleRootSnapshot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotFindFirstOrThrowArgs} args - Arguments to find a MerkleRootSnapshot
+     * @example
+     * // Get one MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MerkleRootSnapshotFindFirstOrThrowArgs>(args?: SelectSubset<T, MerkleRootSnapshotFindFirstOrThrowArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MerkleRootSnapshots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MerkleRootSnapshots
+     * const merkleRootSnapshots = await prisma.merkleRootSnapshot.findMany()
+     * 
+     * // Get first 10 MerkleRootSnapshots
+     * const merkleRootSnapshots = await prisma.merkleRootSnapshot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const merkleRootSnapshotWithIdOnly = await prisma.merkleRootSnapshot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MerkleRootSnapshotFindManyArgs>(args?: SelectSubset<T, MerkleRootSnapshotFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MerkleRootSnapshot.
+     * @param {MerkleRootSnapshotCreateArgs} args - Arguments to create a MerkleRootSnapshot.
+     * @example
+     * // Create one MerkleRootSnapshot
+     * const MerkleRootSnapshot = await prisma.merkleRootSnapshot.create({
+     *   data: {
+     *     // ... data to create a MerkleRootSnapshot
+     *   }
+     * })
+     * 
+     */
+    create<T extends MerkleRootSnapshotCreateArgs>(args: SelectSubset<T, MerkleRootSnapshotCreateArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MerkleRootSnapshots.
+     * @param {MerkleRootSnapshotCreateManyArgs} args - Arguments to create many MerkleRootSnapshots.
+     * @example
+     * // Create many MerkleRootSnapshots
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MerkleRootSnapshotCreateManyArgs>(args?: SelectSubset<T, MerkleRootSnapshotCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MerkleRootSnapshots and returns the data saved in the database.
+     * @param {MerkleRootSnapshotCreateManyAndReturnArgs} args - Arguments to create many MerkleRootSnapshots.
+     * @example
+     * // Create many MerkleRootSnapshots
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MerkleRootSnapshots and only return the `id`
+     * const merkleRootSnapshotWithIdOnly = await prisma.merkleRootSnapshot.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MerkleRootSnapshotCreateManyAndReturnArgs>(args?: SelectSubset<T, MerkleRootSnapshotCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MerkleRootSnapshot.
+     * @param {MerkleRootSnapshotDeleteArgs} args - Arguments to delete one MerkleRootSnapshot.
+     * @example
+     * // Delete one MerkleRootSnapshot
+     * const MerkleRootSnapshot = await prisma.merkleRootSnapshot.delete({
+     *   where: {
+     *     // ... filter to delete one MerkleRootSnapshot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MerkleRootSnapshotDeleteArgs>(args: SelectSubset<T, MerkleRootSnapshotDeleteArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MerkleRootSnapshot.
+     * @param {MerkleRootSnapshotUpdateArgs} args - Arguments to update one MerkleRootSnapshot.
+     * @example
+     * // Update one MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MerkleRootSnapshotUpdateArgs>(args: SelectSubset<T, MerkleRootSnapshotUpdateArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MerkleRootSnapshots.
+     * @param {MerkleRootSnapshotDeleteManyArgs} args - Arguments to filter MerkleRootSnapshots to delete.
+     * @example
+     * // Delete a few MerkleRootSnapshots
+     * const { count } = await prisma.merkleRootSnapshot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MerkleRootSnapshotDeleteManyArgs>(args?: SelectSubset<T, MerkleRootSnapshotDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MerkleRootSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MerkleRootSnapshots
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MerkleRootSnapshotUpdateManyArgs>(args: SelectSubset<T, MerkleRootSnapshotUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MerkleRootSnapshots and returns the data updated in the database.
+     * @param {MerkleRootSnapshotUpdateManyAndReturnArgs} args - Arguments to update many MerkleRootSnapshots.
+     * @example
+     * // Update many MerkleRootSnapshots
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MerkleRootSnapshots and only return the `id`
+     * const merkleRootSnapshotWithIdOnly = await prisma.merkleRootSnapshot.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MerkleRootSnapshotUpdateManyAndReturnArgs>(args: SelectSubset<T, MerkleRootSnapshotUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MerkleRootSnapshot.
+     * @param {MerkleRootSnapshotUpsertArgs} args - Arguments to update or create a MerkleRootSnapshot.
+     * @example
+     * // Update or create a MerkleRootSnapshot
+     * const merkleRootSnapshot = await prisma.merkleRootSnapshot.upsert({
+     *   create: {
+     *     // ... data to create a MerkleRootSnapshot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MerkleRootSnapshot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MerkleRootSnapshotUpsertArgs>(args: SelectSubset<T, MerkleRootSnapshotUpsertArgs<ExtArgs>>): Prisma__MerkleRootSnapshotClient<$Result.GetResult<Prisma.$MerkleRootSnapshotPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MerkleRootSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotCountArgs} args - Arguments to filter MerkleRootSnapshots to count.
+     * @example
+     * // Count the number of MerkleRootSnapshots
+     * const count = await prisma.merkleRootSnapshot.count({
+     *   where: {
+     *     // ... the filter for the MerkleRootSnapshots we want to count
+     *   }
+     * })
+    **/
+    count<T extends MerkleRootSnapshotCountArgs>(
+      args?: Subset<T, MerkleRootSnapshotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MerkleRootSnapshotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MerkleRootSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MerkleRootSnapshotAggregateArgs>(args: Subset<T, MerkleRootSnapshotAggregateArgs>): Prisma.PrismaPromise<GetMerkleRootSnapshotAggregateType<T>>
+
+    /**
+     * Group by MerkleRootSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MerkleRootSnapshotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MerkleRootSnapshotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MerkleRootSnapshotGroupByArgs['orderBy'] }
+        : { orderBy?: MerkleRootSnapshotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MerkleRootSnapshotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMerkleRootSnapshotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MerkleRootSnapshot model
+   */
+  readonly fields: MerkleRootSnapshotFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MerkleRootSnapshot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MerkleRootSnapshotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MerkleRootSnapshot model
+   */
+  interface MerkleRootSnapshotFieldRefs {
+    readonly id: FieldRef<"MerkleRootSnapshot", 'Int'>
+    readonly ownerPubkey: FieldRef<"MerkleRootSnapshot", 'String'>
+    readonly rootHex: FieldRef<"MerkleRootSnapshot", 'String'>
+    readonly leafCount: FieldRef<"MerkleRootSnapshot", 'Int'>
+    readonly anchorTxSignature: FieldRef<"MerkleRootSnapshot", 'String'>
+    readonly anchorPda: FieldRef<"MerkleRootSnapshot", 'String'>
+    readonly createdAt: FieldRef<"MerkleRootSnapshot", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MerkleRootSnapshot findUnique
+   */
+  export type MerkleRootSnapshotFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleRootSnapshot to fetch.
+     */
+    where: MerkleRootSnapshotWhereUniqueInput
+  }
+
+  /**
+   * MerkleRootSnapshot findUniqueOrThrow
+   */
+  export type MerkleRootSnapshotFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleRootSnapshot to fetch.
+     */
+    where: MerkleRootSnapshotWhereUniqueInput
+  }
+
+  /**
+   * MerkleRootSnapshot findFirst
+   */
+  export type MerkleRootSnapshotFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleRootSnapshot to fetch.
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleRootSnapshots to fetch.
+     */
+    orderBy?: MerkleRootSnapshotOrderByWithRelationInput | MerkleRootSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MerkleRootSnapshots.
+     */
+    cursor?: MerkleRootSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleRootSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleRootSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MerkleRootSnapshots.
+     */
+    distinct?: MerkleRootSnapshotScalarFieldEnum | MerkleRootSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleRootSnapshot findFirstOrThrow
+   */
+  export type MerkleRootSnapshotFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleRootSnapshot to fetch.
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleRootSnapshots to fetch.
+     */
+    orderBy?: MerkleRootSnapshotOrderByWithRelationInput | MerkleRootSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MerkleRootSnapshots.
+     */
+    cursor?: MerkleRootSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleRootSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleRootSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MerkleRootSnapshots.
+     */
+    distinct?: MerkleRootSnapshotScalarFieldEnum | MerkleRootSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleRootSnapshot findMany
+   */
+  export type MerkleRootSnapshotFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter, which MerkleRootSnapshots to fetch.
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MerkleRootSnapshots to fetch.
+     */
+    orderBy?: MerkleRootSnapshotOrderByWithRelationInput | MerkleRootSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MerkleRootSnapshots.
+     */
+    cursor?: MerkleRootSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MerkleRootSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MerkleRootSnapshots.
+     */
+    skip?: number
+    distinct?: MerkleRootSnapshotScalarFieldEnum | MerkleRootSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * MerkleRootSnapshot create
+   */
+  export type MerkleRootSnapshotCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * The data needed to create a MerkleRootSnapshot.
+     */
+    data: XOR<MerkleRootSnapshotCreateInput, MerkleRootSnapshotUncheckedCreateInput>
+  }
+
+  /**
+   * MerkleRootSnapshot createMany
+   */
+  export type MerkleRootSnapshotCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MerkleRootSnapshots.
+     */
+    data: MerkleRootSnapshotCreateManyInput | MerkleRootSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MerkleRootSnapshot createManyAndReturn
+   */
+  export type MerkleRootSnapshotCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * The data used to create many MerkleRootSnapshots.
+     */
+    data: MerkleRootSnapshotCreateManyInput | MerkleRootSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MerkleRootSnapshot update
+   */
+  export type MerkleRootSnapshotUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * The data needed to update a MerkleRootSnapshot.
+     */
+    data: XOR<MerkleRootSnapshotUpdateInput, MerkleRootSnapshotUncheckedUpdateInput>
+    /**
+     * Choose, which MerkleRootSnapshot to update.
+     */
+    where: MerkleRootSnapshotWhereUniqueInput
+  }
+
+  /**
+   * MerkleRootSnapshot updateMany
+   */
+  export type MerkleRootSnapshotUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MerkleRootSnapshots.
+     */
+    data: XOR<MerkleRootSnapshotUpdateManyMutationInput, MerkleRootSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which MerkleRootSnapshots to update
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * Limit how many MerkleRootSnapshots to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleRootSnapshot updateManyAndReturn
+   */
+  export type MerkleRootSnapshotUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * The data used to update MerkleRootSnapshots.
+     */
+    data: XOR<MerkleRootSnapshotUpdateManyMutationInput, MerkleRootSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which MerkleRootSnapshots to update
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * Limit how many MerkleRootSnapshots to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleRootSnapshot upsert
+   */
+  export type MerkleRootSnapshotUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * The filter to search for the MerkleRootSnapshot to update in case it exists.
+     */
+    where: MerkleRootSnapshotWhereUniqueInput
+    /**
+     * In case the MerkleRootSnapshot found by the `where` argument doesn't exist, create a new MerkleRootSnapshot with this data.
+     */
+    create: XOR<MerkleRootSnapshotCreateInput, MerkleRootSnapshotUncheckedCreateInput>
+    /**
+     * In case the MerkleRootSnapshot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MerkleRootSnapshotUpdateInput, MerkleRootSnapshotUncheckedUpdateInput>
+  }
+
+  /**
+   * MerkleRootSnapshot delete
+   */
+  export type MerkleRootSnapshotDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+    /**
+     * Filter which MerkleRootSnapshot to delete.
+     */
+    where: MerkleRootSnapshotWhereUniqueInput
+  }
+
+  /**
+   * MerkleRootSnapshot deleteMany
+   */
+  export type MerkleRootSnapshotDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MerkleRootSnapshots to delete
+     */
+    where?: MerkleRootSnapshotWhereInput
+    /**
+     * Limit how many MerkleRootSnapshots to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MerkleRootSnapshot without action
+   */
+  export type MerkleRootSnapshotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MerkleRootSnapshot
+     */
+    select?: MerkleRootSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MerkleRootSnapshot
+     */
+    omit?: MerkleRootSnapshotOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10354,6 +11504,19 @@ export namespace Prisma {
   };
 
   export type MerkleLeafScalarFieldEnum = (typeof MerkleLeafScalarFieldEnum)[keyof typeof MerkleLeafScalarFieldEnum]
+
+
+  export const MerkleRootSnapshotScalarFieldEnum: {
+    id: 'id',
+    ownerPubkey: 'ownerPubkey',
+    rootHex: 'rootHex',
+    leafCount: 'leafCount',
+    anchorTxSignature: 'anchorTxSignature',
+    anchorPda: 'anchorPda',
+    createdAt: 'createdAt'
+  };
+
+  export type MerkleRootSnapshotScalarFieldEnum = (typeof MerkleRootSnapshotScalarFieldEnum)[keyof typeof MerkleRootSnapshotScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10974,6 +12137,7 @@ export namespace Prisma {
 
   export type MerkleLeafWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    merkle_leaves_owner_record_key?: MerkleLeafMerkle_leaves_owner_record_keyCompoundUniqueInput
     AND?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
     OR?: MerkleLeafWhereInput[]
     NOT?: MerkleLeafWhereInput | MerkleLeafWhereInput[]
@@ -10982,7 +12146,7 @@ export namespace Prisma {
     leafHash?: StringFilter<"MerkleLeaf"> | string
     leafIndex?: IntNullableFilter<"MerkleLeaf"> | number | null
     createdAt?: DateTimeFilter<"MerkleLeaf"> | Date | string
-  }, "id">
+  }, "id" | "merkle_leaves_owner_record_key">
 
   export type MerkleLeafOrderByWithAggregationInput = {
     id?: SortOrder
@@ -11008,6 +12172,71 @@ export namespace Prisma {
     leafHash?: StringWithAggregatesFilter<"MerkleLeaf"> | string
     leafIndex?: IntNullableWithAggregatesFilter<"MerkleLeaf"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"MerkleLeaf"> | Date | string
+  }
+
+  export type MerkleRootSnapshotWhereInput = {
+    AND?: MerkleRootSnapshotWhereInput | MerkleRootSnapshotWhereInput[]
+    OR?: MerkleRootSnapshotWhereInput[]
+    NOT?: MerkleRootSnapshotWhereInput | MerkleRootSnapshotWhereInput[]
+    id?: IntFilter<"MerkleRootSnapshot"> | number
+    ownerPubkey?: StringFilter<"MerkleRootSnapshot"> | string
+    rootHex?: StringFilter<"MerkleRootSnapshot"> | string
+    leafCount?: IntFilter<"MerkleRootSnapshot"> | number
+    anchorTxSignature?: StringNullableFilter<"MerkleRootSnapshot"> | string | null
+    anchorPda?: StringNullableFilter<"MerkleRootSnapshot"> | string | null
+    createdAt?: DateTimeFilter<"MerkleRootSnapshot"> | Date | string
+  }
+
+  export type MerkleRootSnapshotOrderByWithRelationInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    rootHex?: SortOrder
+    leafCount?: SortOrder
+    anchorTxSignature?: SortOrderInput | SortOrder
+    anchorPda?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleRootSnapshotWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    merkle_root_snapshots_owner_root_count_key?: MerkleRootSnapshotMerkle_root_snapshots_owner_root_count_keyCompoundUniqueInput
+    AND?: MerkleRootSnapshotWhereInput | MerkleRootSnapshotWhereInput[]
+    OR?: MerkleRootSnapshotWhereInput[]
+    NOT?: MerkleRootSnapshotWhereInput | MerkleRootSnapshotWhereInput[]
+    ownerPubkey?: StringFilter<"MerkleRootSnapshot"> | string
+    rootHex?: StringFilter<"MerkleRootSnapshot"> | string
+    leafCount?: IntFilter<"MerkleRootSnapshot"> | number
+    anchorTxSignature?: StringNullableFilter<"MerkleRootSnapshot"> | string | null
+    anchorPda?: StringNullableFilter<"MerkleRootSnapshot"> | string | null
+    createdAt?: DateTimeFilter<"MerkleRootSnapshot"> | Date | string
+  }, "id" | "merkle_root_snapshots_owner_root_count_key">
+
+  export type MerkleRootSnapshotOrderByWithAggregationInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    rootHex?: SortOrder
+    leafCount?: SortOrder
+    anchorTxSignature?: SortOrderInput | SortOrder
+    anchorPda?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: MerkleRootSnapshotCountOrderByAggregateInput
+    _avg?: MerkleRootSnapshotAvgOrderByAggregateInput
+    _max?: MerkleRootSnapshotMaxOrderByAggregateInput
+    _min?: MerkleRootSnapshotMinOrderByAggregateInput
+    _sum?: MerkleRootSnapshotSumOrderByAggregateInput
+  }
+
+  export type MerkleRootSnapshotScalarWhereWithAggregatesInput = {
+    AND?: MerkleRootSnapshotScalarWhereWithAggregatesInput | MerkleRootSnapshotScalarWhereWithAggregatesInput[]
+    OR?: MerkleRootSnapshotScalarWhereWithAggregatesInput[]
+    NOT?: MerkleRootSnapshotScalarWhereWithAggregatesInput | MerkleRootSnapshotScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"MerkleRootSnapshot"> | number
+    ownerPubkey?: StringWithAggregatesFilter<"MerkleRootSnapshot"> | string
+    rootHex?: StringWithAggregatesFilter<"MerkleRootSnapshot"> | string
+    leafCount?: IntWithAggregatesFilter<"MerkleRootSnapshot"> | number
+    anchorTxSignature?: StringNullableWithAggregatesFilter<"MerkleRootSnapshot"> | string | null
+    anchorPda?: StringNullableWithAggregatesFilter<"MerkleRootSnapshot"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MerkleRootSnapshot"> | Date | string
   }
 
   export type RewrapKeyCreateInput = {
@@ -11605,6 +12834,73 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MerkleRootSnapshotCreateInput = {
+    ownerPubkey: string
+    rootHex: string
+    leafCount: number
+    anchorTxSignature?: string | null
+    anchorPda?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleRootSnapshotUncheckedCreateInput = {
+    id?: number
+    ownerPubkey: string
+    rootHex: string
+    leafCount: number
+    anchorTxSignature?: string | null
+    anchorPda?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleRootSnapshotUpdateInput = {
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    rootHex?: StringFieldUpdateOperationsInput | string
+    leafCount?: IntFieldUpdateOperationsInput | number
+    anchorTxSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    anchorPda?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleRootSnapshotUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    rootHex?: StringFieldUpdateOperationsInput | string
+    leafCount?: IntFieldUpdateOperationsInput | number
+    anchorTxSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    anchorPda?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleRootSnapshotCreateManyInput = {
+    id?: number
+    ownerPubkey: string
+    rootHex: string
+    leafCount: number
+    anchorTxSignature?: string | null
+    anchorPda?: string | null
+    createdAt?: Date | string
+  }
+
+  export type MerkleRootSnapshotUpdateManyMutationInput = {
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    rootHex?: StringFieldUpdateOperationsInput | string
+    leafCount?: IntFieldUpdateOperationsInput | number
+    anchorTxSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    anchorPda?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MerkleRootSnapshotUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    ownerPubkey?: StringFieldUpdateOperationsInput | string
+    rootHex?: StringFieldUpdateOperationsInput | string
+    leafCount?: IntFieldUpdateOperationsInput | number
+    anchorTxSignature?: NullableStringFieldUpdateOperationsInput | string | null
+    anchorPda?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -12112,6 +13408,11 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type MerkleLeafMerkle_leaves_owner_record_keyCompoundUniqueInput = {
+    ownerPubkey: string
+    recordCid: string
+  }
+
   export type MerkleLeafCountOrderByAggregateInput = {
     id?: SortOrder
     ownerPubkey?: SortOrder
@@ -12147,6 +13448,52 @@ export namespace Prisma {
   export type MerkleLeafSumOrderByAggregateInput = {
     id?: SortOrder
     leafIndex?: SortOrder
+  }
+
+  export type MerkleRootSnapshotMerkle_root_snapshots_owner_root_count_keyCompoundUniqueInput = {
+    ownerPubkey: string
+    rootHex: string
+    leafCount: number
+  }
+
+  export type MerkleRootSnapshotCountOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    rootHex?: SortOrder
+    leafCount?: SortOrder
+    anchorTxSignature?: SortOrder
+    anchorPda?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleRootSnapshotAvgOrderByAggregateInput = {
+    id?: SortOrder
+    leafCount?: SortOrder
+  }
+
+  export type MerkleRootSnapshotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    rootHex?: SortOrder
+    leafCount?: SortOrder
+    anchorTxSignature?: SortOrder
+    anchorPda?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleRootSnapshotMinOrderByAggregateInput = {
+    id?: SortOrder
+    ownerPubkey?: SortOrder
+    rootHex?: SortOrder
+    leafCount?: SortOrder
+    anchorTxSignature?: SortOrder
+    anchorPda?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MerkleRootSnapshotSumOrderByAggregateInput = {
+    id?: SortOrder
+    leafCount?: SortOrder
   }
 
   export type AccessLogCreateNestedManyWithoutRewrapKeyInput = {

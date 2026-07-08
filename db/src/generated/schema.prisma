@@ -128,7 +128,23 @@ model MerkleLeaf {
   leafIndex   Int?
   createdAt   DateTime @default(now())
 
+  @@unique([ownerPubkey, recordCid], name: "merkle_leaves_owner_record_key")
   @@index([ownerPubkey], name: "idx_merkle_owner")
   @@index([recordCid], name: "idx_merkle_record")
   @@map("merkle_leaves")
+}
+
+model MerkleRootSnapshot {
+  id                Int      @id @default(autoincrement())
+  ownerPubkey       String   @db.VarChar(44)
+  rootHex           String   @db.VarChar(64)
+  leafCount         Int
+  anchorTxSignature String?
+  anchorPda         String?
+  createdAt         DateTime @default(now())
+
+  @@unique([ownerPubkey, rootHex, leafCount], name: "merkle_root_snapshots_owner_root_count_key")
+  @@index([ownerPubkey], name: "idx_merkle_root_snapshot_owner")
+  @@index([rootHex], name: "idx_merkle_root_snapshot_root")
+  @@map("merkle_root_snapshots")
 }
